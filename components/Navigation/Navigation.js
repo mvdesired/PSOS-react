@@ -11,6 +11,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { createDrawerNavigator, DrawerItems, createStackNavigator } from 'react-navigation';
 import { RegistrationScreen } from './Screens';
 import SplashScreen from '../Splash';
+import LocumReg1Screen from '../LocumReg1';
 const drawerItemStyle = { 
     borderBottomWidth: 1, 
     borderBottomColor: '#147dbf', 
@@ -64,6 +65,9 @@ const Navigation = createStackNavigator({
     Home: {
         screen: Drawer,
     },
+    LocumReg1:{
+        screen:LocumReg1Screen
+    }
 }, {
     headerMode: 'none',
     initialRouteName: 'Splash',

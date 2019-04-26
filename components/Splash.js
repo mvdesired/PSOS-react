@@ -8,7 +8,10 @@ class SplashScreen extends Component{
     }
     componentDidMount(){
         const { navigation } = this.props;
-        //navigation.navigate('Registration');
+        setTimeout(()=>{
+            navigation.navigate('Registration');
+        },2000)
+        //
     }
     render(){
         return (
