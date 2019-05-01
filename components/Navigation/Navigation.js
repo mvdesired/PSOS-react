@@ -9,9 +9,11 @@ import React from 'react';
 import { ScrollView, TouchableOpacity,View,SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { createDrawerNavigator, DrawerItems, createStackNavigator } from 'react-navigation';
-import { RegistrationScreen } from './Screens';
+import { HomeScreen } from './Screens';
 import SplashScreen from '../Splash';
 import LocumReg1Screen from '../LocumReg1';
+import Registration from '../Registration';
+import Login from '../SignScreens/Login';
 const drawerItemStyle = { 
     borderBottomWidth: 1, 
     borderBottomColor: '#147dbf', 
@@ -25,12 +27,12 @@ const drawerLabelStyle = {
     paddingHorizontal:20
 };
 const Drawer = createDrawerNavigator({
-    Registration: {
-        screen: RegistrationScreen,
+    Home:{
+        screen:HomeScreen
     }
 },
     {
-        initialRouteName: 'Registration',
+        initialRouteName: 'Home',
         overlayColor: 'rgba(0, 0, 0, 0.5)',
         drawerWidth: 250,
         contentComponent: props =>
@@ -67,10 +69,16 @@ const Navigation = createStackNavigator({
     },
     LocumReg1:{
         screen:LocumReg1Screen
+    },
+    Registration: {
+        screen: Registration,
+    },
+    Login:{
+        screen:Login
     }
 }, {
     headerMode: 'none',
-    initialRouteName: 'Splash',
+    initialRouteName: 'Login',
     containerOptions: {
         style: {
             backgroundColor: '#147dbf',
