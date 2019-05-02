@@ -9,7 +9,7 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Text, View,SafeAreaView } from 'react-native';
-import Home from '../DrawerScreens/Home';
+import Dashboard from '../Employer/Dashboard';
 function createEmptyScreen(label, icon) {
     return class extends React.Component {
         static navigationOptions = {
@@ -43,4 +43,4 @@ function createScreen(label, icon, Component) {
     }
 }
 
-export const HomeScreen = createScreen('Home','home',Home);
+export const DashboardScreen = createScreen('Home','home',Dashboard);

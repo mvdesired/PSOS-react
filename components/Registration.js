@@ -30,7 +30,7 @@ class Registration extends Component{
                         fontSize:18,
                         color:'#151515'
                     }}>I am registering as:</Text>
-                    <TouchableOpacity onPress={()=>this.checkbuttonClick('a-locum')} style={{
+                    <TouchableOpacity onPress={()=>{this.checkbuttonClick('a-locum');this.props.navigation.navigate('LocumReg1')}} style={{
                         borderBottomWidth:1,
                         borderBottomColor:'#acacac',
                         width:'100%',

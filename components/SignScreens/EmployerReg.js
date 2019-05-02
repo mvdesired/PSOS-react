@@ -2,11 +2,12 @@ import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
     Picker,Dimensions,
     ActionSheetIOS,Platform } from 'react-native';
-import Loader from './Loader';
-import MainStyles from './Styles';
+import Loader from '../Loader';
+import MainStyles from '../Styles';
 import countryList from 'react-select-country-list';
+import Dialog, { SlideAnimation } from "react-native-popup-dialog";
 const { height, width } = Dimensions.get('window');
-class LocumReg1Screen extends Component{
+class EmployerScreen extends Component{
     constructor(props) {
         super(props);
         var cOptionsList = countryList().getLabels();
@@ -15,6 +16,7 @@ class LocumReg1Screen extends Component{
             loading:false,
             CountryList:countryList().getLabels(),
             cOptions:cOptionsList,
+            showTerms:false
         }
     }
     componentDidMount(){
@@ -42,8 +44,8 @@ class LocumReg1Screen extends Component{
                     alignItems:'center',
                     justifyContent:'center'
                 }}>
-                    <Image source={require('../assets/web-logo.png')} style={{width:200,height:34}}/>
-                    <Image source={require('../assets/header-b.png')} style={{width:'100%',marginTop:15}}/>
+                    <Image source={require('../../assets/web-logo.png')} style={{width:200,height:34}}/>
+                    <Image source={require('../../assets/header-b.png')} style={{width:'100%',marginTop:15}}/>
                 </View>
                 <KeyboardAvoidingView style={{flex:1,}} enabled behavior={behavior}>
                     <ScrollView style={{
@@ -51,14 +53,12 @@ class LocumReg1Screen extends Component{
                         height:RemoveHiehgt
                         }}
                     >
-                        <View style={{
-                            paddingVertical:20,
-                        }}>
+                        <View style={{paddingVertical:20,}}>
                             <Text style={{
                                 fontFamily:'AvenirLTStd-Heavy',
                                 color:'#151515',
                                 fontSize:16
-                            }}>Locum Registration Form</Text>
+                            }}>Employer Registration</Text>
                             <Text style={{
                                 marginTop:5,
                                 fontFamily:'AvenirLTStd-Medium',
@@ -70,43 +70,7 @@ class LocumReg1Screen extends Component{
                             </Text>
                         </View>
                         {/* Locum Registration Heading Ends */}
-                        <Image source={require('../assets/dashed-border.png')} width={'100%'} height={2} />
-                        <View style={{
-                            justifyContent:'center',
-                            alignItems: 'center',
-                            paddingVertical:18,
-                            flexDirection: 'row',
-                        }}>
-                            <View style={{
-                                paddingVertical:10,
-                                paddingHorizontal:10,
-                                backgroundColor:'#1476c0',
-                                borderRadius:10
-                            }}>
-                                <Text style={{
-                                    fontFamily:'AvenirLTStd-Medium',
-                                    color:'#FFFFFF',
-                                    fontSize:12,
-                                }}>Contact Details</Text>
-                            </View>
-                            <View style={{paddingHorizontal:10}}>
-                                <Image source={require('../assets/dashed-b-s.png')} width={100} style={{width:50}}/>
-                            </View>
-                            <View style={{
-                                paddingVertical:10,
-                                paddingHorizontal:10,
-                                backgroundColor:'#959595',
-                                borderRadius:10
-                            }}>
-                                <Text style={{
-                                    fontFamily:'AvenirLTStd-Medium',
-                                    color:'#FFFFFF',
-                                    fontSize:12,
-                                }}>Professional Details</Text>
-                            </View>
-                        </View>
-                        <Image source={require('../assets/dashed-border.png')} width={'100%'} height={2}/>
-                        {/* BreadCrumbs Ends */}
+                        <Image source={require('../../assets/dashed-border.png')} width={'100%'} height={2} />
                         <View style={{marginTop:15}}></View>
                         <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                             Name
@@ -235,7 +199,12 @@ class LocumReg1Screen extends Component{
                                 <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
                                     <Picker
                                     selectedValue={this.state.country}
-                                    style={MainStyles.TInput}
+                                    style={{
+                                        flex:1,
+                                        paddingLeft: 10,
+                                        paddingVertical:2,
+                                        height:30,
+                                    }}
                                     textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
                                     itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
                                     itemStyle={MainStyles.TInput}
@@ -265,15 +234,78 @@ class LocumReg1Screen extends Component{
                             alignItems:'center',
                             marginTop:26
                         }}>
-                            <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.props.navigation.navigate('LocumReg2')}}>
-                                <Text style={MainStyles.psosBtnText}>Continue</Text>
+                            <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.setState({showTerms:true})}}>
+                                <Text style={MainStyles.psosBtnText}>Submit</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={{marginTop:20}}></View>
                     </ScrollView>
                 </KeyboardAvoidingView>
+                <Dialog
+                    visible={this.state.showTerms}
+                    dialogStyle={{ width: "95%", padding: 0, maxHeight: "95%" }}
+                    dialogAnimation={new SlideAnimation()}
+                    containerStyle={{
+                        zIndex: 10,
+                        flex: 1,
+                        justifyContent: "space-between"
+                    }}
+                    rounded={false}
+                    >
+                    <View
+                        style={MainStyles.modalHeader}
+                    >
+                        <Text style={MainStyles.modalHeaderHeading}>Terms and Conditions</Text>
+                        <TouchableOpacity onPress={() =>{this.setState({showTerms:false})}}>
+                            <Image source={require('../../assets/cross-icon.png')} width={21} height={21} style={{height:21,width:21}} />
+                        </TouchableOpacity>
+                    </View>
+                    <ScrollView contentContainerStyle={{paddingHorizontal: 10,paddingVertical:10}}>
+                        <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#1476c0',fontSize:15}}>
+                            Our Terms and Conditions
+                        </Text>
+                        <View style={MainStyles.tacItems}>
+                            <Text style={MainStyles.tacItemsH}>1. Lorem Ipsum has been</Text>
+                            <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
+                            <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
+                        </View>
+                        <View style={MainStyles.tacItems}>
+                            <Text style={MainStyles.tacItemsH}>2. Lorem Ipsum has been</Text>
+                            <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
+                            <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
+                        </View>
+                        <View style={MainStyles.tacItems}>
+                            <Text style={MainStyles.tacItemsH}>3. Lorem Ipsum has been</Text>
+                            <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
+                            <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
+                        </View>
+                        <View style={MainStyles.tacItems}>
+                            <Text style={MainStyles.tacItemsH}>4. Lorem Ipsum has been</Text>
+                            <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
+                            <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
+                        </View>
+                        <View style={MainStyles.tacItems}>
+                            <Text style={MainStyles.tacItemsH}>5. Lorem Ipsum has been</Text>
+                            <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
+                            <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
+                        </View>
+                        <View style={MainStyles.tacItems}>
+                            <Text style={MainStyles.tacItemsH}>6. Lorem Ipsum has been</Text>
+                            <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
+                            <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
+                        </View>
+                    </ScrollView>
+                    <View style={MainStyles.modalFooter}>
+                        <TouchableOpacity style={[MainStyles.psosBtn, MainStyles.psosBtnXm]} onPress={()=>{
+                            this.setState({showTerms:false});
+                            this.props.navigation.navigate('Home');
+                        }}>
+                            <Text style={[MainStyles.psosBtnText,MainStyles.psosBtnXsText]}>I Agree</Text>
+                        </TouchableOpacity>
+                    </View>
+                </Dialog>
             </SafeAreaView>
         );
     }
 }
-export default LocumReg1Screen;
+export default EmployerScreen;
