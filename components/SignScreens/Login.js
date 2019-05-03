@@ -1,8 +1,11 @@
 import React,{Component} from 'React';
-import {View,Text,Image,TextInput,TouchableOpacity,SafeAreaView,ImageBackground} from 'react-native';
+import {View,Text,Image,TextInput,TouchableOpacity,SafeAreaView,ImageBackground,
+    AsyncStorage,Platform,NetInfo} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Loader from '../Loader';
 import MainStyles from '../Styles';
+import Toast from 'react-native-simple-toast';
+import { SERVER_URL } from '../../Constants';
 export default class Login extends Component{
     constructor(props){
         super(props);
@@ -12,7 +15,83 @@ export default class Login extends Component{
             emailAddress:'',
             password:''
         }
+        this.signIn = this._signIn.bind(this);
     }
+    async saveDetails(key,value){
+        await AsyncStorage.setItem(key,value);
+    }
+    _signIn = () =>{
+        
+        if(this.state.emailAddress == ''){
+            Toast.show('Email address should not be blank',Toast.SHORT)
+            return false;
+        }
+        if(this.state.password == ''){
+            Toast.show('Password should not be blank',Toast.SHORT)
+            return false;
+        }
+        this.sendDataToServer();
+    }
+    sendDataToServer(){
+        this.setState({loading:true});
+        console.log('token');
+        fetch(SERVER_URL+'user_login',{
+            method:'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: this.state.emailAddress,
+                password: this.state.password,
+                device_type:Platform.OS,
+                device_key:''
+            })
+        })
+        .then((res)=>res.json())
+        .then((response)=>{
+            console.log(response);
+            if(response.status == 1){
+                Toast.show(response.message,Toast.SHORT)
+            }
+            else{
+                Toast.show(response.message,Toast.SHORT)
+            }
+            this.setState({loading:false});
+        })
+        .catch((err)=>{
+            console.log(err);
+            Toast.show("No internet",Toast.SHORT)
+            this.setState({loading:false});
+        });
+    }
+    componentDidMount = ()=>{
+        this.checkNetIndo();
+    }
+    checkNetIndo = ()=>{
+        if (Platform.OS === "android") {
+            NetInfo.isConnected.fetch().then(isConnected => {
+              if (!isConnected) {
+                Toast.show("Please connect to internet!",Toast.LONG);
+              }
+            });
+        } else {
+            // For iOS devices
+            NetInfo.isConnected.addEventListener(
+              "connectionChange",
+              this.handleFirstConnectivityChange
+            );
+        }
+    };
+    handleFirstConnectivityChange = isConnected => {
+        NetInfo.isConnected.removeEventListener(
+          "connectionChange",
+          this.handleFirstConnectivityChange
+        );
+        if (isConnected === false) {
+            Toast.show("Please connect to internet!",Toast.LONG);
+        }
+    };
     render(){
         return(
             <ImageBackground source={require('../../assets/splash-bg.png')} style={{flex:1,backgroundColor:'#FFFFFF',justifyContent:'center',alignItems:'center'}}>
@@ -108,7 +187,7 @@ export default class Login extends Component{
                         alignItems:'center',
                         marginTop:26
                     }}>
-                        <TouchableOpacity style={MainStyles.psosBtn}>
+                        <TouchableOpacity style={MainStyles.psosBtn} onPress={()=>{this.signIn()}}>
                             <Text style={MainStyles.psosBtnText}>Login</Text>
                         </TouchableOpacity>
                     </View>

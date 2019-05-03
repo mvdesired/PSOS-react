@@ -62,7 +62,6 @@ const shadow = {
     }
 }
 const Navigation = createStackNavigator({
-    
     Splash: {
         screen: SplashScreen
     },
@@ -92,7 +91,7 @@ const Navigation = createStackNavigator({
     }
 }, {
     headerMode: 'none',
-    initialRouteName: 'Home',
+    initialRouteName: 'Splash',
     containerOptions: {
         style: {
             backgroundColor: '#147dbf',

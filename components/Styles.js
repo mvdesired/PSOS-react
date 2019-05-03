@@ -106,6 +106,51 @@ const MainStyles = StyleSheet.create({
         paddingVertical:5,
         borderTopColor: '#bebebe',
         borderTopWidth: 2,
+    },
+    eDW:{
+        backgroundColor:'#FFFFFF',
+        marginTop:8,
+        paddingVertical:10,
+        paddingHorizontal:15,
+        flexDirection:'row',
+        justifyContent:'space-evenly',
+        flexWrap: 'wrap',
+    },
+    eDTWI:{
+        backgroundColor:'#e67e22',
+        width:'48%',
+        paddingVertical:10,
+        paddingHorizontal:15,
+        justifyContent:'center',
+        alignItems:'center',
+        borderRadius:5
+    },
+    eDTWIT:{
+        fontFamily:'AvenirLTStd-Book',
+        color:'#FFFFFF',
+        fontSize:14,
+        textAlign:'center'
+    },
+    eDBWI:{
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor:'#f0f0f0',
+        paddingHorizontal:30,
+        paddingVertical:15
+    },
+    eDBWIIC:{
+        backgroundColor:'#1d7bc3',
+        justifyContent:'center',
+        alignItems:'center',
+        paddingVertical:15,
+        borderRadius:100,
+        width:80,
+        height:80,
+        marginBottom: 8,
+    },
+    eDBWIT:{
+        fontFamily:'AvenirLTStd-Roman',
+        textAlign:'center'
     }
 });
 export default MainStyles;

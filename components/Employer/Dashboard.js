@@ -17,7 +17,7 @@ class Dashboard extends Component{
     render(){
         const RemoveHiehgt = height - 52;
         return(
-            <SafeAreaView>
+            <SafeAreaView style={{flex:1}}>
                 <View style={{
                     flexDirection:'row',
                     justifyContent:"space-between",
@@ -59,13 +59,74 @@ class Dashboard extends Component{
                     </View>
                 </View>
                 <ScrollView style={{height:RemoveHiehgt,flex:1,backgroundColor:'#f0f0f0'}}>
-                    <View style={{
-                        backgroundColor:'#FFFFFF',
-                        marginTop:8,
-                        paddingVertical:10,
-                        paddingHorizontal:15
-                    }}>
-
+                    <View style={MainStyles.eDW}>
+                        <TouchableOpacity style={MainStyles.eDTWI}>
+                            <Image source={require('../../assets/locum-shift.png')} width={50} height={50} style={{width:50,height:50,marginBottom:10}} />
+                            <Text style={MainStyles.eDTWIT}>NEW LOCUM SHIFT</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[MainStyles.eDTWI,{backgroundColor:'#a29bfe'}]}>
+                            <Image source={require('../../assets/perm-pos.png')}  width={50} height={55} style={{width:50,height:55,marginBottom:10}} />
+                            <Text style={MainStyles.eDTWIT}>NEW PERMANENT POSITION</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#00cec9'}]}>
+                            <Image source={require('../../assets/job-list.png')}  width={50} height={57} style={{width:50,height:57,marginBottom:10}} />
+                            <Text style={MainStyles.eDTWIT}>JOB LIST</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#0984e3'}]}>
+                            <Image source={require('../../assets/pay-invoice.png')}  width={50} height={50} style={{width:50,height:50,marginBottom:10}} />
+                            <Text style={MainStyles.eDTWIT}>PAY INVOICE</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#ffbe76'}]}>
+                            <Image source={require('../../assets/chat.png')}  width={50} height={50} style={{width:50,height:50,marginBottom:10}} />
+                            <Text style={{
+                                fontFamily:'AvenirLTStd-Book',
+                                color:'#FFFFFF',
+                                fontSize:14,
+                                textAlign:'center'
+                            }}>CHAT</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#e77f67'}]}>
+                            <Image source={require('../../assets/feedback.png')}  width={50} height={52} style={{width:50,height:52,marginBottom:10}} />
+                            <Text style={MainStyles.eDTWIT}>FEEBACK</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={[MainStyles.eDW,{marginTop:8}]}>
+                        <View style={{width:'48%',height:149}}>
+                            <View style={MainStyles.eDBWI}>
+                                <View style={MainStyles.eDBWIIC}>
+                                    <Image source={require('../../assets/total-job.png')} style={{width:30,height:27,marginBottom:8}}/>
+                                    <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>159</Text>
+                                </View>
+                                <Text style={MainStyles.eDBWIT}>Total Jobs</Text>
+                            </View>
+                        </View>
+                        <View style={{width:'48%',height:149}}>
+                            <View style={MainStyles.eDBWI}>
+                                <View style={MainStyles.eDBWIIC}>
+                                    <Image source={require('../../assets/total-job.png')} style={{width:30,height:27,marginBottom:8}}/>
+                                    <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>250</Text>
+                                </View>
+                                <Text style={MainStyles.eDBWIT}>Total Pharmacy</Text>
+                            </View>
+                        </View>
+                        <View style={{width:'48%',height:149}}>
+                            <View style={MainStyles.eDBWI}>
+                                <View style={MainStyles.eDBWIIC}>
+                                    <Image source={require('../../assets/total-applications.png')} style={{width:30,height:30,marginBottom:8}}/>
+                                    <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>250</Text>
+                                </View>
+                                <Text style={MainStyles.eDBWIT}>Total Applications</Text>
+                            </View>
+                        </View>
+                        <View style={{width:'48%',height:149}}>
+                            <View style={MainStyles.eDBWI}>
+                                <View style={MainStyles.eDBWIIC}>
+                                    <Image source={require('../../assets/total-jb.png')} style={{width:30,height:32,marginBottom:8}}/>
+                                    <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>250</Text>
+                                </View>
+                                <Text style={MainStyles.eDBWIT}>Total Locum Booked</Text>
+                            </View>
+                        </View>
                     </View>
                 </ScrollView>
             </SafeAreaView>

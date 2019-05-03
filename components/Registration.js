@@ -77,7 +77,7 @@ class Registration extends Component{
                         width:'100%',
                         paddingBottom:20
                     }}>
-                        <TouchableOpacity onPress={()=>this.checkbuttonClick('a-employer')} style={{
+                        <TouchableOpacity onPress={()=>{this.checkbuttonClick('a-employer');this.props.navigation.navigate('EmployerReg')}} style={{
                             flexDirection:'row',
                             justifyContent:'space-between'
                         }}>

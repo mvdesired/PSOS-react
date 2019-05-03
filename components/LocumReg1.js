@@ -235,7 +235,12 @@ class LocumReg1Screen extends Component{
                                 <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
                                     <Picker
                                     selectedValue={this.state.country}
-                                    style={MainStyles.TInput}
+                                    style={{
+                                        flex:1,
+                                        paddingLeft: 10,
+                                        paddingVertical:2,
+                                        height:30,
+                                    }}
                                     textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
                                     itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
                                     itemStyle={MainStyles.TInput}
