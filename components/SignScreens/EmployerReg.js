@@ -6,6 +6,8 @@ import Loader from '../Loader';
 import MainStyles from '../Styles';
 import countryList from 'react-select-country-list';
 import Dialog, { SlideAnimation } from "react-native-popup-dialog";
+import Toast from 'react-native-simple-toast';
+import { SERVER_URL } from '../../Constants';
 const { height, width } = Dimensions.get('window');
 class EmployerScreen extends Component{
     constructor(props) {
@@ -16,20 +18,101 @@ class EmployerScreen extends Component{
             loading:false,
             CountryList:countryList().getLabels(),
             cOptions:cOptionsList,
-            showTerms:false
+            showTerms:false,
+            firsName:'',
+            lastName:'',
+            phoneNo:'',
+            emailAddress:'',
+            city:'',
+            spr:'',
+            pz:'',
+            country:'',
         }
+        this.singup = this._signup.bind(this);
     }
-    componentDidMount(){
+    componentDidMount = () => {
 
     }
-    pickerIos = ()=>{
+    _signup = () => {
+        
+        if(this.state.firsName == ''){
+            Toast.show('First name should not be blank',Toast.SHORT);
+            return false;
+        }
+        if(this.state.lastName == ''){
+            Toast.show('Last name should not be blank',Toast.SHORT)
+            return false;
+        }
+        if(this.state.phoneNo == ''){
+            Toast.show('Phone number should not be blank',Toast.SHORT)
+            return false;
+        }
+        if(this.state.emailAddress == ''){
+            Toast.show('Email ID should not be blank',Toast.SHORT)
+            return false;
+        }
+        if(this.state.streetAddress == ''){
+            Toast.show('Email ID should not be blank',Toast.SHORT)
+            return false;
+        }
+        if(this.state.city == ''){
+            Toast.show('City should not be blank',Toast.SHORT)
+            return false;
+        }
+        if(this.state.spr == ''){
+            Toast.show('State/Provision/Region should not be blank',Toast.SHORT)
+            return false;
+        }
+        if(this.state.pz == ''){
+            Toast.show('Postal/Zipcode should not be blank',Toast.SHORT)
+            return false;
+        }
+        if(this.state.country == ''){
+            Toast.show('Country should not be blank',Toast.SHORT)
+            return false;
+        }
+        this.setState({loading:true});
+        var formdata = new FormData();
+        formdata.append('fname',this.state.firsName);
+        formdata.append('lname',this.state.lastName);
+        formdata.append('phone',this.state.phoneNo);
+        formdata.append('email',this.state.emailAddress);
+        formdata.append('city',this.state.city);
+        formdata.append('state',this.state.spr);
+        formdata.append('postal',this.state.pz);
+        formdata.append('country',this.state.country);
+        formdata.append('device_type',Platform.OS);
+        formdata.append('device_key','');
+        fetch(SERVER_URL+'emp_reg',{
+            method:'POST',
+            headers: {
+                Accept: 'application/json',
+            },
+            body: formdata
+        })
+        .then((res)=>res.json())
+        .then((response)=>{
+            if(response.status == 200){
+                Toast.show(response.message,Toast.SHORT);
+            }
+            else{
+                Toast.show(response.message,Toast.SHORT);
+            }
+            this.setState({loading:false});
+        })
+        .catch((err)=>{
+            console.log(err);
+            this.setState({loading:false});
+        });
+    }
+    pickerIos = () => {
         ActionSheetIOS.showActionSheetWithOptions({
             options: this.state.cOptions,
             cancelButtonIndex: 0,
           },
           (buttonIndex) => {
             if(buttonIndex != 0){
-              this.setState({country: this.state.cOptions[buttonIndex]})
+              this.setState({country: this.state.cOptions[buttonIndex]});
             }
           });
     }
@@ -48,11 +131,7 @@ class EmployerScreen extends Component{
                     <Image source={require('../../assets/header-b.png')} style={{width:'100%',marginTop:15}}/>
                 </View>
                 <KeyboardAvoidingView style={{flex:1,}} enabled behavior={behavior}>
-                    <ScrollView style={{
-                        paddingHorizontal:15,
-                        height:RemoveHiehgt
-                        }}
-                    >
+                    <ScrollView style={{paddingHorizontal:15,height:RemoveHiehgt}} keyboardShouldPersistTaps="always">
                         <View style={{paddingVertical:20,}}>
                             <Text style={{
                                 fontFamily:'AvenirLTStd-Heavy',
@@ -149,12 +228,12 @@ class EmployerScreen extends Component{
                             style={MainStyles.TInput} 
                             placeholder="Street Address" 
                             returnKeyType={"go"} 
-                            ref={(input) => { this.emailAddress = input; }} 
+                            ref={(input) => { this.streetAddress = input; }} 
                             blurOnSubmit={false}
-                            onChangeText={(text)=>this.setState({emailAddress:text})} 
+                            onChangeText={(text)=>this.setState({streetAddress:text})} 
                             placeholderTextColor="#bebebe" 
                             underlineColorAndroid="transparent" 
-                            value={this.state.emailAddress}
+                            value={this.state.streetAddress}
                         />
                         <View style={{flexDirection:'row',justifyContent:'space-around',marginTop:15}}>
                             <TextInput 
@@ -234,7 +313,7 @@ class EmployerScreen extends Component{
                             alignItems:'center',
                             marginTop:26
                         }}>
-                            <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.setState({showTerms:true})}}>
+                            <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.singup()}}>
                                 <Text style={MainStyles.psosBtnText}>Submit</Text>
                             </TouchableOpacity>
                         </View>

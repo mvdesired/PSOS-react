@@ -13,7 +13,16 @@ import { DashboardScreen } from './Screens';
 import SplashScreen from '../Splash';
 import LocumReg1Screen from '../LocumReg1';
 import LocumReg2Screen from '../LocumReg2';
+/**Employer Screens Starts */
 import EmployerScreen from '../SignScreens/EmployerReg';
+import NewLocumShiftScreen from '../Employer/NewLocumShift';
+import NLSFormScreen from '../Employer/NLSForm';
+import NewPermScreen from '../Employer/NewPermShift';
+import NPSFormScreen from '../Employer/NPSForm';
+import JobListE from '../Employer/JobList';
+import LocumListScreen from '../Employer/LocumList';
+import LocumDetailScreen from '../Employer/LocumDetails';
+/**Employer Screens ends */
 import Registration from '../Registration';
 import Login from '../SignScreens/Login';
 const drawerItemStyle = { 
@@ -68,12 +77,6 @@ const Navigation = createStackNavigator({
     Home: {
         screen: Drawer,
     },
-    LocumReg1:{
-        screen:LocumReg1Screen
-    },
-    LocumReg2:{
-        screen:LocumReg2Screen
-    },
     Registration: {
         screen: Registration,
     },
@@ -83,15 +86,38 @@ const Navigation = createStackNavigator({
     LocumReg2:{
         screen:LocumReg2Screen
     },
+    /*Employer Navigations Starts */
     EmployerReg:{
         screen:EmployerScreen
     },
+    NewLocumShift:{
+        screen:NewLocumShiftScreen
+    },
+    NLSForm:{
+        screen:NLSFormScreen
+    },
+    NewPermShift:{
+        screen:NewPermScreen
+    },
+    NPSForm:{
+        screen:NPSFormScreen
+    },
+    JobListE:{
+        screen:JobListE
+    },
+    LocumList:{
+        screen:LocumListScreen
+    },
+    LocumDetails:{
+        screen:LocumDetailScreen
+    },
+    /*Employer Navigations Ends */
     Login:{
         screen:Login
     }
 }, {
     headerMode: 'none',
-    initialRouteName: 'Splash',
+    initialRouteName: 'LocumDetails',
     containerOptions: {
         style: {
             backgroundColor: '#147dbf',

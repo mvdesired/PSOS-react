@@ -6,13 +6,42 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { DrawerActions,NavigationActions } from 'react-navigation';
 import Loader from '../Loader';
 import MainStyles from '../Styles';
+import { SERVER_URL } from '../../Constants';
 const { height, width } = Dimensions.get('window');
 class Dashboard extends Component{
     constructor(props) {
         super(props);
         this.state={
             loading:false,
+            totalJobs:0,
+            totalPharmacy:0,
+            totalApplications:0,
+            totalBookedLocums:0
         }
+    }
+    componentDidMount = ()=>{
+        this.fetchTotals();
+    }
+    fetchTotals = ()=>{
+        fetch(SERVER_URL+'dashboard?user_id=1',{
+            method:'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(res=>res.json())
+        .then(response=>{
+            if(response.status == 200){
+                Toast.show(response.message,Toast.SHORT);
+                this.setState({pharmacyList:response.result});
+            }
+            this.setState({loading:false});
+        })
+        .catch((err)=>{
+            this.setState({loading:false});
+            console.log(err);
+        });
     }
     render(){
         const RemoveHiehgt = height - 52;
@@ -60,15 +89,15 @@ class Dashboard extends Component{
                 </View>
                 <ScrollView style={{height:RemoveHiehgt,flex:1,backgroundColor:'#f0f0f0'}}>
                     <View style={MainStyles.eDW}>
-                        <TouchableOpacity style={MainStyles.eDTWI}>
+                        <TouchableOpacity style={MainStyles.eDTWI} onPress={()=>{this.props.navigation.navifate('NewLocumShift')}}>
                             <Image source={require('../../assets/locum-shift.png')} width={50} height={50} style={{width:50,height:50,marginBottom:10}} />
                             <Text style={MainStyles.eDTWIT}>NEW LOCUM SHIFT</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[MainStyles.eDTWI,{backgroundColor:'#a29bfe'}]}>
+                        <TouchableOpacity style={[MainStyles.eDTWI,{backgroundColor:'#a29bfe'}]} onPress={()=>{this.props.navigation.navifate('NewPermShift')}}>
                             <Image source={require('../../assets/perm-pos.png')}  width={50} height={55} style={{width:50,height:55,marginBottom:10}} />
                             <Text style={MainStyles.eDTWIT}>NEW PERMANENT POSITION</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#00cec9'}]}>
+                        <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#00cec9'}]} onPress={()=>{this.props.navigation.navifate('JobListE')}}>
                             <Image source={require('../../assets/job-list.png')}  width={50} height={57} style={{width:50,height:57,marginBottom:10}} />
                             <Text style={MainStyles.eDTWIT}>JOB LIST</Text>
                         </TouchableOpacity>
@@ -95,7 +124,7 @@ class Dashboard extends Component{
                             <View style={MainStyles.eDBWI}>
                                 <View style={MainStyles.eDBWIIC}>
                                     <Image source={require('../../assets/total-job.png')} style={{width:30,height:27,marginBottom:8}}/>
-                                    <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>159</Text>
+                                    <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>{this.state.totalJobs}</Text>
                                 </View>
                                 <Text style={MainStyles.eDBWIT}>Total Jobs</Text>
                             </View>
@@ -104,7 +133,7 @@ class Dashboard extends Component{
                             <View style={MainStyles.eDBWI}>
                                 <View style={MainStyles.eDBWIIC}>
                                     <Image source={require('../../assets/total-job.png')} style={{width:30,height:27,marginBottom:8}}/>
-                                    <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>250</Text>
+                                    <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>{this.state.totalPharmacy}</Text>
                                 </View>
                                 <Text style={MainStyles.eDBWIT}>Total Pharmacy</Text>
                             </View>
@@ -113,7 +142,7 @@ class Dashboard extends Component{
                             <View style={MainStyles.eDBWI}>
                                 <View style={MainStyles.eDBWIIC}>
                                     <Image source={require('../../assets/total-applications.png')} style={{width:30,height:30,marginBottom:8}}/>
-                                    <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>250</Text>
+                                    <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>{this.state.totalApplications}</Text>
                                 </View>
                                 <Text style={MainStyles.eDBWIT}>Total Applications</Text>
                             </View>
@@ -122,7 +151,7 @@ class Dashboard extends Component{
                             <View style={MainStyles.eDBWI}>
                                 <View style={MainStyles.eDBWIIC}>
                                     <Image source={require('../../assets/total-jb.png')} style={{width:30,height:32,marginBottom:8}}/>
-                                    <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>250</Text>
+                                    <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>{this.state.totalBookedLocums}</Text>
                                 </View>
                                 <Text style={MainStyles.eDBWIT}>Total Locum Booked</Text>
                             </View>

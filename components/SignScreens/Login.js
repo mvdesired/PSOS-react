@@ -51,7 +51,7 @@ export default class Login extends Component{
         .then((res)=>res.json())
         .then((response)=>{
             console.log(response);
-            if(response.status == 1){
+            if(response.status == 200){
                 Toast.show(response.message,Toast.SHORT)
             }
             else{
@@ -61,14 +61,14 @@ export default class Login extends Component{
         })
         .catch((err)=>{
             console.log(err);
-            Toast.show("No internet",Toast.SHORT)
+            this.checkNetInfo();
             this.setState({loading:false});
         });
     }
     componentDidMount = ()=>{
-        this.checkNetIndo();
+        this.checkNetInfo();
     }
-    checkNetIndo = ()=>{
+    checkNetInfo = ()=>{
         if (Platform.OS === "android") {
             NetInfo.isConnected.fetch().then(isConnected => {
               if (!isConnected) {

@@ -30,7 +30,7 @@ const MainStyles = StyleSheet.create({
         paddingVertical:2,
         height:30,
         fontSize:14,
-        borderRadius:8,
+        borderRadius:20,
         fontFamily:'AvenirLTStd-Medium',
         borderColor:'#a1a1a1',
         borderWidth: 1,
@@ -59,7 +59,14 @@ const MainStyles = StyleSheet.create({
         borderWidth:1,
         borderColor:'#bebebe',
         borderRadius:3,
-        marginRight:6
+        marginRight:6,
+        alignItems:'center',
+        justifyContent:'center'
+    },
+    checkBoxCheckedStyle:{
+        width:8,
+        height:8,
+        backgroundColor:'#1476c0'
     },
     checkBoxLabel:{
         color:'#676767',
@@ -151,6 +158,78 @@ const MainStyles = StyleSheet.create({
     eDBWIT:{
         fontFamily:'AvenirLTStd-Roman',
         textAlign:'center'
+    },
+    navHeaderWrapper:{
+        flexDirection:'row',
+        justifyContent:"space-between",
+        paddingVertical: 13,
+        paddingHorizontal: 10,
+        backgroundColor:'#1d7bc3',
+        alignItems: 'center',
+        borderBottomColor: '#bebebe',
+        borderBottomWidth: 1,
+    },
+    nHNotiIconNum:{
+        position:'absolute',
+        right:-5,
+        top:-5,
+        width:15,
+        height:15,
+        alignItems:'center',
+        justifyContent:'center',
+        backgroundColor:'#FFFFFF',
+        borderRadius: 35,
+        borderWidth: 1,
+        borderColor: '#929496'
+    },
+    jobListETabsItem:{
+        paddingVertical:10,
+        paddingHorizontal:7,
+        justifyContent: 'center',
+        alignItems:'center',
+        textAlign:'center',
+        width:'50%'
+    },
+    jobListETabsItemText:{
+        fontFamily:'AvenirLTStd-Medium',
+        fontSize:12,
+        color:'#676767'
+    },
+    activeJLEItem:{
+        borderBottomColor:'#1d7bc3',
+        borderBottomWidth:2
+    },
+    activeJLEItemText:{
+        color:'#1d7bc3'
+    },
+    JLELoopItem:{
+        backgroundColor:'#FFFFFF',
+        marginTop:10,
+        paddingHorizontal:10,
+        paddingVertical:10,
+        flexDirection:'row',
+        justifyContent:'space-between',
+        alignItems:'center'
+    },
+    JLELoopItemName:{
+        color:'#151515',
+        fontFamily:'AvenirLTStd-Medium',
+        fontSize:15,
+        marginBottom:5
+    },
+    JLELoopItemTime:{
+        color:'#bebebe',
+        fontFamily:'AvenirLTStd-Book',
+        fontSize:13
+    },
+    JLELoopItemCount:{
+        color:'#151515',
+        fontFamily:'AvenirLTStd-Medium',
+        fontSize:14
+    },
+    JLELoopItemIcon:{
+        color:'#1d7bc3',
+        marginLeft:5
     }
 });
 export default MainStyles;
