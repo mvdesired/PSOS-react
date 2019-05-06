@@ -22,6 +22,9 @@ import NPSFormScreen from '../Employer/NPSForm';
 import JobListE from '../Employer/JobList';
 import LocumListScreen from '../Employer/LocumList';
 import LocumDetailScreen from '../Employer/LocumDetails';
+import EChatListScreen from '../Employer/EChatList';
+import ChatScreen from '../Employer/ChatSingle';
+import Reviews from '../Employer/Reviews';
 /**Employer Screens ends */
 import AboutScreen from '../About';
 import Registration from '../Registration';
@@ -112,6 +115,15 @@ const Navigation = createStackNavigator({
     LocumDetails:{
         screen:LocumDetailScreen
     },
+    EChatList:{
+        screen:EChatListScreen
+    },
+    ChatScreen:{
+        screen:ChatScreen
+    },
+    Reviews:{
+        screen:Reviews
+    },
     /*Employer Navigations Ends */
     About:{
         screen:AboutScreen
@@ -121,7 +133,7 @@ const Navigation = createStackNavigator({
     }
 }, {
     headerMode: 'none',
-    initialRouteName: 'About',
+    initialRouteName: 'Reviews',
     containerOptions: {
         style: {
             backgroundColor: '#147dbf',
