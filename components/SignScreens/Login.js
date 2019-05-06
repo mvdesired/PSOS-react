@@ -174,14 +174,14 @@ export default class Login extends Component{
                             value={this.state.password}
                         />
                     </View>
-                    <View style={{width:'100%',alignItems:'flex-end',marginTop:15}}>
+                    {/* <View style={{width:'100%',alignItems:'flex-end',marginTop:15}}>
                         <TouchableOpacity onPress={()=>{}}>
                             <Text style={{
                                 color:'#ed1d24',
                                 fontFamily:'AvenirLTStd-Roman'
                             }}>Forgot Password ?</Text>
                         </TouchableOpacity>
-                    </View>
+                    </View> */}
                     <View style={{
                         justifyContent:'center',
                         alignItems:'center',
