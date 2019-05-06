@@ -23,6 +23,7 @@ import JobListE from '../Employer/JobList';
 import LocumListScreen from '../Employer/LocumList';
 import LocumDetailScreen from '../Employer/LocumDetails';
 /**Employer Screens ends */
+import AboutScreen from '../About';
 import Registration from '../Registration';
 import Login from '../SignScreens/Login';
 const drawerItemStyle = { 
@@ -112,12 +113,15 @@ const Navigation = createStackNavigator({
         screen:LocumDetailScreen
     },
     /*Employer Navigations Ends */
+    About:{
+        screen:AboutScreen
+    },
     Login:{
         screen:Login
     }
 }, {
     headerMode: 'none',
-    initialRouteName: 'LocumDetails',
+    initialRouteName: 'About',
     containerOptions: {
         style: {
             backgroundColor: '#147dbf',

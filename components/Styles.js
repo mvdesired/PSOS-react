@@ -230,6 +230,21 @@ const MainStyles = StyleSheet.create({
     JLELoopItemIcon:{
         color:'#1d7bc3',
         marginLeft:5
+    },
+    locumProfileItemWrapper:{
+        paddingVertical:10,
+        borderTopColor:'#999999',
+        borderTopWidth:1,
+    },
+    LPIHeading:{
+        color:'#151515',
+        fontFamily:'AvenirLTStd-Light',
+        fontSize:15,
+    },
+    LPISubHeading:{
+        color:'#151515',
+        fontFamily:'AvenirLTStd-Medium',
+        fontSize:16,
     }
 });
 export default MainStyles;
