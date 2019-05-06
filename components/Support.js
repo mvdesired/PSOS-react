@@ -100,7 +100,7 @@ class Support  extends Component{
                     <View style={{       }}>
 
                     </View>
-                    <Text style={{fontFamily:'AvenirLTStd-Medium',marginLeft:10,fontSize:20,color:'#147dbf',marginTop:2,flexWrap:'wrap'}}>Question ?</Text>
+                    <Text style={{fontFamily:'AvenirLTStd-Medium',marginLeft:10,fontSize:,color:'#147dbf',marginTop:2,flexWrap:'wrap'}}>Question ?</Text>
                 </View>
               </View>         
 
