@@ -9,7 +9,7 @@ import React from 'react';
 import { ScrollView, TouchableOpacity,View,SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { createDrawerNavigator, DrawerItems, createStackNavigator } from 'react-navigation';
-import { DashboardScreen } from './Screens';
+import { DashboardScreen,AboutScreen,PharmacyScreen,NotificationsScreen } from './Screens';
 import SplashScreen from '../Splash';
 import LocumReg1Screen from '../LocumReg1';
 import LocumReg2Screen from '../LocumReg2';
@@ -25,8 +25,9 @@ import LocumDetailScreen from '../Employer/LocumDetails';
 import EChatListScreen from '../Employer/EChatList';
 import ChatScreen from '../Employer/ChatSingle';
 import Reviews from '../Employer/Reviews';
+import Pharmacy from '../Employer/Pharmacy';
 /**Employer Screens ends */
-import AboutScreen from '../About';
+
 import Registration from '../Registration';
 import Login from '../SignScreens/Login';
 const drawerItemStyle = { 
@@ -44,7 +45,16 @@ const drawerLabelStyle = {
 const Drawer = createDrawerNavigator({
     Home:{
         screen:DashboardScreen
-    }
+    },
+    Pharmacy:{
+        screen:PharmacyScreen
+    },
+    Notifications:{
+        screen:NotificationsScreen
+    },
+    About:{
+        screen:AboutScreen
+    },
 },
     {
         initialRouteName: 'Home',
@@ -125,21 +135,14 @@ const Navigation = createStackNavigator({
         screen:Reviews
     },
     /*Employer Navigations Ends */
-    About:{
-        screen:AboutScreen
-    },
     Login:{
         screen:Login
     }
 }, {
     headerMode: 'none',
-    initialRouteName: 'Reviews',
+    initialRouteName: 'Splash',
     containerOptions: {
-        style: {
-            backgroundColor: '#147dbf',
-            flex: 1
-
-            }
-        }
-    });
+        style: {backgroundColor: '#147dbf',flex: 1}
+    }
+});
 export default Navigation;

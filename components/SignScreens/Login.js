@@ -21,8 +21,8 @@ export default class Login extends Component{
         await AsyncStorage.setItem(key,value);
     }
     _signIn = () =>{
-        
-        if(this.state.emailAddress == ''){
+        this.props.navigation.navigate('Home');
+       /* if(this.state.emailAddress == ''){
             Toast.show('Email address should not be blank',Toast.SHORT)
             return false;
         }
@@ -30,7 +30,7 @@ export default class Login extends Component{
             Toast.show('Password should not be blank',Toast.SHORT)
             return false;
         }
-        this.sendDataToServer();
+        this.sendDataToServer();*/
     }
     sendDataToServer(){
         this.setState({loading:true});

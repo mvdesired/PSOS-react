@@ -8,8 +8,12 @@
 
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { Text, View,SafeAreaView } from 'react-native';
+import { Text, View,SafeAreaView,Image } from 'react-native';
 import Dashboard from '../Employer/Dashboard';
+import Pharmacy from '../Employer/Pharmacy';
+import Notifications from '../Employer/Notifications';
+import About from '../About';
+const assetsPath = '../../assets/';
 function createEmptyScreen(label, icon) {
     return class extends React.Component {
         static navigationOptions = {
@@ -24,7 +28,7 @@ function createEmptyScreen(label, icon) {
     }
 }
 
-function createScreen(label, icon, Component) {    
+function createScreen(label, Icon, Component) {    
     return class extends React.Component {
         static navigationOptions = ({ navigation }) =>  {
             const { params } = navigation.state;
@@ -33,7 +37,7 @@ function createScreen(label, icon, Component) {
                     return label
                 },
                 drawerIcon: () => (
-                    <Icon name={icon} style={{ fontSize: 20, color: '#147dbf' }} />
+                    Icon
                 )
             }
         };
@@ -43,4 +47,7 @@ function createScreen(label, icon, Component) {
     }
 }
 
-export const DashboardScreen = createScreen('Home','home',Dashboard);
+export const DashboardScreen = createScreen('Home',<Image source={require(assetsPath+'home-d-icon.png')} style={{width:18,height:16}} />,Dashboard);
+export const PharmacyScreen = createScreen('Pharmacy',<Image source={require(assetsPath+'phar-d-icon.png')} style={{width:18,height:15}} />,Pharmacy);
+export const NotificationsScreen = createScreen('Notifications',<Image source={require(assetsPath+'noti-d-icon.png')} style={{width:18,height:17}} />,Notifications);
+export const AboutScreen = createScreen('About',<Image source={require(assetsPath+'about-d-icon.png')} style={{width:18,height:11}} />,About);

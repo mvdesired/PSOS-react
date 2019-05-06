@@ -41,6 +41,7 @@ class JobList extends Component{
         })
         .then(res=>res.json())
         .then(response=>{
+            console.log(response);
             if(response.status == 200){
                 this.setState({shiftList:response.result});
             }
@@ -129,7 +130,7 @@ class JobList extends Component{
                                             <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.created_on)}</Text>
                                         </View>
                                         <View style={{flexDirection:'row',alignItems:'center'}}>
-                                            <Text style={MainStyles.JLELoopItemCount}>20</Text>
+                                            <Text style={MainStyles.JLELoopItemCount}>{item.applier}</Text>
                                             <Icon name="eye" style={MainStyles.JLELoopItemIcon}/>
                                         </View>
                                     </TouchableOpacity>

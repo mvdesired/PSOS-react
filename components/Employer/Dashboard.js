@@ -89,15 +89,15 @@ class Dashboard extends Component{
                 </View>
                 <ScrollView style={{height:RemoveHiehgt,flex:1,backgroundColor:'#f0f0f0'}}>
                     <View style={MainStyles.eDW}>
-                        <TouchableOpacity style={MainStyles.eDTWI} onPress={()=>{this.props.navigation.navifate('NewLocumShift')}}>
+                        <TouchableOpacity style={MainStyles.eDTWI} onPress={()=>{this.props.navigation.navigate('NewLocumShift')}}>
                             <Image source={require('../../assets/locum-shift.png')} width={50} height={50} style={{width:50,height:50,marginBottom:10}} />
                             <Text style={MainStyles.eDTWIT}>NEW LOCUM SHIFT</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[MainStyles.eDTWI,{backgroundColor:'#a29bfe'}]} onPress={()=>{this.props.navigation.navifate('NewPermShift')}}>
+                        <TouchableOpacity style={[MainStyles.eDTWI,{backgroundColor:'#a29bfe'}]} onPress={()=>{this.props.navigation.navigate('NewPermShift')}}>
                             <Image source={require('../../assets/perm-pos.png')}  width={50} height={55} style={{width:50,height:55,marginBottom:10}} />
                             <Text style={MainStyles.eDTWIT}>NEW PERMANENT POSITION</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#00cec9'}]} onPress={()=>{this.props.navigation.navifate('JobListE')}}>
+                        <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#00cec9'}]} onPress={()=>{this.props.navigation.navigate('JobListE')}}>
                             <Image source={require('../../assets/job-list.png')}  width={50} height={57} style={{width:50,height:57,marginBottom:10}} />
                             <Text style={MainStyles.eDTWIT}>JOB LIST</Text>
                         </TouchableOpacity>
@@ -105,7 +105,7 @@ class Dashboard extends Component{
                             <Image source={require('../../assets/pay-invoice.png')}  width={50} height={50} style={{width:50,height:50,marginBottom:10}} />
                             <Text style={MainStyles.eDTWIT}>PAY INVOICE</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#ffbe76'}]}>
+                        <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#ffbe76'}]} onPress={()=>{this.props.navigation.navigate('EChatList')}}>
                             <Image source={require('../../assets/chat.png')}  width={50} height={50} style={{width:50,height:50,marginBottom:10}} />
                             <Text style={{
                                 fontFamily:'AvenirLTStd-Book',
