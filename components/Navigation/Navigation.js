@@ -29,6 +29,10 @@ import Reviews from '../Employer/Reviews';
 import AboutScreen from '../About';
 import Registration from '../Registration';
 import Login from '../SignScreens/Login';
+import Termscondition from '../Termscondition';
+import Privacy from '../Privacy'
+import Support from '../Support';
+
 const drawerItemStyle = { 
     borderBottomWidth: 1, 
     borderBottomColor: '#147dbf', 
@@ -118,6 +122,10 @@ const Navigation = createStackNavigator({
     EChatList:{
         screen:EChatListScreen
     },
+    Termscondition:{
+        screen:Termscondition
+
+    },
     ChatScreen:{
         screen:ChatScreen
     },
@@ -128,12 +136,19 @@ const Navigation = createStackNavigator({
     About:{
         screen:AboutScreen
     },
+    Privacy:{
+       screen:Privacy
+    },
+    Support:
+    {
+        screen:Support
+    },
     Login:{
         screen:Login
     }
 }, {
     headerMode: 'none',
-    initialRouteName: 'Reviews',
+    initialRouteName: 'Support',
     containerOptions: {
         style: {
             backgroundColor: '#147dbf',
