@@ -148,7 +148,12 @@ class EmployerScreen extends Component{
                                 To register and benefit from becoming a Pharmacy SOS locum, please use this form to register.
                             </Text>
                         </View>
+
+
                         {/* Locum Registration Heading Ends */}
+
+
+                        
                         <Image source={require('../../assets/dashed-border.png')} width={'100%'} height={2} />
                         <View style={{marginTop:15}}></View>
                         <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>

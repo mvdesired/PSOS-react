@@ -43,7 +43,7 @@ class Support  extends Component{
               <View style={{paddingHorizontal:10}}>
                 <View style={{flex: 1,flexDirection:'row',marginVertical:5,paddingHorizontal:10,backgroundColor: '#FFFFFF',borderColor:'#1d7bc3',borderWidth:1,height:40,borderRadius:10,marginTop:20}}>
                     <View style={{     }}>
-
+                    
                     </View>
                     <Text style={{fontFamily:'AvenirLTStd-Medium',marginLeft:10,fontSize:20,color:'#147dbf',marginTop:2,flexWrap:'wrap'}}>Question ?</Text>
                 </View>
