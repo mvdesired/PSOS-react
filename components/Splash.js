@@ -17,11 +17,13 @@ class SplashScreen extends Component{
         return (
             <ImageBackground source={require('../assets/splash-bg.png')} style={{flex:1,backgroundColor:'#FFFFFF'}}>
                 <Loader loading={this.state.loading} />
+
                 <View style={{
                 flex:1,justifyContent: 'center',alignItems:'center'
                 }}>
                     <Image source={require('../assets/psos-logo.png')} style={{width:180,height:131}}/>
                 </View>
+                
                 <View style={{position:'absolute',
                     alignItems:'center',
                     justifyContent:'center',

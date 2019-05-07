@@ -54,7 +54,9 @@ class Support  extends Component{
                         </View>
                       }
                   </View>
-                  {/* Q1 */}
+                                   {/* Q1 */}
+
+                                   
                   <View style={styles.qnaWrapper}>
                       <TouchableOpacity style={[(this.state.showingQA == 'q2')?{backgroundColor:'#147dbf'}:'',{paddingHorizontal:10}]} onPress={()=>{
                           this.setState({showingQA:'q2'});

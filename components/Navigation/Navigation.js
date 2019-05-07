@@ -30,8 +30,10 @@ import AboutScreen from '../About';
 import Registration from '../Registration';
 import Login from '../SignScreens/Login';
 import Termscondition from '../Termscondition';
-import Privacy from '../Privacy'
+import Privacy from '../Privacy';
 import Support from '../Support';
+import ShareApp from '../ShareApp';
+
 
 const drawerItemStyle = { 
     borderBottomWidth: 1, 
@@ -139,6 +141,10 @@ const Navigation = createStackNavigator({
     Privacy:{
        screen:Privacy
     },
+    ShareApp:
+    {
+          screen:ShareApp
+    },
     Support:
     {
         screen:Support
@@ -148,7 +154,7 @@ const Navigation = createStackNavigator({
     }
 }, {
     headerMode: 'none',
-    initialRouteName: 'Support',
+    initialRouteName: 'ShareApp',
     containerOptions: {
         style: {
             backgroundColor: '#147dbf',
