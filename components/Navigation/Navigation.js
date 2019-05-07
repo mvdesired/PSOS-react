@@ -33,6 +33,8 @@ import Termscondition from '../Termscondition';
 import Privacy from '../Privacy';
 import Support from '../Support';
 import ShareApp from '../ShareApp';
+import Profile from '../Profile';
+import Profilesecond from '../Profilesecond';
 
 
 const drawerItemStyle = { 
@@ -149,12 +151,21 @@ const Navigation = createStackNavigator({
     {
         screen:Support
     },
+    Profile:
+    {
+        screen:Profile
+    },
+    Profilesecond:
+    {
+        screen:Profilesecond
+    },
+
     Login:{
         screen:Login
     }
 }, {
     headerMode: 'none',
-    initialRouteName: 'ShareApp',
+    initialRouteName: 'Profilesecond',
     containerOptions: {
         style: {
             backgroundColor: '#147dbf',

@@ -61,6 +61,8 @@ class LocumDetails extends Component{
                         </TouchableOpacity>
                     </View>
                 </View>
+
+
                 <ScrollView style={{paddingHorizontal:15,height:RemoveHiehgt,flex:1}} keyboardShouldPersistTaps="always">
                     <View style={{justifyContent:'center',alignItems:'center',marginVertical: 15}}>
                         <View style={{width:100,height:100,justifyContent:'flex-start',alignItems:'center',overflow:'hidden',borderRadius: 100,marginBottom: 10,}}>
@@ -68,6 +70,8 @@ class LocumDetails extends Component{
                         </View>
                         <Text style={{fontFamily:'AvenirLTStd-Meduim',color:'#151515',fontSize:17}}>{this.state.locumData.fname+' '+this.state.locumData.lname}</Text>
                     </View>
+
+                    
                     <View style={MainStyles.locumProfileItemWrapper}>
                         <Text style={MainStyles.LPIHeading}>Date of Birth</Text>
                         <Text style={MainStyles.LPISubHeading}>{this.state.locumData.js_dob}</Text>

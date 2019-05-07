@@ -22,6 +22,8 @@ const MainStyles = StyleSheet.create({
     },
     psosBtnXsText:{
         fontSize: 15,
+        
+
     },
     TInput:{
         flex:1,
@@ -232,7 +234,7 @@ const MainStyles = StyleSheet.create({
         marginLeft:5
     },
     locumProfileItemWrapper:{
-        paddingVertical:10,
+        paddingVertical:12,
         borderTopColor:'#999999',
         borderTopWidth:1,
     },
@@ -240,11 +242,13 @@ const MainStyles = StyleSheet.create({
         color:'#151515',
         fontFamily:'AvenirLTStd-Light',
         fontSize:15,
+       
     },
     LPISubHeading:{
         color:'#151515',
         fontFamily:'AvenirLTStd-Medium',
         fontSize:16,
+       
     }
 });
 export default MainStyles;
