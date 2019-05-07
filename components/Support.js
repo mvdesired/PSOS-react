@@ -103,6 +103,53 @@ class Support  extends Component{
                       }
                   </View>
                   {/* Q4 */}
+
+                  <View style={styles.qnaWrapper}>
+                      <TouchableOpacity style={[(this.state.showingQA == 'q5')?{backgroundColor:'#147dbf'}:'',{paddingHorizontal:10}]} onPress={()=>{
+                          this.setState({showingQA:'q5'});
+                        }}
+                      >
+                        <Text style={[styles.qnaHeading,(this.state.showingQA == 'q5')?{color:'#FFFFFF'}:{color:'#147dbf'}]}>Question ?</Text>
+                      </TouchableOpacity>
+                      {
+                        this.state.showingQA == 'q5' && 
+                        <View style={{paddingVertical:10,paddingHorizontal:10}}>
+                          <Text style={{fontFamily:'AvenirLTStd-Medium',fontSize:13,color:'#151515'}}>Lorem Nothing Text</Text>
+                        </View>
+                      }
+                  </View>
+                  {/*Q5*/}
+
+                  <View style={styles.qnaWrapper}>
+                      <TouchableOpacity style={[(this.state.showingQA == 'q6')?{backgroundColor:'#147dbf'}:'',{paddingHorizontal:10}]} onPress={()=>{
+                          this.setState({showingQA:'q6'});
+                        }}
+                      >
+                        <Text style={[styles.qnaHeading,(this.state.showingQA == 'q6')?{color:'#FFFFFF'}:{color:'#147dbf'}]}>Question ?</Text>
+                      </TouchableOpacity>
+                      {
+                        this.state.showingQA == 'q6' && 
+                        <View style={{paddingVertical:10,paddingHorizontal:10}}>
+                          <Text style={{fontFamily:'AvenirLTStd-Medium',fontSize:13,color:'#151515'}}>Lorem Nothing Text</Text>
+                        </View>
+                      }
+                  </View>
+                  {/*Q6*/}
+
+                  <View style={styles.qnaWrapper}>
+                      <TouchableOpacity style={[(this.state.showingQA == 'q7')?{backgroundColor:'#147dbf'}:'',{paddingHorizontal:10}]} onPress={()=>{
+                          this.setState({showingQA:'q7'});
+                        }}
+                      >
+                        <Text style={[styles.qnaHeading,(this.state.showingQA == 'q7')?{color:'#FFFFFF'}:{color:'#147dbf'}]}>Question ?</Text>
+                      </TouchableOpacity>
+                      {
+                        this.state.showingQA == 'q7' && 
+                        <View style={{paddingVertical:10,paddingHorizontal:10}}>
+                          <Text style={{fontFamily:'AvenirLTStd-Medium',fontSize:13,color:'#151515'}}>Lorem Nothing Text</Text>
+                        </View>
+                      }
+                  </View>
                 </View>
                 
               </ScrollView>
