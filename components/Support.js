@@ -116,7 +116,7 @@ class Support  extends Component{
                       {
                         this.state.showingQA == 'q5' && 
                         <View style={{paddingVertical:10,paddingHorizontal:10}}>
-                          <Text style={{fontFamily:'AvenirLTStd-Medium',fontSize:13,color:'#151515'}}>Lorem Nothing Text</Text>
+                          <Text style={{fontFamily:'AvenirLTStd-Medium',fontSize:13,color:'#151515'}}>Lorem Nothing</Text>
                         </View>
                       }
                   </View>
