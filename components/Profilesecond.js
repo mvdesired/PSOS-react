@@ -63,7 +63,7 @@ class Profilesecond extends Component{
                    
                     <View style={MainStyles.locumProfileItemWrapper}>
                         <Text style={MainStyles.LPIHeading}>Address</Text>
-                        <Text style={MainStyles.LPISubHeading}>123,Lorem  ipsum  A48 Lorem ipsum</Text>
+                        <Text style={MainStyles.LPISubHeading}>123, ipsum  A48 Lorem ipsum</Text>
                        
                     </View>
 
