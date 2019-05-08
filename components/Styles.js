@@ -119,27 +119,29 @@ const MainStyles = StyleSheet.create({
     eDW:{
         backgroundColor:'#FFFFFF',
         marginTop:8,
-        paddingVertical:10,
         paddingHorizontal:15,
-        flexDirection:'row',
-        justifyContent:'space-evenly',
+       justifyContent:'space-evenly',
         flexWrap: 'wrap',
     },
     eDTWI:{
         backgroundColor:'#e67e22',
-        width:'48%',
+        width:'100%',
         paddingVertical:10,
-        paddingHorizontal:15,
-        justifyContent:'center',
+        paddingHorizontal:50,
         alignItems:'center',
-        borderRadius:5
+        borderRadius:5,
+        flexDirection:'row',
+        height:140,
+        
     },
     eDTWIT:{
         fontFamily:'AvenirLTStd-Book',
         color:'#FFFFFF',
         fontSize:14,
-        textAlign:'center'
-    },
+        flexDirection:'row',
+        justifyContent:'center',
+        },
+
     eDBWI:{
         justifyContent:'center',
         alignItems:'center',

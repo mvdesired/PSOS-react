@@ -35,6 +35,9 @@ import Support from '../Support';
 import ShareApp from '../ShareApp';
 import Profile from '../Profile';
 import Profilesecond from '../Profilesecond';
+import SuccessScreen from '../Locum/Success';
+import Locumdashboardscreen from '../Locum/Locumdashboard';
+
 
 
 const drawerItemStyle = { 
@@ -140,6 +143,7 @@ const Navigation = createStackNavigator({
     About:{
         screen:AboutScreen
     },
+
     Privacy:{
        screen:Privacy
     },
@@ -159,13 +163,22 @@ const Navigation = createStackNavigator({
     {
         screen:Profilesecond
     },
-
+    
+    Success:{
+        screen:SuccessScreen
+    },
+  
     Login:{
         screen:Login
-    }
+    },
+    Locumdashboard:{
+        screen:Locumdashboardscreen
+
+    },
+   
 }, {
     headerMode: 'none',
-    initialRouteName: 'Profilesecond',
+    initialRouteName: 'Locumdashboard',
     containerOptions: {
         style: {
             backgroundColor: '#147dbf',
@@ -175,3 +188,7 @@ const Navigation = createStackNavigator({
         }
     });
 export default Navigation;
+
+
+
+
