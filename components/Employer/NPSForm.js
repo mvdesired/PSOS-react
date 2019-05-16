@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
-    Picker,Dimensions,FlatList,
+    Picker,Dimensions,FlatList,AsyncStorage,
     ActionSheetIOS,Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { DrawerActions,NavigationActions } from 'react-navigation';
@@ -45,7 +45,13 @@ class NPSFormScreen extends Component{
             listing_role:''
         }
     }
+    async setUserData(){
+        let userDataStringfy = await AsyncStorage.getItem('userData');
+        let userData = JSON.parse(userDataStringfy);
+        this.setState({userData});
+    }
     componentWillMount =()=>{
+        this.setUserData();
         var timHours = [];
         var timeMinutes = [];
         var dateDays = [];
@@ -157,7 +163,7 @@ class NPSFormScreen extends Component{
         this.setState({loading:true});
         var formdata = new FormData();
         formdata.append('pharm_id',this.state.pharm_id);
-        formdata.append('user_id',1);
+        formdata.append('user_id',this.state.userData.id);
         formdata.append('name',this.state.shiftName);
         formdata.append('start_date',this.state.startYear+'-'+this.state.startMonth+'-'+this.state.startDay);
         formdata.append('detail',this.state.shiftDetails);
@@ -185,9 +191,9 @@ class NPSFormScreen extends Component{
         })
         .then(res=>{console.log(res);return res.json()})
         .then(response=>{
-            console.log(response);
             this.setState({loading:false});
             Toast.show(response.message,Toast.SHORT);
+            this.props.navigation.navigate('JobListE');
         })
         .catch(err=>{
             this.setState({loading:false});

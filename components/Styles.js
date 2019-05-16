@@ -162,7 +162,7 @@ const MainStyles = StyleSheet.create({
     navHeaderWrapper:{
         flexDirection:'row',
         justifyContent:"space-between",
-        paddingVertical: 13,
+        //paddingVertical: 10,
         paddingHorizontal: 10,
         backgroundColor:'#1d7bc3',
         alignItems: 'center',
@@ -233,7 +233,7 @@ const MainStyles = StyleSheet.create({
     },
     locumProfileItemWrapper:{
         paddingVertical:10,
-        borderTopColor:'#999999',
+        borderTopColor:'#F0F0F0',
         borderTopWidth:1,
     },
     LPIHeading:{

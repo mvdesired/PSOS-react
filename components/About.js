@@ -10,6 +10,7 @@ class AboutScreen extends Component{
     componentDidMount(){
     }
     render(){
+       const {navigation} = this.props;
         return (
             <ImageBackground source={require('../assets/splash-bg.png')} style={{flex:1,backgroundColor:'#FFFFFF'}}>
                 <Loader loading={this.state.loading} />
@@ -28,9 +29,13 @@ class AboutScreen extends Component{
                     <Text style={{color:'#676767',marginTop:40,flexWrap:'wrap',width:80,textAlign:'center'}}>Version 2.0.03</Text>
                 </View>
                 <View style={{position:'absolute',alignItems:'center',justifyContent:'center',width:'100%',bottom:20,flexDirection: 'row'}}>
-                    <Text style={{color:'#147dbf',fontFamily:'AvenirLTStd-Roman'}}>Terms &amp; Conditions</Text>
+                    <TouchableOpacity onPress={()=>{navigation.navigate('TnC')}}>
+                        <Text style={{color:'#147dbf',fontFamily:'AvenirLTStd-Roman'}}>Terms &amp; Conditions</Text>
+                    </TouchableOpacity>
                     <View style={{borderLeftColor:'#1d7bc3',borderLeftWidth:1,marginHorizontal:5}}><Text>&nbsp;</Text></View>
-                    <Text style={{color:'#147dbf',fontFamily:'AvenirLTStd-Roman'}}>Privacy &amp; Policy</Text>
+                    <TouchableOpacity onPress={()=>{navigation.navigate('Privacy')}}>
+                        <Text style={{color:'#147dbf',fontFamily:'AvenirLTStd-Roman'}}>Privacy &amp; Policy</Text>
+                    </TouchableOpacity>
                 </View>
             </ImageBackground>
         );

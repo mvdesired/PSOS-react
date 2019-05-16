@@ -10,6 +10,7 @@ import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import { FlatList } from 'react-native-gesture-handler';
 const { height, width } = Dimensions.get('window');
+import Header from '../Navigation/Header';
 class Reviews extends Component{
     constructor(props) {
         super(props);
@@ -39,20 +40,7 @@ class Reviews extends Component{
         return(
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
                 <Loader loading={this.state.loading} />
-                <View style={MainStyles.navHeaderWrapper}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}}>
-                        <Image source={require('../../assets/back-icon.png')} style={{width:10,height:19}}/>
-                    </TouchableOpacity>
-                    <Text style={{fontFamily:'AvenirLTStd-Roman',color:'#FFFFFF',fontSize:16}}>Reviews</Text>
-                    <View style={{flexDirection:'row',alignItems:'center'}}>
-                        <TouchableOpacity>
-                            <Image source={require('../../assets/noti-icon.png')} width={20} height={23} style={{width:20,height:23}} />
-                            <View style={MainStyles.nHNotiIconNum}>
-                                <Text style={{fontSize:9}}>99</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                <Header pageName="Reviews" />
                 <View style={{backgroundColor:'#FFFFFF',flexDirection:'row',borderBottomColor: '#bebebe',borderBottomWidth: 1}}>
                     <TouchableOpacity style={[MainStyles.jobListETabsItem,(this.state.currentTab == 'my')?MainStyles.activeJLEItem:'']} onPress={()=>{this.setState({currentTab:'my'})}}>
                         <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'my')?MainStyles.activeJLEItemText:'']}>MY REVIEW</Text>

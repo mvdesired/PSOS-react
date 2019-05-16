@@ -6,14 +6,17 @@ import Loader from '../Loader';
 import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
+import PushNotification from 'react-native-push-notification';
 export default class Login extends Component{
     constructor(props){
         super(props);
         this.state = {
             loading:false,
-            registertingFrom:'',
-            emailAddress:'',
-            password:''
+            mobileNumber:'',
+            otp:'',
+            serverOtp:'',
+            otpField:false,
+            userId:0,
         }
         this.signIn = this._signIn.bind(this);
     }
@@ -21,41 +24,91 @@ export default class Login extends Component{
         await AsyncStorage.setItem(key,value);
     }
     _signIn = () =>{
-        this.props.navigation.navigate('Home');
-       /* if(this.state.emailAddress == ''){
-            Toast.show('Email address should not be blank',Toast.SHORT)
-            return false;
+        if(this.state.otpField){
+            this.checkOtp();
         }
-        if(this.state.password == ''){
-            Toast.show('Password should not be blank',Toast.SHORT)
-            return false;
+        else{
+            if(this.state.emailAddress == ''){
+                Toast.show('Email address should not be blank',Toast.SHORT);
+                return false;
+            }
+            //this.sendDataToServer();
+            this.setState({loading:true});
+            this.getToken(this.sendDataToServer.bind(this));
         }
-        this.sendDataToServer();*/
+        
     }
-    sendDataToServer(){
+    checkOtp =()=>{
+        if(this.state.otp == ''){
+            Toast.show('OTP should not be blank',Toast.SHORT);
+            return false;
+        }
+        if(this.state.otp != this.state.serverOtp){
+            Toast.show('OTP not matched',Toast.SHORT);
+            return false;
+        }
         this.setState({loading:true});
-        console.log('token');
-        fetch(SERVER_URL+'user_login',{
+        fetch(SERVER_URL+'userdata',{
             method:'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                email: this.state.emailAddress,
-                password: this.state.password,
-                device_type:Platform.OS,
-                device_key:''
+                user_id: this.state.userId
             })
         })
-        .then((res)=>res.json())
+        .then((res)=>{console.log(res._bodyInit);return res.json()})
         .then((response)=>{
             console.log(response);
             if(response.status == 200){
-                Toast.show(response.message,Toast.SHORT)
+                Toast.show(response.message,Toast.SHORT);
+                this.saveDetails('isUserLoggedIn',"true");
+                this.saveDetails('userData',JSON.stringify(response.result));
+                //if(response.result.user_type == 'employer'){
+                    this.props.navigation.navigate('Home');
+                    this.setState({otpField:false,serverOtp:'',userId:'',otp:'',mobileNumber:''});
+                //}
             }
             else{
-                Toast.show(response.message,Toast.SHORT)
+                Toast.show(response.message,Toast.SHORT);
+            }
+            this.setState({loading:false});
+        })
+        .catch((err)=>{
+            console.log(err);
+            this.checkNetInfo();
+            this.setState({loading:false});
+        });
+    }
+    sendDataToServer(token){
+        var fd = new FormData();
+        fd.append('phone',this.state.mobileNumber);
+        fd.append('device_type',Platform.OS);
+        fd.append('device_key',token.token);
+        var jsonArray = {
+            phone: this.state.mobileNumber,
+            device_type:Platform.OS,
+            device_key:token.token
+        };
+        console.log(jsonArray);
+        fetch(SERVER_URL+'user_login',{
+            method:'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(jsonArray)
+        })
+        .then((res)=>{console.log(res._bodyInit);return res.json()})
+        .then((response)=>{
+            console.log(response);
+            if(response.status == 200){
+                Toast.show(''+response.result.otp,Toast.SHORT);
+                this.setState({otpField:true,serverOtp:response.result.otp,userId:response.result.id});
+            }
+            else{
+                Toast.show(response.message,Toast.SHORT);
             }
             this.setState({loading:false});
         })
@@ -67,6 +120,22 @@ export default class Login extends Component{
     }
     componentDidMount = ()=>{
         this.checkNetInfo();
+    }
+    getToken = (onToken)=>{
+        PushNotification.configure({
+            onRegister: onToken,
+            onNotification: function(notification) {
+                console.log('NOTIFICATION:', notification );
+            },
+            senderID: "71450108131",
+            permissions: {
+                alert: true,
+                badge: true,
+                sound: true
+            },
+            popInitialNotification: true,
+            requestPermissions: true,
+        });
     }
     checkNetInfo = ()=>{
         if (Platform.OS === "android") {
@@ -102,6 +171,8 @@ export default class Login extends Component{
                     width:'100%',
                     maxWidth:'70%'
                 }}>
+                {
+                    !this.state.otpField && 
                     <View 
                         style={{
                         borderRadius: 35,
@@ -127,61 +198,65 @@ export default class Login extends Component{
                             fontSize:17,
                             fontFamily:'AvenirLTStd-Medium'
                         }} 
-                        placeholder="Email *" 
-                        returnKeyType={"next"} 
-                        ref={(input) => { this.emailAddress = input; }} 
-                        onSubmitEditing={() => { this.password.focus(); }} 
-                        blurOnSubmit={false}
-                        onChangeText={(text)=>this.setState({emailAddress:text})} 
-                        keyboardType="email-address" 
+                        placeholder="Mobile Number *" 
+                        returnKeyType={"go"} 
+                        ref={(input) => { this.mobileNumber = input; }}  
+                        blurOnSubmit={true}
+                        onChangeText={(text)=>this.setState({mobileNumber:text})} 
+                        keyboardType="phone-pad" 
                         autoCapitalize='none' 
                         placeholderTextColor="#147dbf" 
                         underlineColorAndroid="transparent" 
-                        value={this.state.emailAddress}
+                        value={this.state.mobileNumber}
                         />
                     </View>
-                    <View style={{
-                        borderRadius: 35,
-                        borderStyle:"dashed",
-                        borderWidth: 3,
-                        borderColor: '#bebebe',
-                        width:'100%',
-                        paddingHorizontal: 12,
-                        paddingVertical: 6,
-                        flexDirection: 'row',
-                        justifyContent:'center',
-                        alignItems: 'center',
-                        }}
-                    >
-                        <Image source={require('../../assets/lock-disable.png')} width={18} height={24} style={{width:18,height:24}}/>
-                        <TextInput 
-                            style={{
-                                flex:1,
-                                textAlign:'left',
-                                paddingLeft: 10,
-                                height:40,
-                                fontSize:17,
-                                fontFamily:'AvenirLTStd-Medium',
-                            }} 
-                            placeholder="Password *" 
-                            returnKeyType={"go"} 
-                            secureTextEntry={true} 
-                            ref={(input) => { this.password = input; }} 
-                            blurOnSubmit={false}
-                            onChangeText={(text)=>this.setState({password:text})} 
-                            placeholderTextColor="#bebebe" 
-                            underlineColorAndroid="transparent" 
-                            value={this.state.password}
-                        />
-                    </View>
-                    <View style={{width:'100%',alignItems:'flex-end',marginTop:15}}>
+                }
+                    
+                    {
+                        this.state.otpField && 
+                        <View style={{
+                            borderRadius: 35,
+                            borderStyle:"dashed",
+                            borderWidth: 3,
+                            borderColor: '#bebebe',
+                            width:'100%',
+                            paddingHorizontal: 12,
+                            paddingVertical: 6,
+                            flexDirection: 'row',
+                            justifyContent:'center',
+                            alignItems: 'center',
+                            }}
+                        >
+                            <Image source={require('../../assets/lock-disable.png')} width={18} height={24} style={{width:18,height:24}}/>
+                            <TextInput 
+                                style={{
+                                    flex:1,
+                                    textAlign:'left',
+                                    paddingLeft: 10,
+                                    height:40,
+                                    fontSize:17,
+                                    fontFamily:'AvenirLTStd-Medium',
+                                }} 
+                                placeholder="OTP *" 
+                                returnKeyType={"go"} 
+                                keyboardType="number-pad"
+                                ref={(input) => { this.otp = input; }} 
+                                blurOnSubmit={false}
+                                onChangeText={(text)=>this.setState({otp:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.otp}
+                            />
+                        </View>
+                    }
+                    {/* <View style={{width:'100%',alignItems:'flex-end',marginTop:15}}>
                         <TouchableOpacity onPress={()=>{}}>
                             <Text style={{
                                 color:'#ed1d24',
                                 fontFamily:'AvenirLTStd-Roman'
                             }}>Forgot Password ?</Text>
                         </TouchableOpacity>
-                    </View>
+                    </View> */}
                     <View style={{
                         justifyContent:'center',
                         alignItems:'center',

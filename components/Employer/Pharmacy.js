@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
-    Picker,Dimensions,RefreshControl,ImageBackground,
+    Picker,Dimensions,RefreshControl,ImageBackground,AsyncStorage,
     ActionSheetIOS,Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { DrawerActions,NavigationActions } from 'react-navigation';
@@ -9,8 +9,12 @@ import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import { FlatList } from 'react-native-gesture-handler';
+import Header from '../Navigation/Header';
 const { height, width } = Dimensions.get('window');
+
 class Pharmacy extends Component{
+    _isMounted = false;
+    clearTime = '';
     constructor(props){
         super(props);
         this.state={
@@ -21,8 +25,21 @@ class Pharmacy extends Component{
         };
         this.fetchPharma = this._fetchPharma.bind(this);
     }
+    async setUserData(){
+        let userDataStringfy = await AsyncStorage.getItem('userData');
+        let userData = JSON.parse(userDataStringfy);
+        this.setState({userData});
+    }
     componentDidMount = ()=>{
-        this.fetchPharma();
+        this._isMounted = true;
+        this.setUserData();
+        setTimeout(()=>{
+            this.fetchPharma();
+            this.clearTime = setInterval(()=>{
+                this.fetchPharma();
+            },3000);
+        },1500);
+        
     }
     submitPharmacy = ()=>{
         if(this.state.bname == ''){
@@ -51,7 +68,7 @@ class Pharmacy extends Component{
         }
         this.setState({loading:true});
         var formdata = new FormData();
-        formdata.append('user_id',1);
+        formdata.append('user_id',this.state.userData.id);
         formdata.append('business_name',this.state.bname);
         formdata.append('abn',this.state.abn);
         formdata.append('f_name',this.state.fname);
@@ -70,6 +87,7 @@ class Pharmacy extends Component{
             this.setState({loading:false,});
             Toast.show(response.message,Toast.SHORT);
             this.setState({bname:'',abn:'',fname:'',lname:'',bEmail:'',bPhone:'',bFax:'',mNumber:''});
+            this.fetchPharma();
         })
         .catch(err=>{
             this.setState({loading:false});
@@ -78,11 +96,16 @@ class Pharmacy extends Component{
         });
     }
     _fetchPharma = ()=>{
-        fetch(SERVER_URL+'pharmacy_list?user_id=1')
+        console.log(this.state.userData.id);
+        fetch(SERVER_URL+'pharmacy_list?user_id='+this.state.userData.id)
         .then(res=>res.json())
         .then(response=>{
             console.log(response);
-            this.setState({pharmaList:response.result});
+            if(response.status == 200){
+                this.setState({pharmaList:response.result});
+                
+            }
+            Toast.show(response.message,Toast.SHORT);
         })
         .catch(err=>{
 
@@ -103,22 +126,16 @@ class Pharmacy extends Component{
         if (interval > 1) {return interval + " minutes";}
         return Math.floor(seconds) + " seconds";
     }
+    componentWillUnmount(){
+        this._isMounted = false;
+        clearTimeout(this.clearTime);
+    }
     render(){
         const RemoveHiehgt = height - 88;
         return (
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
                 <Loader loading={this.state.loading} />
-                <View style={MainStyles.navHeaderWrapper}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}}>
-                        <Image source={require('../../assets/back-icon.png')} style={{width:10,height:19}}/>
-                    </TouchableOpacity>
-                    <Text style={{fontFamily:'AvenirLTStd-Roman',color:'#FFFFFF',fontSize:16}}>Pharmacy Details</Text>
-                    <View style={{flexDirection:'row',alignItems:'center'}}>
-                        <TouchableOpacity>
-                            <Image source={require('../../assets/noti-icon.png')} width={20} height={23} style={{width:20,height:23}} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                <Header pageName="Pharmacy Details" />
                 <View style={{backgroundColor:'#FFFFFF',flexDirection:'row',borderBottomColor: '#bebebe',borderBottomWidth: 1}}>
                     <TouchableOpacity style={[MainStyles.jobListETabsItem,(this.state.currentTab == 'add')?MainStyles.activeJLEItem:'']} onPress={()=>{this.setState({currentTab:'add'})}}>
                         <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'add')?MainStyles.activeJLEItemText:'']}>ADD PHARMACY</Text>

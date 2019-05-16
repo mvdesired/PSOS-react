@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
-    Picker,Dimensions,FlatList,
+    Picker,Dimensions,FlatList,AsyncStorage,
     ActionSheetIOS,Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { DrawerActions,NavigationActions } from 'react-navigation';
@@ -9,6 +9,12 @@ import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 const { height, width } = Dimensions.get('window');
+var myHeaders = new Headers();
+myHeaders.set('Accept', 'application/json');
+//myHeaders.set('Content-Type', 'application/json');
+myHeaders.set('Cache-Control', 'no-cache');
+myHeaders.set('Pragma', 'no-cache');
+myHeaders.set('Expires', '0');
 class NewPermShift extends Component{
     constructor(props) {
         super(props);
@@ -21,16 +27,21 @@ class NewPermShift extends Component{
             viewAreaCoveragePercentThreshold: 95
         }
     }
+    async setUserData(){
+        let userDataStringfy = await AsyncStorage.getItem('userData');
+        let userData = JSON.parse(userDataStringfy);
+        this.setState({userData});
+    }
     componentDidMount = ()=>{
-        this.fetchPharmacyList();
+        this.setUserData();
+        setTimeout(()=>{
+            this.fetchPharmacyList();
+        },1000);
     }
     fetchPharmacyList = ()=>{
-        fetch(SERVER_URL+'pharmacy_list?user_id=1',{
+        fetch(SERVER_URL+'pharmacy_list?user_id='+this.state.userData.id,{
             method:'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            }
+            headers: myHeaders
         })
         .then(res=>res.json())
         .then(response=>{
@@ -59,6 +70,9 @@ class NewPermShift extends Component{
                     alignItems:'center',
                     justifyContent:'center'
                 }}>
+                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}} style={{position:'absolute',left:8,top:8,paddingHorizontal:5,paddingVertical:15,width:10,height:19}}>
+                        <Image source={require('../../assets/blue-back-icon.png')} style={{width:10,height:19}}/>
+                    </TouchableOpacity>
                     <Image source={require('../../assets/web-logo.png')} style={{width:200,height:34}}/>
                     <Image source={require('../../assets/header-b.png')} style={{width:'100%',marginTop:15}}/>
                 </View>

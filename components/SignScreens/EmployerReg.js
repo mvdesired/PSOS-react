@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
-    Picker,Dimensions,
+    Picker,Dimensions,AsyncStorage,
     ActionSheetIOS,Platform } from 'react-native';
 import Loader from '../Loader';
 import MainStyles from '../Styles';
@@ -16,7 +16,8 @@ class EmployerScreen extends Component{
         cOptionsList.unshift('Cancel');
         this.state={
             loading:false,
-            CountryList:countryList().getLabels(),
+            CountryList:['Australia','New Zealand'],
+            stateList:['VIC','NSW','QLD','ACT','TAS','NT','WA','SA','North Island','South Island'],
             cOptions:cOptionsList,
             showTerms:false,
             firsName:'',
@@ -24,11 +25,14 @@ class EmployerScreen extends Component{
             phoneNo:'',
             emailAddress:'',
             city:'',
-            spr:'',
+            spr:'VIC',
             pz:'',
-            country:'',
+            country:'Australia',
         }
         this.singup = this._signup.bind(this);
+    }
+    async saveDetails(key,value){
+        await AsyncStorage.setItem(key,value);
     }
     componentDidMount = () => {
 
@@ -77,6 +81,7 @@ class EmployerScreen extends Component{
         formdata.append('lname',this.state.lastName);
         formdata.append('phone',this.state.phoneNo);
         formdata.append('email',this.state.emailAddress);
+        formdata.append('address',this.state.streetAddress);
         formdata.append('city',this.state.city);
         formdata.append('state',this.state.spr);
         formdata.append('postal',this.state.pz);
@@ -90,10 +95,13 @@ class EmployerScreen extends Component{
             },
             body: formdata
         })
-        .then((res)=>res.json())
+        .then((res)=>{console.log(res);return res.json()})
         .then((response)=>{
             if(response.status == 200){
                 Toast.show(response.message,Toast.SHORT);
+                this.saveDetails('isUserLoggedIn',"true");
+                this.saveDetails('userData',JSON.stringify(response.result));
+                navigation.navigate('Home');
             }
             else{
                 Toast.show(response.message,Toast.SHORT);
@@ -127,6 +135,9 @@ class EmployerScreen extends Component{
                     alignItems:'center',
                     justifyContent:'center'
                 }}>
+                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}} style={{position:'absolute',left:8,top:8,paddingHorizontal:5,paddingVertical:15,width:10,height:19}}>
+                        <Image source={require('../../assets/blue-back-icon.png')} style={{width:10,height:19}}/>
+                    </TouchableOpacity>
                     <Image source={require('../../assets/web-logo.png')} style={{width:200,height:34}}/>
                     <Image source={require('../../assets/header-b.png')} style={{width:'100%',marginTop:15}}/>
                 </View>
@@ -248,17 +259,38 @@ class EmployerScreen extends Component{
                                 value={this.state.city}
                             />
                             <View style={{paddingHorizontal:5}}></View>
-                            <TextInput 
-                                style={MainStyles.TInput} 
-                                placeholder="State/Province/Region" 
-                                returnKeyType={"go"} 
-                                ref={(input) => { this.spr = input; }} 
-                                blurOnSubmit={false}
-                                onChangeText={(text)=>this.setState({spr:text})} 
-                                placeholderTextColor="#bebebe" 
-                                underlineColorAndroid="transparent" 
-                                value={this.state.spr}
-                            />
+                            {
+                                Platform.OS == 'android' && 
+                                <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
+                                    <Picker
+                                    selectedValue={this.state.spr}
+                                    style={{
+                                        flex:1,
+                                        paddingLeft: 10,
+                                        paddingVertical:2,
+                                        height:30,
+                                    }}
+                                    textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
+                                    itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
+                                    itemStyle={MainStyles.TInput}
+                                    onValueChange={(itemValue, itemIndex) => this.setState({spr: itemValue})}>
+                                        {
+                                        this.state.stateList.map(item=>{
+                                            return (
+                                            <Picker.Item key={'key-'+item} label={item} value={item} />
+                                            )
+                                        })
+                                        }
+                                    </Picker>
+                                </View>
+                            }
+                            {
+                                Platform.OS == 'ios' && 
+                                <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
+                                    <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.spr}</Text>
+                                </TouchableOpacity>
+                                
+                            }
                         </View>
                         <View style={{flexDirection:'row',justifyContent:'space-around',marginTop:15}}>
                             <TextInput 
@@ -288,7 +320,6 @@ class EmployerScreen extends Component{
                                     itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
                                     itemStyle={MainStyles.TInput}
                                     onValueChange={(itemValue, itemIndex) => this.setState({country: itemValue})}>
-                                        <Picker.Item label="Choose " value="" />
                                         {
                                         this.state.CountryList.map(item=>{
                                             return (

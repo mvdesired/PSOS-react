@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
-    Picker,Dimensions,RefreshControl,
+    Picker,Dimensions,RefreshControl,AsyncStorage,
     ActionSheetIOS,Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { DrawerActions,NavigationActions } from 'react-navigation';
@@ -9,12 +9,19 @@ import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import { FlatList } from 'react-native-gesture-handler';
+import Header from '../Navigation/Header';
+var myHeaders = new Headers();
+myHeaders.set('Accept', 'application/json');
+//myHeaders.set('Content-Type', 'application/json');
+myHeaders.set('Cache-Control', 'no-cache');
+myHeaders.set('Pragma', 'no-cache');
+myHeaders.set('Expires', '0');
 const { height, width } = Dimensions.get('window');
 class LocumList extends Component{
     constructor(props) {
         super(props);
         this.state={
-            loading:false,
+            loading:true,
             locumList:{},
             isRefreshing:false,
             job_id:this.props.navigation.getParam("job_id"),
@@ -25,6 +32,11 @@ class LocumList extends Component{
             viewAreaCoveragePercentThreshold: 95
         }
         this.fetchLocumList = this._fetchLocumList.bind(this);
+    }
+    async setUserData(){
+        let userDataStringfy = await AsyncStorage.getItem('userData');
+        let userData = JSON.parse(userDataStringfy);
+        this.setState({userData});
     }
     componentDidMount(){
         this.fetchLocumList();
@@ -41,11 +53,10 @@ class LocumList extends Component{
     }
     _fetchLocumList = ()=>{
         var fetchFrom = (this.state.job_type == 'perm')?'permanent_applierlist':'locumshift_applierlist';
-        fetch(SERVER_URL+fetchFrom+'?job_id='+this.state.job_id+'&emp_id=1',{
+        //+'&emp_id='+this.state.id
+        fetch(SERVER_URL+fetchFrom+'?job_id='+this.state.job_id,{
             method:'GET',
-            headers:{
-                Accept:'application/json'
-            }
+            headers:myHeaders
         })
         .then(res=>res.json())
         .then(response=>{
@@ -53,7 +64,6 @@ class LocumList extends Component{
             if(response.status == 200){
                 this.setState({locumList:response.result});
             }
-            Toast.show(response.message,Toast.SHORT);
             this.setState({loading:false,isRefreshing:false});
         })
         .catch(err=>{
@@ -82,36 +92,42 @@ class LocumList extends Component{
         return(
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
                 <Loader loading={this.state.loading} />
-                <View style={MainStyles.navHeaderWrapper}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}}>
-                        <Image source={require('../../assets/back-icon.png')} style={{width:10,height:19}}/>
-                    </TouchableOpacity>
-                    <Text style={{fontFamily:'AvenirLTStd-Roman',color:'#FFFFFF',fontSize:16}}>Locum List</Text>
-                    <View style={{flexDirection:'row',alignItems:'center'}}>
-                        <TouchableOpacity>
-                            <Image source={require('../../assets/noti-icon.png')} width={20} height={23} style={{width:20,height:23}} />
-                            <View style={MainStyles.nHNotiIconNum}>
-                                <Text style={{fontSize:9}}>99</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                <Header pageName="Locum List" />
                 <View style={{height:RemoveHiehgt}}>
                     {
                         this.state.locumList.length > 0 && 
                         <FlatList data={this.state.locumList} 
                             renderItem={({item}) => (
-                                <TouchableOpacity style={MainStyles.JLELoopItem} onPress={()=>{
-                                    console.log(item.job_id,item.locum_id);
-                                }}>
-                                    <View style={{flexWrap:'wrap'}}>
-                                        <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                        <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.applied_date)}</Text>
-                                    </View>
-                                    <View style={{flexDirection:'row',alignItems:'center'}}>
-                                        <Image source={require('../../assets/list-fd-icon.png')} style={{width:8,height:15}}/>
-                                    </View>
-                                </TouchableOpacity>
+                                <View>
+                                    {
+                                        item.status == 0 && 
+                                        <TouchableOpacity style={MainStyles.JLELoopItem} onPress={()=>{
+                                            console.log(item);
+                                            this.props.navigation.navigate('LocumDetails',{job_id:this.state.job_id,job_type:this.state.job_type,locum_id:item.locum_id})
+                                        }}>
+                                            <View style={{flexWrap:'wrap'}}>
+                                                <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
+                                                <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.applied_date)}</Text>
+                                            </View>
+                                            <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                <Image source={require('../../assets/list-fd-icon.png')} style={{width:8,height:15}}/>
+                                            </View>
+                                        </TouchableOpacity>
+
+                                    }
+                                    {
+                                        item.status == 1 && 
+                                        <View style={[MainStyles.JLELoopItem,{backgroundColor:'#e6e6e6'}]}>
+                                            <View style={{flexWrap:'wrap'}}>
+                                                <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
+                                                <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.applied_date)}</Text>
+                                            </View>
+                                            <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                <Text style={{transform: [{ rotate: "45deg" }],color:'#61bf6f',fontFamily:'AvenirLTStd-Light',fontSize:14}}>Hired</Text>
+                                            </View>
+                                        </View>
+                                    }
+                                </View>
                                 )}
                             keyExtractor={(item) => 'key-'+item.id}
                             viewabilityConfig={this.viewabilityConfig}

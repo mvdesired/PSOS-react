@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
-    Picker,Dimensions,RefreshControl,ImageBackground,
+    Picker,Dimensions,RefreshControl,ImageBackground,AsyncStorage,
     ActionSheetIOS,Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { DrawerActions,NavigationActions } from 'react-navigation';
@@ -8,37 +8,96 @@ import Loader from '../Loader';
 import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
+import Header from '../Navigation/Header';
 import { FlatList } from 'react-native-gesture-handler';
+var myHeaders = new Headers();
+myHeaders.set('Accept', 'application/json');
+//myHeaders.set('Content-Type', 'application/json');
+myHeaders.set('Cache-Control', 'no-cache');
+myHeaders.set('Pragma', 'no-cache');
+myHeaders.set('Expires', '0');
 const { height, width } = Dimensions.get('window');
 class EChatList extends Component{
+    _isMounted = false;
+    clearTime = '';
     constructor(props){
         super(props);
         this.state={
-            loading:false,
+            loading:true,
             isRefreshing:false,
-            chatList:[{id:1},{id:2}]
+            chatList:{}
         };
-        this.fetchChatList = this._fetchChatList.bind(this);
+        //this.fetchChatList = this._fetchChatList.bind(this);
+    }
+    async setUserData(){
+        let userDataStringfy = await AsyncStorage.getItem('userData');
+        let userData = JSON.parse(userDataStringfy);
+        this.setState({userData});
+    }
+    componentDidMount(){
+        this._isMounted = true;
+        this.setUserData();
+        setTimeout(()=>{
+            this._fetchChatList();
+            this.clearTime = setInterval(
+                () => {this._fetchChatList();},
+                2500
+              );
+        },1500);
     }
     _fetchChatList = ()=>{
-
+        if(this._isMounted){
+            fetch(SERVER_URL+'fethc_chat_list?user_id='+this.state.userData.id+'&user_type='+this.state.userData.user_type,{
+                method:'GET',
+                headers:myHeaders,
+            })
+            .then(res=>res.json())
+            .then(response=>{
+                if(response.status == 200){
+                    this.setState({chatList:response.result});
+                }
+                this.setState({loading:false,isRefreshing:false});
+            })
+            .catch(err=>{
+                this.setState({loading:false,isRefreshing:false});
+                console.log(err);
+            })
+        }
+    }
+    formatAMPM(date) {
+        var date = new Date(date);
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var dateToday = (new Date()).getDate();
+        var messageDate = date.getDate();
+        if(dateToday > messageDate){
+            var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return fullDate+' '+strTime;
+        }
+        else{
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return strTime;
+        }
+    }
+    componentWillUnmount(){
+        this._isMounted = false;
+        clearTimeout(this.clearTime);
     }
     render(){
         const RemoveHiehgt = height - 50;
         return(
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
                 <Loader loading={this.state.loading} />
-                <View style={MainStyles.navHeaderWrapper}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}}>
-                        <Image source={require('../../assets/back-icon.png')} style={{width:10,height:19}}/>
-                    </TouchableOpacity>
-                    <Text style={{fontFamily:'AvenirLTStd-Roman',color:'#FFFFFF',fontSize:16}}>Chat</Text>
-                    <View style={{flexDirection:'row',alignItems:'center'}}>
-                        <TouchableOpacity>
-                            <Image source={require('../../assets/noti-icon.png')} width={20} height={23} style={{width:20,height:23}} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                <Header pageName="Chat" />
                 <View style={{height:RemoveHiehgt}}>
                     {
                         this.state.chatList.length > 0 && 
@@ -54,15 +113,15 @@ class EChatList extends Component{
                                     borderBottomColor: '#f0f0f0',
                                     borderBottomWidth: 1,
                                 }} onPress={()=>{
-                                    this.props.navigation.navigate('ChatSingle',{chat_id:1});
+                                    this.props.navigation.navigate('ChatScreen',{chat_id:item.chat_id});
                                 }}>
                                     <View style={{flexDirection:'row',alignItems:'center'}}>
                                         <View style={{width:50,height:50,borderRadius: 100,justifyContent:'center',alignItems:'center'}}>
-                                            <ImageBackground  source={require('../../assets/default.png')} style={{overflow:'hidden',width:50,height:50,borderRadius: 100}}></ImageBackground>
+                                            <ImageBackground  source={{uri:item.user_img}} style={{overflow:'hidden',width:50,height:50,borderRadius: 100,borderColor:'#afafaf',borderWidth:1}}></ImageBackground>
                                             <View style={{
                                                     width:13,
                                                     height:13,
-                                                    backgroundColor:'#00ff00',
+                                                    backgroundColor:(item.status == 'Offline')?'#afafaf':'#00ff00',
                                                     position: 'absolute',
                                                     right:1,
                                                     bottom:1,
@@ -71,13 +130,17 @@ class EChatList extends Component{
                                                     borderRadius:100
                                                 }}></View>
                                         </View>
-                                        <Text style={[MainStyles.JLELoopItemName,{marginLeft:10,flexWrap:'wrap'}]}>Amit Sharma</Text>
+                                        <Text style={[MainStyles.JLELoopItemName,{marginLeft:10,flexWrap:'wrap'}]}>{item.full_name}</Text>
                                     </View>
                                     <View style={{alignItems:'center'}}>
-                                        <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#676767',fontSize:11}}>12:35 AM</Text>
-                                        <View style={{marginTop:5,backgroundColor:'#02aeee',width:18,height:18,alignItems:'center',justifyContent:'center',borderRadius:100}}>
-                                            <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#FFFFFF',fontSize:10}}>2</Text>
-                                        </View>
+                                        <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#676767',fontSize:11}}>{this.formatAMPM(item.lastMsg)}</Text>
+                                        {
+                                            item.unread > 0 && 
+                                            <View style={{marginTop:5,backgroundColor:'#02aeee',width:18,height:18,alignItems:'center',justifyContent:'center',borderRadius:100}}>
+                                                <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#FFFFFF',fontSize:10}}>{item.unread}</Text>
+                                            </View>
+                                        }
+                                        
                                     </View>
                                 </TouchableOpacity>
                                 )}
@@ -86,7 +149,7 @@ class EChatList extends Component{
                             refreshControl={
                                 <RefreshControl
                                     refreshing={this.state.isRefreshing}
-                                    onRefresh={()=>{this.setState({isRefreshing:true}),this.fetchChatList()}}
+                                    onRefresh={()=>{this.setState({isRefreshing:true}),this._fetchChatList()}}
                                     title="Pull to refresh"
                                     colors={["#1d7bc3","red", "green", "blue"]}
                                 />

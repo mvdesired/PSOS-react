@@ -9,13 +9,20 @@ import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import { FlatList } from 'react-native-gesture-handler';
+import Header from '../Navigation/Header';
 const { height, width } = Dimensions.get('window');
+var myHeaders = new Headers();
+myHeaders.set('Accept', 'application/json');
+//myHeaders.set('Content-Type', 'application/json');
+myHeaders.set('Cache-Control', 'no-cache');
+myHeaders.set('Pragma', 'no-cache');
+myHeaders.set('Expires', '0');
 class LocumDetails extends Component{
     constructor(props) {
         super(props);
         this.state={
-            loading:false,
-            locumData:{},
+            loading:true,
+            locumData:{fname:'',lname:''},
             isRefreshing:false,
             job_id:this.props.navigation.getParam("job_id"),
             job_type:this.props.navigation.getParam("job_type"),
@@ -24,10 +31,14 @@ class LocumDetails extends Component{
         this.fetchLocumDetails = this._fetchLocumDetails.bind(this);
     }
     componentDidMount = ()=>{
+        this.setUserData();
         this.fetchLocumDetails();
     }
     _fetchLocumDetails = ()=>{
-        fetch(SERVER_URL+'locum_detail?locum_id=14')
+        fetch(SERVER_URL+'locum_detail?locum_id='+this.state.locum_id,{
+            method:'GET',
+            headers:myHeaders
+        })
         .then(res=>res.json())
         .then(response=>{
             console.log(response);
@@ -37,6 +48,35 @@ class LocumDetails extends Component{
             else{
                 Toast.show(response.message,Toast.SHORT);
             }
+            this.setState({loading:false});
+        })
+        .catch(err=>{
+            console.log(err);
+            this.setState({loading:false});
+        });
+    }
+    async setUserData(){
+        let userDataStringfy = await AsyncStorage.getItem('userData');
+        let userData = JSON.parse(userDataStringfy);
+        this.setState({userData});
+    }
+    hireThis = ()=>{
+        var fd = new FormData();
+        fd.append('job_id',this.state.job_id);
+        fd.append('type',(this.state.job_type == 'shift')?'locum_shift':'permanent');
+        fd.append('locum_id',this.state.locum_id);
+        fd.append('employer_id',this.state.userData.id);
+        fetch(SERVER_URL+'hire_locum',{
+            method:'POST',
+            headers:myHeaders,
+            body:fd
+        })
+        .then(res=>{console.log(res);return res.json();})
+        .then(response=>{
+            if(response.status == 200){
+                this.props.navigation.navigate('ChatScreen',{chat_id:response.result});
+            }
+            console.log(response);
         })
         .catch(err=>{
             console.log(err);
@@ -47,20 +87,7 @@ class LocumDetails extends Component{
         return(
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
                 <Loader loading={this.state.loading} />
-                <View style={MainStyles.navHeaderWrapper}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}}>
-                        <Image source={require('../../assets/back-icon.png')} style={{width:10,height:19}}/>
-                    </TouchableOpacity>
-                    <Text style={{fontFamily:'AvenirLTStd-Roman',color:'#FFFFFF',fontSize:16}}>Locum Detail</Text>
-                    <View style={{flexDirection:'row',alignItems:'center'}}>
-                        <TouchableOpacity>
-                            <Image source={require('../../assets/noti-icon.png')} width={20} height={23} style={{width:20,height:23}} />
-                            <View style={MainStyles.nHNotiIconNum}>
-                                <Text style={{fontSize:9}}>99</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                <Header pageName="Locum Detail" />
                 <ScrollView style={{paddingHorizontal:15,height:RemoveHiehgt,flex:1}} keyboardShouldPersistTaps="always">
                     <View style={{justifyContent:'center',alignItems:'center',marginVertical: 15}}>
                         <View style={{width:100,height:100,justifyContent:'flex-start',alignItems:'center',overflow:'hidden',borderRadius: 100,marginBottom: 10,}}>
@@ -99,7 +126,9 @@ class LocumDetails extends Component{
                     </View>
                     {/* Languga */}
                     <View style={{justifyContent:'center',alignItems:'center',marginTop: 10,marginBottom:15}}>
-                        <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]}>
+                        <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{
+                            this.hireThis();
+                        }}>
                             <Text style={MainStyles.psosBtnText}>Hire</Text>
                         </TouchableOpacity>
                     </View>
