@@ -9,6 +9,7 @@ import Loader from '../Loader';
 import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
+import SignatureCapture from 'react-native-signature-capture';
 const { height, width } = Dimensions.get('window');
 class ETimeSheet extends Component{
     constructor(props) {
@@ -89,6 +90,11 @@ class ETimeSheet extends Component{
               });
             }
           });
+    }
+    _onSaveEvent(result) {
+        //result.encoded - for the base64 encoded png
+        //result.pathName - for the file path name
+        console.log(result);
     }
     render(){
         const RemoveHiehgt = height - 52;
@@ -570,6 +576,22 @@ class ETimeSheet extends Component{
                                     <View style={[MainStyles.checkBoxStyle]}><View style={MainStyles.checkBoxCheckedStyle}></View></View>
                                     <Text style={[MainStyles.checkBoxLabel]}>I declare that these hours are true and correct, and approved by payment by the pharmacy*</Text>
                                 </TouchableOpacity>
+                            </View>
+                            <View style={[MainStyles.TInput,{justifyContent:'center',alignItems:'center',marginTop:26,height:300,}]}>
+                                <SignatureCapture
+                                style={{
+                                    borderColor: '#000033',
+                                    borderWidth: 1,
+                                    width:'100%',
+                                    height:260,
+                                    backgroundColor:'#010101'
+                                }}
+                                ref="sign"
+                                onSaveEvent={this._onSaveEvent}
+                                saveImageFileInExtStorage={false}
+                                showNativeButtons={true}
+                                showTitleLabel={false}
+                                viewMode={"portrait"}/>
                             </View>
                             <View style={{justifyContent:'center',alignItems:'center',marginTop:26}}>
                                 <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{

@@ -1,4 +1,8 @@
 rootProject.name = 'psos'
+include ':react-native-signature-capture'
+project(':react-native-signature-capture').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-signature-capture/android')
+include ':@merryjs_photo-viewer'
+project(':@merryjs_photo-viewer').projectDir = new File(rootProject.projectDir, '../node_modules/@merryjs/photo-viewer/android')
 include ':react-native-fs'
 project(':react-native-fs').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fs/android')
 include ':react-native-document-picker'

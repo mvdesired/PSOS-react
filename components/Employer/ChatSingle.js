@@ -1,7 +1,7 @@
 import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
-    Picker,Dimensions,RefreshControl,ImageBackground,AsyncStorage,
-    ActionSheetIOS,Platform } from 'react-native';
+    Picker,Dimensions,RefreshControl,ImageBackground,AsyncStorage,TouchableWithoutFeedback,
+    ActionSheetIOS,Platform,Modal  } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { DrawerActions,NavigationActions } from 'react-navigation';
 import Loader from '../Loader';
@@ -9,10 +9,12 @@ import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import { FlatList } from 'react-native-gesture-handler';
+import ImagePicker from 'react-native-image-picker';
+import PhotoView from "@merryjs/photo-viewer";
 const { height, width } = Dimensions.get('window');
 var myHeaders = new Headers();
 myHeaders.set('Accept', 'application/json');
-//myHeaders.set('Content-Type', 'application/json');
+myHeaders.set('Content-Type', 'application/json');
 myHeaders.set('Cache-Control', 'no-cache');
 myHeaders.set('Pragma', 'no-cache');
 myHeaders.set('Expires', '0');
@@ -29,7 +31,12 @@ class ChatScreen extends Component{
             chat_id:this.props.navigation.getParam('chat_id'),
             full_name: '',
             status:'',
-            disableBtn:true
+            disableBtn:true,
+            isFile:0,
+            media:'',
+            isModalOpened: false,  //Controls if modal is opened or closed
+            currentImageIndex: 0,
+            images:{}
         };
         this.fetchChatting = this._fetchChatting.bind(this);
     }
@@ -51,7 +58,7 @@ class ChatScreen extends Component{
                 method:'GET',
                 headers:myHeaders
             })
-            .then(res=>res.json())
+            .then(res=>{return res.json()})
             .then(response=>{
                 if(response.status == 200){
                     this.setState({
@@ -60,6 +67,11 @@ class ChatScreen extends Component{
                         status:response.result.status,
                         chatting:response.result.msg
                     });
+                    let images = [];
+                    for(var i=0;i<response.result.media_list.length;i++){
+                        images.push({source:{uri:response.result.media_list[i]}});
+                    }
+                    this.setState({images});
                 }
             })
             .catch(err=>{
@@ -108,8 +120,9 @@ class ChatScreen extends Component{
     }
     sendNewMessage() {
         var message = this.state.messageText;
+        var isFile = this.state.isFile;
         var newDate = new Date();
-        if (message) {
+        if (message || isFile == 1) {
             this.refs['messageText'].setNativeProps({text: ''});
             if(this.state.chatting.length > 0){
                 var messagesCopy = this.state.chatting.slice();
@@ -120,7 +133,9 @@ class ChatScreen extends Component{
                     send_by:this.state.userData.id,
                     ID:'key-'+messagesCopy.length+1,
                     send_on:newDate.getTime()/1000,
-                    msg_text:message
+                    msg_text:message,
+                    is_file:isFile,
+                    media:this.state.avatarSource
                 }
             }
             else{
@@ -129,25 +144,36 @@ class ChatScreen extends Component{
                     send_by:this.state.userData.id,
                     key:'key-'+messagesCopy.length+1,
                     send_on:newDate.getTime()/1000,
-                    msg_text:message
+                    msg_text:message,
+                    is_file:isFile,
+                    media:this.state.avatarSource
                 }
             }
-            this.setState({chatting: messagesCopy,messageText: '',disableBtn:true});
+            this.setState({chatting: messagesCopy,messageText: '',disableBtn:true,media:'',});
             if(this.state.chatting.length > 4){
                 //this.scrollToTheBottom();
             }
-            var fd = new FormData();
+            /*var fd = new FormData();
             fd.append('chat_id',this.state.chat_id);
             fd.append('user_id',this.state.userData.id);
             fd.append('message',message);
+            fd.append('is_file',this.state.isFile);
+            fd.append('media',this.state.fileData);*/
+            var jsonData = {
+                chat_id:this.state.chat_id,
+                user_id:this.state.userData.id,
+                message:message,
+                is_file:this.state.isFile,
+                media:this.state.fileData,
+            }
             fetch( SERVER_URL + 'send_chat_msg',{
                 method:'POST',
                 headers:myHeaders,
-                body:fd
+                body:JSON.stringify(jsonData)
             })
-            .then((response) => response.json())
+            .then((response) => {console.log(response);return response.json()})
             .then((responseData) => {
-
+                this.setState({isFile:0,fileData:{}});
             })
             .catch(err=>{
                 console.log(err);
@@ -158,6 +184,51 @@ class ChatScreen extends Component{
         this._isMounted = false;
         clearTimeout(this.clearTime);
     }
+    pickFile = ()=>{
+        const options = {
+            title: 'Select File',
+            storageOptions: {
+              skipBackup: false,
+              path: 'images',
+            },
+            maxWidth:800,
+            maxHeight:800,
+            mediaType:'photo',
+            quality:1,
+            allowsEditing:true,
+          };
+          
+          /**
+           * The first arg is the options object for customization (it can also be null or omitted for default options),
+           * The second arg is the callback which sends object: response (more info in the API Reference)
+           */
+          ImagePicker.showImagePicker(options, (response) => {
+            //console.log('Response = ', response);
+          
+            if (response.didCancel) {
+              console.log('User cancelled image picker');
+            } else if (response.error) {
+              console.log('ImagePicker Error: ', response.error);
+            } else if (response.customButton) {
+              console.log('User tapped custom button: ', response.customButton);
+            } else {
+              const source = response.uri ;
+              // You can also display the image using data:
+              // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+              this.setState({
+                profilePicName:response.fileName,
+                fileData:{data:response.data,name:response.fileName},
+                avatarSource: source,
+                isFile:1
+              });
+              this.sendNewMessage();
+            }
+          });
+    }
+    openModal(index) {
+        console.log(index);
+        this.setState({isModalOpened: true, currentImageIndex: index })
+     }
     render(){
         const enableBtn = this.state.disableBtn?{color:'rgba(126, 126, 126, 0.1)'}:{color:'#7e7e7e'};
         const RemoveHiehgt = height - 50;
@@ -181,7 +252,7 @@ class ChatScreen extends Component{
                     {
                         this.state.chatting.length > 0 && 
                         <FlatList data={this.state.chatting}
-                            renderItem={({item}) => (
+                            renderItem={({item,key}) => (
                                 <View style={[{
                                     flexDirection:'row',
                                     paddingHorizontal:10,
@@ -208,7 +279,18 @@ class ChatScreen extends Component{
                                                     <View style={{width:6,height:5,position:'absolute',bottom:-1,right:-2,borderRadius:2,backgroundColor:'#f0f0f0'}}></View>
                                                 </View>
                                         }
-                                        <Text>{item.msg_text}</Text>
+                                        {
+                                            item.is_file == '1' && 
+                                            <TouchableOpacity onPress={() => {this.openModal(item.media.i_index)}} style={(item.msg_text!='')?{marginBottom:10}:''}>
+                                                <Image source={{uri:item.media.url}} width={200} height={200} style={[{width:200,height:200,},]} />
+                                            </TouchableOpacity>
+                                            
+                                        }
+                                        {
+                                            item.msg_text != '' && 
+                                            <Text>{item.msg_text}</Text>
+                                        }
+                                        
                                     </View>
                                     {
                                         (item.send_by != this.state.userData.id) && <Text style={{color:'#b6b6b6',fontSize:12}}>{this.formatAMPM(item.send_on*1000)}</Text>
@@ -243,7 +325,7 @@ class ChatScreen extends Component{
                             underlineColorAndroid="transparent" 
                             text={this.state.messageText}
                         />
-                        <TouchableOpacity style={{justifyContent:'center',alignItems:'center',marginLeft: 10,}}>
+                        <TouchableOpacity style={{justifyContent:'center',alignItems:'center',marginLeft: 10,}} onPress={()=>this.pickFile()}>
                             <Icon name="paperclip" style={{fontSize:25,color:'#7e7e7e'}} />
                         </TouchableOpacity>
                         <TouchableOpacity style={[{justifyContent:'center',alignItems:'center',marginLeft: 10,}]} disabled={this.state.disableBtn} onPress={()=>this.sendNewMessage()}>
@@ -251,6 +333,24 @@ class ChatScreen extends Component{
                         </TouchableOpacity>
                     </View>
                 </KeyboardAvoidingView>
+                {
+                    this.state.images.length>0 && 
+                    // <Modal visible={this.state.isModalOpened} transparent={true}>
+                    //     <ImageViewer imageUrls={this.state.images} index={this.state.currentImageIndex} enableSwipeDown={true}/>
+                    // </Modal>
+                    <PhotoView
+                        visible={this.state.isModalOpened}
+                        data={this.state.images}
+                        hideStatusBar={true}
+                        hideShareButton={true}
+                        initial={this.state.currentImageIndex}
+                        onDismiss={e => {
+                        // don't forgot set state back.
+                        this.setState({ isModalOpened: false });
+                        }}
+                    />
+                }
+                
             </SafeAreaView>
         );
     }

@@ -13,18 +13,7 @@ import { DashboardScreen,AboutScreen,ProfileScreen,PharmacyScreen,
     NotificationsScreen,SupportScreen, WebsiteScreen,TwitterScreen,FacebookScreen,
     ShareAppScreen,LogoutScreen,AppliedScreen
 } from './Screens';
-let userData = {
-    fname:'',
-    email:'',
-    user_img:require('../../assets/default-u-icon.png')
-};
-setUserData = async()=>{
-    await AsyncStorage.getItem('userData').then(val=>{
-        console.log(val);
-        userData = JSON.parse(val);
-    });
-}
-setUserData();
+import DrawerBody from './DrawerBody';
 import SplashScreen from '../Splash';
 import LocumReg1Screen from '../LocumReg1';
 import LocumReg2Screen from '../LocumReg2';
@@ -136,41 +125,9 @@ const drawerLabelStyle = {
             initialRouteName: 'Home',
             overlayColor: 'rgba(0, 0, 0, 1)',
             drawerWidth: 250,
-            contentComponent: props =>{
-                return (<SafeAreaView>
-                    <ScrollView style={{padding:0}}>
-                        {/* <TouchableOpacity style={{ paddingLeft: 20,justifyContent:'flex-end',position:'absolute',right:-50 }} onPress={props.navigation.closeDrawer}>
-                            <Icon name="bars" style={{ fontSize: 20, color: '#147dbf' }} />
-                        </TouchableOpacity> */}
-                        {/* <ImageBackground source={require('../../assets/defaul-p-bg.png')} style={{
-                            height:180,
-                            backgroundColor:'rgba(29, 123, 195, 0.8)',
-                            justifyContent:'flex-end',
-                            paddingBottom: 15,
-                            paddingHorizontal:10
-                        }}>
-                            <View>
-                                <Image source={{uri:userData.user_img}} style={{width:60,height:60,marginBottom:7,borderRadius:100}}/>
-                                <Text style={{color:'#feffff',fontFamily:'AvenirLTStd-Light',marginBottom:5}}>{userData.fname} {userData.lname}</Text>
-                                <Text style={{color:'#feffff',fontFamily:'AvenirLTStd-Light'}}>{userData.email}</Text>
-                            </View>
-                        </ImageBackground> */}
-                        <DrawerItems 
-                            {...props}
-                            //itemStyle={drawerItemStyle}
-                            //activeTintColor={'#1d7bc3'}
-                            //inactiveTintColor={'#151515'}
-                            activeBackgroundColor={'#FFFFFF'}
-                            itemsContainerStyle={{ paddingHorizontal: 0 }}
-                            //labelStyle={drawerLabelStyle}
-                            iconContainerStyle={{ marginHorizontal: 0, marginLeft: 16 }}
-                            
-                        />
-        
-                    </ScrollView>
-                </SafeAreaView>
-                );
-            }
+            contentComponent: props =>(
+                <DrawerBody props={props} />
+            )
                 
     });
 const Navigation = createStackNavigator({
@@ -255,7 +212,7 @@ const Navigation = createStackNavigator({
     }
 }, {
     headerMode: 'none',
-    initialRouteName: 'Splash',
+    initialRouteName: 'ETimeSheet',
     containerOptions: {
         style: {backgroundColor: '#147dbf',flex: 1}
     }

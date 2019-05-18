@@ -86,6 +86,9 @@
 		AFB8FE4B12614BC9A0A1B868 /* AvenirLTStd-Roman.otf in Resources */ = {isa = PBXBuildFile; fileRef = DF531B857CE34F87B785BA71 /* AvenirLTStd-Roman.otf */; };
 		330E848CBC5D420B87A2CA27 /* libRNDocumentPicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6984996D7621415D950AF902 /* libRNDocumentPicker.a */; };
 		7DA20055C28C413C96A5C6DE /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F2243D04BF9E413083A4FCCA /* libRNFS.a */; };
+		1B24419F31F24EA1AE3795B2 /* libMerryPhotoViewer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 45A5FABD8B11481CA140D66A /* libMerryPhotoViewer.a */; };
+		0CEBC10746B14177A08EF664 /* libRNCWebView.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E5EC9B724F434188AAD1DB94 /* libRNCWebView.a */; };
+		B94037819689423398B25943 /* libRSSignatureCapture.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E3358A745D1464C9C3BE44A /* libRSSignatureCapture.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -448,6 +451,12 @@
 		6984996D7621415D950AF902 /* libRNDocumentPicker.a */ = {isa = PBXFileReference; name = "libRNDocumentPicker.a"; path = "libRNDocumentPicker.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		528BC17BAD55427097191236 /* RNFS.xcodeproj */ = {isa = PBXFileReference; name = "RNFS.xcodeproj"; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		F2243D04BF9E413083A4FCCA /* libRNFS.a */ = {isa = PBXFileReference; name = "libRNFS.a"; path = "libRNFS.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		7611D4A59AB8431E9647B940 /* MerryPhotoViewer.xcodeproj */ = {isa = PBXFileReference; name = "MerryPhotoViewer.xcodeproj"; path = "../node_modules/@merryjs/photo-viewer/ios/MerryPhotoViewer.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		45A5FABD8B11481CA140D66A /* libMerryPhotoViewer.a */ = {isa = PBXFileReference; name = "libMerryPhotoViewer.a"; path = "libMerryPhotoViewer.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		29A96F56B2A24A259A3C5040 /* RNCWebView.xcodeproj */ = {isa = PBXFileReference; name = "RNCWebView.xcodeproj"; path = "../node_modules/react-native-webview/ios/RNCWebView.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		E5EC9B724F434188AAD1DB94 /* libRNCWebView.a */ = {isa = PBXFileReference; name = "libRNCWebView.a"; path = "libRNCWebView.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		AB1B3C487C6540359373F929 /* RSSignatureCapture.xcodeproj */ = {isa = PBXFileReference; name = "RSSignatureCapture.xcodeproj"; path = "../node_modules/react-native-signature-capture/ios/RSSignatureCapture.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		6E3358A745D1464C9C3BE44A /* libRSSignatureCapture.a */ = {isa = PBXFileReference; name = "libRSSignatureCapture.a"; path = "libRSSignatureCapture.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -483,6 +492,9 @@
 				DC366112C78A403D92292E88 /* libRNVectorIcons.a in Frameworks */,
 				330E848CBC5D420B87A2CA27 /* libRNDocumentPicker.a in Frameworks */,
 				7DA20055C28C413C96A5C6DE /* libRNFS.a in Frameworks */,
+				1B24419F31F24EA1AE3795B2 /* libMerryPhotoViewer.a in Frameworks */,
+				0CEBC10746B14177A08EF664 /* libRNCWebView.a in Frameworks */,
+				B94037819689423398B25943 /* libRSSignatureCapture.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -679,6 +691,9 @@
 				B460708AE6C2482E89E2303B /* RNVectorIcons.xcodeproj */,
 				341DD40F6E6F423CAA95199C /* RNDocumentPicker.xcodeproj */,
 				528BC17BAD55427097191236 /* RNFS.xcodeproj */,
+				7611D4A59AB8431E9647B940 /* MerryPhotoViewer.xcodeproj */,
+				29A96F56B2A24A259A3C5040 /* RNCWebView.xcodeproj */,
+				AB1B3C487C6540359373F929 /* RSSignatureCapture.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1393,6 +1408,9 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/psos.app/psos";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1404,6 +1422,9 @@
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-document-picker\ios\RNDocumentPicker",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
 				);
 			};
 			name = Debug;
@@ -1425,6 +1446,9 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/psos.app/psos";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1436,6 +1460,9 @@
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-document-picker\ios\RNDocumentPicker",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
 				);
 			};
 			name = Release;
@@ -1466,6 +1493,9 @@
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-document-picker\ios\RNDocumentPicker",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
 				);
 			};
 			name = Debug;
@@ -1495,6 +1525,9 @@
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-document-picker\ios\RNDocumentPicker",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
 				);
 			};
 			name = Release;
@@ -1524,6 +1557,9 @@
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1535,6 +1571,9 @@
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-document-picker\ios\RNDocumentPicker",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
 				);
 			};
 			name = Debug;
@@ -1564,6 +1603,9 @@
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1575,6 +1617,9 @@
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-document-picker\ios\RNDocumentPicker",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
 				);
 			};
 			name = Release;
@@ -1603,6 +1648,9 @@
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1614,6 +1662,9 @@
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-document-picker\ios\RNDocumentPicker",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
 				);
 			};
 			name = Debug;
@@ -1642,6 +1693,9 @@
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1653,6 +1707,9 @@
 					"$(SRCROOT)\..\node_modules\react-native-vector-icons\RNVectorIconsManager",
 					"$(SRCROOT)\..\node_modules\react-native-document-picker\ios\RNDocumentPicker",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
 				);
 			};
 			name = Release;

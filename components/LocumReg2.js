@@ -12,6 +12,7 @@ import Toast from 'react-native-simple-toast';
 import RNFS from 'react-native-fs';
 import { SERVER_URL,SENDER_ID } from '../Constants';
 import PushNotification from 'react-native-push-notification';
+
 const { height, width } = Dimensions.get('window');
 var myHeaders = new Headers();
 //myHeaders.set('Accept', 'application/json');
@@ -248,6 +249,7 @@ class LocumReg1Screen extends Component{
             this.setState({loading:false});
         });
     }
+    
     render(){
         const RemoveHiehgt = height - 66;
         var behavior = (Platform.OS == 'ios')?'padding':'';
@@ -615,6 +617,7 @@ class LocumReg1Screen extends Component{
                             />
                         </View>
                         {/* Accredited Ends */}
+                        
                         <View style={{justifyContent:'center',alignItems:'center',marginTop:26}}>
                             <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{
                                 this.setState({showTerms:true});

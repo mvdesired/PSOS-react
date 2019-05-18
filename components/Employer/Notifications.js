@@ -10,6 +10,12 @@ import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import { FlatList } from 'react-native-gesture-handler';
 import Header from '../Navigation/Header';
+var myHeaders = new Headers();
+myHeaders.set('Accept', 'application/json');
+//myHeaders.set('Content-Type', 'application/json');
+myHeaders.set('Cache-Control', 'no-cache');
+myHeaders.set('Pragma', 'no-cache');
+myHeaders.set('Expires', '0');
 const { height, width } = Dimensions.get('window');
 class Notifications extends Component{
     _isMounted = false;
@@ -17,11 +23,10 @@ class Notifications extends Component{
     constructor(props){
         super(props);
         this.state={
-            loading:false,
+            loading:true,
             isRefreshing:false,
             notiList:{},
         };
-        this.fetchNotifications = this._fetchNotifications.bind(this);
     }
     async setUserData(){
         let userDataStringfy = await AsyncStorage.getItem('userData');
@@ -32,14 +37,17 @@ class Notifications extends Component{
         this._isMounted = true;
         this.setUserData();
         setTimeout(()=>{
-            this.fetchNotifications();
+            this._fetchNotifications();
             this.clearTime = setInterval(()=>{
-                this.fetchNotifications();
+                this._fetchNotifications();
             },3000);
-        },500);
+        },1500);
     }
     _fetchNotifications = ()=>{
-        fetch(SERVER_URL+'fetch_notification?user_id='+this.state.userData.id)
+        fetch(SERVER_URL+'fetch_notification?user_id='+this.state.userData.id,{
+            method:'GET',
+            headers:myHeaders
+        })
         .then(res=>res.json())
         .then(response=>{
             if (this._isMounted) {
@@ -47,6 +55,7 @@ class Notifications extends Component{
                 if(response.status == 200){
                     this.setState({notiList:response.result});
                 }
+                this.setState({loading:false});
             }
         })
         .catch(err=>{
@@ -57,6 +66,27 @@ class Notifications extends Component{
         this._isMounted = false;
         clearTimeout(this.clearTime);
     }
+    clearNotification(){
+        clearTimeout(this.clearTime);
+        fetch(SERVER_URL+'clear_notification?user_id='+this.state.userData.id,{
+            method:'GET',
+            headers:myHeaders
+        })
+        .then(res=>res.json())
+        .then(response=>{
+            console.log(response);
+            if(response.status == 200){
+                this.setState({notiList:{}});
+            }
+            this.clearTime = setInterval(()=>{
+                this._fetchNotifications();
+            },3000);
+            Toast.show(response.message,Toast.SHORT);
+        })
+        .catch(err=>{
+
+        });
+    }
     render(){
         return(
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
@@ -66,7 +96,7 @@ class Notifications extends Component{
                         <Image source={require('../../assets/back-icon.png')} style={{width:10,height:19}}/>
                     </TouchableOpacity>
                     <Text style={{fontFamily:'AvenirLTStd-Roman',color:'#FFFFFF',fontSize:16}}>Notifications</Text>
-                    <TouchableOpacity style={{alignItems:'center',justifyContent:'center'}}>
+                    <TouchableOpacity style={{alignItems:'center',justifyContent:'center'}} onPress={()=>this.clearNotification()}>
                         <Text style={{color:'#FFFFFF'}}>Clear all</Text>
                     </TouchableOpacity>
                 </View>
@@ -96,7 +126,7 @@ class Notifications extends Component{
                         refreshControl={
                             <RefreshControl
                                 refreshing={this.state.isRefreshingShift}
-                                onRefresh={()=>{this.setState({isRefreshingShift:true}),this.fetchPharma()}}
+                                onRefresh={()=>{this.setState({isRefreshingShift:true}),this._fetchNotifications()}}
                                 title="Pull to refresh"
                                 colors={["#1d7bc3","red", "green", "blue"]}
                             />

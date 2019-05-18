@@ -1,8 +1,12 @@
 package com.psos;
 
 import android.app.Application;
-
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.facebook.imagepipeline.decoder.SimpleProgressiveJpegConfig;
 import com.facebook.react.ReactApplication;
+import com.rssignaturecapture.RSSignatureCapturePackage;
+import com.merryjs.PhotoViewer.MerryPhotoViewPackage;
 import com.rnfs.RNFSPackage;
 import com.reactnativedocumentpicker.ReactNativeDocumentPicker;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
@@ -31,6 +35,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RSSignatureCapturePackage(),
+            new MerryPhotoViewPackage(),
             new RNFSPackage(),
             new ReactNativeDocumentPicker(),
             new ReactNativePushNotificationPackage(),
@@ -57,5 +63,11 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+    ImagePipelineConfig config = ImagePipelineConfig.newBuilder(this)
+    .setProgressiveJpegConfig(new SimpleProgressiveJpegConfig())
+    .setResizeAndRotateEnabledForNetwork(true)
+    .setDownsampleEnabled(true)
+    .build();
+    Fresco.initialize(this, config);
   }
 }

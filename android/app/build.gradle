@@ -137,6 +137,8 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-signature-capture')
+    compile project(':@merryjs_photo-viewer')
     compile project(':react-native-fs')
     compile project(':react-native-document-picker')
     compile project(':react-native-push-notification')
