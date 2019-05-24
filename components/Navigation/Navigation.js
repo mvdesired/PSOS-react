@@ -212,7 +212,7 @@ const Navigation = createStackNavigator({
     }
 }, {
     headerMode: 'none',
-    initialRouteName: 'ETimeSheet',
+    initialRouteName: 'Splash',
     containerOptions: {
         style: {backgroundColor: '#147dbf',flex: 1}
     }

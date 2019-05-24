@@ -25,6 +25,7 @@
     "react-native-image-picker": "^0.28.0",
     "react-native-lazyload": "^1.1.0",
     "react-native-permissions": "^1.1.1",
+    "react-native-phone-input": "^0.2.1",
     "react-native-popup-dialog": "^0.16.6",
     "react-native-push-notification": "^3.1.3",
     "react-native-signature-capture": "^0.4.9",

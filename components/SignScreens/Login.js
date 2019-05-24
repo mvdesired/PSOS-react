@@ -7,6 +7,7 @@ import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import PushNotification from 'react-native-push-notification';
+import PhoneInput from 'react-native-phone-input'
 export default class Login extends Component{
     constructor(props){
         super(props);
@@ -95,7 +96,7 @@ export default class Login extends Component{
         fetch(SERVER_URL+'user_login',{
             method:'POST',
             headers: {
-                Accept: 'application/json',
+                //Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(jsonArray)
@@ -104,7 +105,7 @@ export default class Login extends Component{
         .then((response)=>{
             console.log(response);
             if(response.status == 200){
-                Toast.show(''+response.result.otp,Toast.SHORT);
+                //Toast.show(''+response.result.otp,Toast.SHORT);
                 this.setState({otpField:true,serverOtp:response.result.otp,userId:response.result.id});
             }
             else{
@@ -174,11 +175,7 @@ export default class Login extends Component{
                 {
                     !this.state.otpField && 
                     <View 
-                        style={{
-                        borderRadius: 35,
-                        borderStyle:"dashed",
-                        borderWidth: 3,
-                        borderColor: '#147dbf',
+                        style={{borderRadius: 35,borderStyle:"dashed",borderWidth: 3,borderColor: '#147dbf',
                         width:'100%',
                         paddingHorizontal: 12,
                         paddingVertical: 6,
@@ -186,9 +183,23 @@ export default class Login extends Component{
                         marginBottom: 22.5,
                         justifyContent:'center',
                         alignItems: 'center',
+                        marginTop:10
                         }}
                     >
-                        <Image source={require('../../assets/envelope.png')} width={18} height={14} style={{width:18,height:14}}/>
+                        <PhoneInput
+                        ref={(ref) => { this.mobileNumber = ref; }}
+                        style={{
+                            flex:1,
+                            textAlign:'left',
+                            paddingLeft: 10,
+                            height:40,
+                            fontSize:17,
+                            fontFamily:'AvenirLTStd-Medium'
+                        }} 
+                        onChangePhoneNumber={(number)=>this.setState({mobileNumber:number})}
+                        value={this.state.mobileNumber}
+                        />
+                        {/* <Image source={require('../../assets/envelope.png')} width={18} height={14} style={{width:18,height:14}}/>
                         <TextInput 
                         style={{
                             flex:1,
@@ -208,7 +219,7 @@ export default class Login extends Component{
                         placeholderTextColor="#147dbf" 
                         underlineColorAndroid="transparent" 
                         value={this.state.mobileNumber}
-                        />
+                        /> */}
                     </View>
                 }
                     
@@ -265,6 +276,14 @@ export default class Login extends Component{
                         <TouchableOpacity style={MainStyles.psosBtn} onPress={()=>{this.signIn()}}>
                             <Text style={MainStyles.psosBtnText}>Login</Text>
                         </TouchableOpacity>
+                        { 
+                            this.state.otpField && 
+                            <TouchableOpacity style={{marginTop:10}} onPress={()=>{
+                                this.setState({otpField:false});
+                            }}>
+                                <Text style={{color:'#147dbf',fontFamily:'AvenirLTStd-Roman'}}>Previous</Text>
+                            </TouchableOpacity>
+                        }
                     </View>
                     {/* <View style={{
                         marginTop:25

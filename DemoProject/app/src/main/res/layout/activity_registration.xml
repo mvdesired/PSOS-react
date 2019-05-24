@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="top"
+    android:orientation="vertical"
+    tools:context=".RegistrationActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginBottom="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_launcher_background"/>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/full_name_text_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/full_name_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords"
+                    android:imeOptions="actionNext"
+                    android:maxLines="1"
+                    android:textSize="18dp"
+                    android:hint="Full Name"
+                    android:textColorHint="#000000"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/email_text_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/email_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:imeOptions="actionNext"
+                    android:maxLines="1"
+                    android:textSize="18dp"
+                    android:hint="Email Id"
+                    android:textColorHint="#000000"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/password_text_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/password_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusableInTouchMode="true"
+                    android:inputType="textPassword"
+                    android:imeOptions="actionUnspecified"
+                    android:maxLines="1"
+                    android:textSize="18dp"
+                    android:hint="password"
+                    android:textColorHint="#000000"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/confirm_password_text_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/confirm_password_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusableInTouchMode="true"
+                    android:inputType="textPassword"
+                    android:imeOptions="actionUnspecified"
+                    android:maxLines="1"
+                    android:textSize="18dp"
+                    android:hint="Confirm Password"
+                    android:textColorHint="#000000"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/mobile_text_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/mobile_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusableInTouchMode="true"
+                    android:inputType="textPassword"
+                    android:imeOptions="actionUnspecified"
+                    android:maxLines="1"
+                    android:textSize="18dp"
+                    android:hint="Mobile Number"
+                    android:textColorHint="#000000"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18dp"
+                android:text="DRIVING LICENSE / EXPIRY DATE"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/ic_launcher_background" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/date_text_input_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/date_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusableInTouchMode="true"
+                        android:inputType="textPassword"
+                        android:imeOptions="actionUnspecified"
+                        android:maxLines="1"
+                        android:textSize="18dp"
+                        android:hint="dd/mm/yyyy"
+                        android:textColorHint="#000000"/>
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18dp"
+                android:text="ID PROF"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/ic_launcher_background" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/date_text_input_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/date_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusableInTouchMode="true"
+                        android:inputType="textPassword"
+                        android:imeOptions="actionUnspecified"
+                        android:maxLines="1"
+                        android:textSize="18dp"
+                        android:hint="dd/mm/yyyy"
+                        android:textColorHint="#000000"/>
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/remember_me_check_box"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:buttonTint="@color/colorPrimaryDark"
+                    android:textSize="18dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="18dp"
+                    android:text="I Accept your Term & Condition"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/login_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:layout_gravity="center_horizontal"
+                android:shadowColor="@android:color/transparent"
+                android:background="@drawable/button_background"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:inputType="text"
+                android:text="Sign Up"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="#3DB3C7"
+                    android:textSize="20sp"
+                    android:text="Already have an account?"/>
+
+                <TextView
+                    android:id="@+id/register_link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center_horizontal"
+                    android:textColor="#0036FF"
+                    android:textSize="20sp"
+                    android:text="Sign In"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
+
