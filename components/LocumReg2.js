@@ -257,7 +257,7 @@ class LocumReg1Screen extends Component{
             <SafeAreaView style={{flexDirection:'column',flex:1}}>
                 <Loader loading={this.state.loading} />
                 <View style={{paddingTop: 15,alignItems:'center',justifyContent:'center'}}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}} style={{position:'absolute',left:8,top:8,paddingHorizontal:5,paddingVertical:15,width:10,height:19}}>
+                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}} style={{position:'absolute',left:8,top:8,paddingLeft:10,paddingRight:15,paddingVertical:15,}}>
                         <Image source={require('../assets/blue-back-icon.png')} style={{width:10,height:19}}/>
                     </TouchableOpacity>
                     <Image source={require('../assets/web-logo.png')} style={{width:200,height:34}}/>

@@ -20,6 +20,9 @@ class Registration extends Component{
         return(
             <ImageBackground source={require('../assets/splash-bg.png')} style={{flex:1,backgroundColor:'#FFFFFF',justifyContent:'center',alignItems:'center'}}>
                 <Loader loading={this.state.loading} />
+                <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}} style={{position:'absolute',left:8,top:8,paddingLeft:10,paddingRight:15,paddingVertical:15,}}>
+                    <Image source={require('../assets/blue-back-icon.png')} style={{width:10,height:19}}/>
+                </TouchableOpacity>
                 <View style={{
                 flex:1,justifyContent: 'center',alignItems:'center',
                 width:300

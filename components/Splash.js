@@ -44,7 +44,7 @@ class SplashScreen extends Component{
                 <View style={{
                 flex:1,justifyContent: 'center',alignItems:'center'
                 }}>
-                    <Image source={require('../assets/psos-logo.png')} style={{width:180,height:131}}/>
+                    <Image source={require('../assets/psos-logo.png')} style={{width:250,height:181}}/>
                 </View>
                 <View style={{position:'absolute',
                     alignItems:'center',
