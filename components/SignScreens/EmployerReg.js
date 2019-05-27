@@ -8,6 +8,7 @@ import countryList from 'react-select-country-list';
 import Dialog, { SlideAnimation } from "react-native-popup-dialog";
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
+import PhoneInput from 'react-native-phone-input'
 const { height, width } = Dimensions.get('window');
 class EmployerScreen extends Component{
     constructor(props) {
