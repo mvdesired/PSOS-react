@@ -101,7 +101,8 @@ class EmployerScreen extends Component{
                 Toast.show(response.message,Toast.SHORT);
                 this.saveDetails('isUserLoggedIn',"true");
                 this.saveDetails('userData',JSON.stringify(response.result));
-                navigation.navigate('Home');
+                this.setState({showTerms:false});
+                this.props.navigation.navigate('Home');
             }
             else{
                 Toast.show(response.message,Toast.SHORT);
@@ -344,7 +345,7 @@ class EmployerScreen extends Component{
                             alignItems:'center',
                             marginTop:26
                         }}>
-                            <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.singup()}}>
+                            <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.setState({showTerms:true});}}>
                                 <Text style={MainStyles.psosBtnText}>Submit</Text>
                             </TouchableOpacity>
                         </View>
@@ -406,10 +407,7 @@ class EmployerScreen extends Component{
                         </View>
                     </ScrollView>
                     <View style={MainStyles.modalFooter}>
-                        <TouchableOpacity style={[MainStyles.psosBtn, MainStyles.psosBtnXm]} onPress={()=>{
-                            this.setState({showTerms:false});
-                            this.props.navigation.navigate('Home');
-                        }}>
+                        <TouchableOpacity style={[MainStyles.psosBtn, MainStyles.psosBtnXm]} onPress={()=>{this.singup()}}>
                             <Text style={[MainStyles.psosBtnText,MainStyles.psosBtnXsText]}>I Agree</Text>
                         </TouchableOpacity>
                     </View>

@@ -89,6 +89,7 @@
 		1B24419F31F24EA1AE3795B2 /* libMerryPhotoViewer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 45A5FABD8B11481CA140D66A /* libMerryPhotoViewer.a */; };
 		0CEBC10746B14177A08EF664 /* libRNCWebView.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E5EC9B724F434188AAD1DB94 /* libRNCWebView.a */; };
 		B94037819689423398B25943 /* libRSSignatureCapture.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E3358A745D1464C9C3BE44A /* libRSSignatureCapture.a */; };
+		D73E36B9939E4D19BEC6FF51 /* libRNShare.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A91DE68D83C04C939805B472 /* libRNShare.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -457,6 +458,8 @@
 		E5EC9B724F434188AAD1DB94 /* libRNCWebView.a */ = {isa = PBXFileReference; name = "libRNCWebView.a"; path = "libRNCWebView.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		AB1B3C487C6540359373F929 /* RSSignatureCapture.xcodeproj */ = {isa = PBXFileReference; name = "RSSignatureCapture.xcodeproj"; path = "../node_modules/react-native-signature-capture/ios/RSSignatureCapture.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		6E3358A745D1464C9C3BE44A /* libRSSignatureCapture.a */ = {isa = PBXFileReference; name = "libRSSignatureCapture.a"; path = "libRSSignatureCapture.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		63E476A939CF4D4F8B7B9A6D /* RNShare.xcodeproj */ = {isa = PBXFileReference; name = "RNShare.xcodeproj"; path = "../node_modules/react-native-share/ios/RNShare.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		A91DE68D83C04C939805B472 /* libRNShare.a */ = {isa = PBXFileReference; name = "libRNShare.a"; path = "libRNShare.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -495,6 +498,7 @@
 				1B24419F31F24EA1AE3795B2 /* libMerryPhotoViewer.a in Frameworks */,
 				0CEBC10746B14177A08EF664 /* libRNCWebView.a in Frameworks */,
 				B94037819689423398B25943 /* libRSSignatureCapture.a in Frameworks */,
+				D73E36B9939E4D19BEC6FF51 /* libRNShare.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -694,6 +698,7 @@
 				7611D4A59AB8431E9647B940 /* MerryPhotoViewer.xcodeproj */,
 				29A96F56B2A24A259A3C5040 /* RNCWebView.xcodeproj */,
 				AB1B3C487C6540359373F929 /* RSSignatureCapture.xcodeproj */,
+				63E476A939CF4D4F8B7B9A6D /* RNShare.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1411,6 +1416,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1425,6 +1431,7 @@
 					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-share\ios",
 				);
 			};
 			name = Debug;
@@ -1449,6 +1456,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1463,6 +1471,7 @@
 					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-share\ios",
 				);
 			};
 			name = Release;
@@ -1496,6 +1505,7 @@
 					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-share\ios",
 				);
 			};
 			name = Debug;
@@ -1528,6 +1538,7 @@
 					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-share\ios",
 				);
 			};
 			name = Release;
@@ -1560,6 +1571,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1574,6 +1586,7 @@
 					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-share\ios",
 				);
 			};
 			name = Debug;
@@ -1606,6 +1619,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1620,6 +1634,7 @@
 					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-share\ios",
 				);
 			};
 			name = Release;
@@ -1651,6 +1666,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1665,6 +1681,7 @@
 					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-share\ios",
 				);
 			};
 			name = Debug;
@@ -1696,6 +1713,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1710,6 +1728,7 @@
 					"$(SRCROOT)\..\node_modules\@merryjs\photo-viewer\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 					"$(SRCROOT)\..\node_modules\react-native-signature-capture\ios/**",
+					"$(SRCROOT)\..\node_modules\react-native-share\ios",
 				);
 			};
 			name = Release;

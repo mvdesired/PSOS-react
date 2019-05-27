@@ -8,6 +8,12 @@ import Loader from '../Loader';
 import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
+var myHeaders = new Headers();
+myHeaders.set('Accept', 'application/json');
+//myHeaders.set('Content-Type', 'application/json');
+myHeaders.set('Cache-Control', 'no-cache');
+myHeaders.set('Pragma', 'no-cache');
+myHeaders.set('Expires', '0');
 const { height, width } = Dimensions.get('window');
 class NewLocumShift extends Component{
     constructor(props) {
@@ -34,10 +40,7 @@ class NewLocumShift extends Component{
     fetchPharmacyList = ()=>{
         fetch(SERVER_URL+'pharmacy_list?user_id='+this.state.userData.id,{
             method:'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            }
+            headers:myHeaders
         })
         .then(res=>res.json())
         .then(response=>{
@@ -66,7 +69,7 @@ class NewLocumShift extends Component{
                     alignItems:'center',
                     justifyContent:'center'
                 }}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}} style={{position:'absolute',left:8,top:8,paddingHorizontal:5,paddingVertical:15,width:10,height:19}}>
+                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}} style={{position:'absolute',left:8,top:8,paddingLeft:5,paddingRight:15,paddingVertical:15}}>
                         <Image source={require('../../assets/blue-back-icon.png')} style={{width:10,height:19}}/>
                     </TouchableOpacity>
                     <Image source={require('../../assets/web-logo.png')} style={{width:200,height:34}}/>

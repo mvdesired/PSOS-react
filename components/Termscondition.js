@@ -1,6 +1,7 @@
 import React,{Component} from 'react';
 import {View,ImageBackground, Image,Text, StyleSheet,Dimensions,ScrollView, TouchableOpacity,SafeAreaView } from 'react-native';
 import MainStyles from './Styles';
+import Header from './Navigation/Header';
 const { height, width } = Dimensions.get('window');
 class Termscondition  extends Component{
     constructor(props) {
@@ -14,18 +15,7 @@ class Termscondition  extends Component{
         return (
 
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
-               
-                <View style={MainStyles.navHeaderWrapper}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}}>
-                        <Image source={require('../assets/back-icon.png')} style={{width:10,height:19}}/>
-                    </TouchableOpacity>
-                    
-                    <Text style={{fontFamily:'AvenirLTStd-Roman',color:'#FFFFFF',fontSize:16,marginRight:130,flexWrap:'wrap'}}>Term's / Conditions</Text>
-                    <View style={{flexDirection:'row',marginLeft:10}}>
-                        <TouchableOpacity>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+               <Header pageName="Term's / Conditions" />
                 <ScrollView style={{height:RemoveHiehgt,flex:1,paddingHorizontal:15,backgroundColor:'#FFFFFF',marginTop:10}}>
                     
                 <View style={{justifyContent: 'center'}}>

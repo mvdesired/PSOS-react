@@ -1,6 +1,7 @@
 import React,{Component} from 'react';
 import {View,ImageBackground, Image,Text,StyleSheet,TextInput,Dimensions,ScrollView, TouchableOpacity,SafeAreaView } from 'react-native';
 import MainStyles from './Styles';
+import Header from './Navigation/Header';
 const { height, width } = Dimensions.get('window');
 class Support  extends Component{
     constructor(props) {
@@ -16,21 +17,8 @@ class Support  extends Component{
         return (
 
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
-
-            <View style={MainStyles.navHeaderWrapper}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}}>
-                        <Image source={require('../assets/back-icon.png')} style={{width:10,height:19}}/>
-                    </TouchableOpacity>
-                    
-                    <Text style={{fontFamily:'AvenirLTStd-Roman',color:'#FFFFFF',fontSize:16}}>Support</Text>
-                    <View style={{flexDirection:'row',alignItems:'center'}}>
-                        <TouchableOpacity>
-                        </TouchableOpacity>
-                    </View>
-            </View>
-
+              <Header pageName="Support" />
                 <ScrollView style={{height:RemoveHiehgt,flex:1}}>
-                  
                 <View style={{paddingVertical:2,backgroundColor:'#FFFFFF',marginTop:1,paddingHorizontal:10}}>
                   <View style={{justifyContent: 'center'}}>
                     <Text style={{fontFamily:'AvenirLTStd-Medium',fontSize:17,color:'#151515',marginTop:2,flexWrap:'wrap'}}>How can we help you ?</Text>

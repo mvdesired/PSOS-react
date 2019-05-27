@@ -10,6 +10,9 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import ImagePicker from 'react-native-image-picker';
 import Header from '../Navigation/Header';
 const { height, width } = Dimensions.get('window');
+var myHeaders = new Headers();
+myHeaders.set('Accept', 'application/json');
+myHeaders.set('Content-Type', 'application/json');
 class Profile extends Component{
     constructor(props) {
         super(props);
@@ -54,7 +57,7 @@ class Profile extends Component{
             maxWidth:400,
             maxHeight:400,
             mediaType:'photo',
-            quality:0.7,
+            quality:1,
             allowsEditing:true,
           };
           
@@ -63,7 +66,7 @@ class Profile extends Component{
            * The second arg is the callback which sends object: response (more info in the API Reference)
            */
           ImagePicker.showImagePicker(options, (response) => {
-            console.log('Response = ', response);
+            //console.log('Response = ', response);
           
             if (response.didCancel) {
               console.log('User cancelled image picker');
@@ -99,12 +102,24 @@ class Profile extends Component{
         formdata.append('state',this.state.state);
         formdata.append('postal',this.state.postal);
         formdata.append('country',this.state.country);
+        formdata.append('user_img',this.state.fileData);
+        var jsonArray = {
+            user_id:this.state.userData.id,
+            fname:this.state.fname,
+            lname:this.state.lname,
+            address:this.state.address,
+            city:this.state.city,
+            state:this.state.state,
+            postal:this.state.postal,
+            country:this.state.country,
+            user_img:this.state.fileData
+        }
         fetch(SERVER_URL+'update_emp_profile',{
             method:'POST',
-            headers: {
-                Accept: 'application/json',
-            },
-            body: formdata
+            credentials: 'same-origin',
+            mode: 'same-origin',
+            headers:myHeaders,
+            body: JSON.stringify(jsonArray)
         })
         .then((res)=>res.json())
         .then((response)=>{
@@ -139,21 +154,23 @@ class Profile extends Component{
                                 this.state.user_img != '' && 
                                 <ImageBackground  source={{uri:this.state.user_img}} style={{overflow:'hidden',width:100,height:100,borderRadius: 100}}></ImageBackground>
                             }
-                            <TouchableOpacity style={{
-                                    width:25,
-                                    height:25,
-                                    backgroundColor:'#FFFFFF',
-                                    position: 'absolute',
-                                    right:1,
-                                    bottom:1,
-                                    borderWidth: 2,
-                                    borderColor: '#FFFFFF',
-                                    borderRadius:100,
-                                    alignItems:'center',
-                                    justifyContent: 'center',
-                            }} onPress={()=>{this.pickFile()}}>
-                                <Image source={require('../../assets/camera-icon.png')} style={{width:15,height:14}}/>
-                            </TouchableOpacity>
+                            {this.state.isEditing == true &&
+                                <TouchableOpacity style={{
+                                        width:25,
+                                        height:25,
+                                        backgroundColor:'#FFFFFF',
+                                        position: 'absolute',
+                                        right:1,
+                                        bottom:1,
+                                        borderWidth: 2,
+                                        borderColor: '#FFFFFF',
+                                        borderRadius:100,
+                                        alignItems:'center',
+                                        justifyContent: 'center',
+                                }} onPress={()=>{this.pickFile()}}>
+                                    <Image source={require('../../assets/camera-icon.png')} style={{width:15,height:14}}/>
+                                </TouchableOpacity>
+                            }
                         </View>
                         <View style={{alignItems:'center',marginLeft: 15}}>
                             <View style={{alignItems:'center',flexDirection:'row'}}>

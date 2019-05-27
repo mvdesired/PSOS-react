@@ -2,6 +2,7 @@ import React,{Component} from 'react';
 import {View,ImageBackground, Image,Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Loader from './Loader';
 import MainStyles from './Styles';
+import Header from './Navigation/Header';
 class AboutScreen extends Component{
     constructor(props) {
         super(props);
@@ -14,16 +15,7 @@ class AboutScreen extends Component{
         return (
             <ImageBackground source={require('../assets/splash-bg.png')} style={{flex:1,backgroundColor:'#FFFFFF'}}>
                 <Loader loading={this.state.loading} />
-                <View style={MainStyles.navHeaderWrapper}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}}>
-                        <Image source={require('../assets/back-icon.png')} style={{width:10,height:19}}/>
-                    </TouchableOpacity>
-                    <Text style={{fontFamily:'AvenirLTStd-Roman',color:'#FFFFFF',fontSize:16}}>About</Text>
-                    <View style={{flexDirection:'row',alignItems:'center'}}>
-                        <TouchableOpacity>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                <Header pageName="About" />
                 <View style={{flex:1,justifyContent: 'center',alignItems:'center'}}>
                     <Image source={require('../assets/web-logo.png')} style={{width:280,height:48}}/>
                     <Text style={{color:'#676767',marginTop:40,flexWrap:'wrap',width:80,textAlign:'center'}}>Version 2.0.03</Text>

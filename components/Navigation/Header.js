@@ -52,7 +52,7 @@ class Header extends Component{
     render(){
         return(
             <View style={MainStyles.navHeaderWrapper}>
-                <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}} style={{paddingHorizontal:5,paddingVertical:15}}>
+                <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}} style={{paddingLeft:5,paddingRight:15,paddingVertical:15}}>
                     <Image source={require('../../assets/back-icon.png')} style={{width:10,height:19}}/>
                 </TouchableOpacity>
                 <Text style={{fontFamily:'AvenirLTStd-Roman',color:'#FFFFFF',fontSize:16}}>{this.props.pageName}</Text>

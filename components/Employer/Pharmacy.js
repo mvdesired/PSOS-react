@@ -11,7 +11,12 @@ import { SERVER_URL } from '../../Constants';
 import { FlatList } from 'react-native-gesture-handler';
 import Header from '../Navigation/Header';
 const { height, width } = Dimensions.get('window');
-
+var myHeaders = new Headers();
+myHeaders.set('Accept', 'application/json');
+//myHeaders.set('Content-Type', 'application/json');
+myHeaders.set('Cache-Control', 'no-cache');
+myHeaders.set('Pragma', 'no-cache');
+myHeaders.set('Expires', '0');
 class Pharmacy extends Component{
     _isMounted = false;
     clearTime = '';
@@ -35,9 +40,9 @@ class Pharmacy extends Component{
         this.setUserData();
         setTimeout(()=>{
             this.fetchPharma();
-            this.clearTime = setInterval(()=>{
-                this.fetchPharma();
-            },3000);
+            /*this.clearTime = setInterval(()=>{
+                //this.fetchPharma();
+            },3500);*/
         },1500);
         
     }
@@ -84,7 +89,7 @@ class Pharmacy extends Component{
         })
         .then(res=>res.json())
         .then(response=>{
-            this.setState({loading:false,});
+            this.setState({loading:false,currentTab:'list'});
             Toast.show(response.message,Toast.SHORT);
             this.setState({bname:'',abn:'',fname:'',lname:'',bEmail:'',bPhone:'',bFax:'',mNumber:''});
             this.fetchPharma();
@@ -96,16 +101,18 @@ class Pharmacy extends Component{
         });
     }
     _fetchPharma = ()=>{
-        console.log(this.state.userData.id);
-        fetch(SERVER_URL+'pharmacy_list?user_id='+this.state.userData.id)
+        fetch(SERVER_URL+'pharmacy_list?user_id='+this.state.userData.id,{
+            method:'GET',
+            headers:myHeaders
+        })
         .then(res=>res.json())
         .then(response=>{
-            console.log(response);
             if(response.status == 200){
                 this.setState({pharmaList:response.result});
                 
             }
-            Toast.show(response.message,Toast.SHORT);
+            this.setState({isRefreshingShift:false});
+            //Toast.show(response.message,Toast.SHORT);
         })
         .catch(err=>{
 
@@ -128,7 +135,7 @@ class Pharmacy extends Component{
     }
     componentWillUnmount(){
         this._isMounted = false;
-        clearTimeout(this.clearTime);
+        //clearTimeout(this.clearTime);
     }
     render(){
         const RemoveHiehgt = height - 88;
@@ -223,6 +230,7 @@ class Pharmacy extends Component{
                             <TextInput 
                                 style={[MainStyles.TInput]} 
                                 placeholder="E-mail"
+                                keyboardType={"email-address"}
                                 returnKeyType={"next"} 
                                 ref={(input) => { this.bEmail = input; }} 
                                 blurOnSubmit={false}
@@ -241,6 +249,7 @@ class Pharmacy extends Component{
                             <TextInput 
                                 style={[MainStyles.TInput]} 
                                 placeholder="Phone"
+                                keyboardType={"phone-pad"}
                                 returnKeyType={"next"} 
                                 ref={(input) => { this.bPhone = input; }} 
                                 blurOnSubmit={false}
@@ -260,6 +269,7 @@ class Pharmacy extends Component{
                                 style={[MainStyles.TInput]} 
                                 placeholder="Fax"
                                 returnKeyType={"next"} 
+                                keyboardType={"name-phone-pad"}
                                 ref={(input) => { this.bFax = input; }} 
                                 blurOnSubmit={false}
                                 onChangeText={(text)=>this.setState({bFax:text})} 
@@ -271,13 +281,14 @@ class Pharmacy extends Component{
                             <View style={{marginTop:15}}></View>
                             <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                                 Mobile Number
-                                <Text style={{color:'#ee1b24'}}>*</Text>
+                                {/* <Text style={{color:'#ee1b24'}}>*</Text> */}
                             </Text>
                             <View style={{marginTop:10}}></View>
                             <TextInput 
                                 style={[MainStyles.TInput]} 
                                 placeholder="Number"
                                 returnKeyType={"next"} 
+                                keyboardType={"phone-pad"}
                                 ref={(input) => { this.mNumber = input; }} 
                                 blurOnSubmit={false}
                                 onChangeText={(text)=>this.setState({mNumber:text})} 

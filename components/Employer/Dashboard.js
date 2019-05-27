@@ -38,6 +38,9 @@ class Dashboard extends Component{
     componentDidMount = ()=>{
         this._isMounted = true;
         //this.onFocus();
+        if(this.state.userData.user_type == 'employer'){
+            this.fetchTotals();
+        }
         this.listener = this.props.navigation.addListener("didFocus", this.onFocus);
     }
     onFocus =()=>{
@@ -48,9 +51,6 @@ class Dashboard extends Component{
             }
             this.fetchNotifications();
             this.clearTime = setInterval(()=>{
-                if(this.state.userData.user_type == 'employer'){
-                    this.fetchTotals();
-                }
                 this.fetchNotifications();
             },3000);
         },1500);
@@ -61,11 +61,9 @@ class Dashboard extends Component{
             headers: myHeaders
         })
         .then(res=>res.json())
-        .then(response=>{
-            if(response.status == 200){
-                Toast.show(response.message,Toast.SHORT);
-                this.setState({pharmacyList:response.result});
-            }
+        .then(r=>{
+            console.log(r);
+            this.setState({totalJobs:r.jobs,totalPharmacy:r.pharmacy,totalApplications:r.applicants,totalBookedLocums:r.locum_booked});
             this.setState({loading:false});
         })
         .catch((err)=>{
