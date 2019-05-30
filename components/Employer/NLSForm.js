@@ -8,6 +8,7 @@ import Loader from '../Loader';
 import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
+import DateTimePicker from "react-native-modal-datetime-picker";
 const { height, width } = Dimensions.get('window');
 class NLSFormScreen extends Component{
     constructor(props) {
@@ -16,12 +17,9 @@ class NLSFormScreen extends Component{
         var travelList = ['Travel and accommodation offered','Travel and accommodation NOT offered','Travel and accommodation may be negotiated'];
         this.state={
             loading:false,
+            isStartDateTimePickerVisible:false,
+            isEndDateTimePickerVisible:false,
             pharm_id:this.props.navigation.getParam("pharm_id"),
-            timHours:{},
-            timeMinutes:{},
-            dateDays:{},
-            dateMonth:{},
-            dateYears:{},
             startDay:'01',
             startMonth:'01',
             startYear:'2019',
@@ -47,35 +45,13 @@ class NLSFormScreen extends Component{
     }
     componentWillMount =()=>{
         this.setUserData();
-        var timHours = [];
-        var timeMinutes = [];
-        var dateDays = [];
-        var dateMonth = [];
-        var dateYears = [];
-        for(var i = 1;i<25;i++){
-            var k = i;
-            if(i < 10){k = '0'+i;}
-            timHours.push(''+k);
-        }
-        for(var i = 1;i<61;i++){
-            var k = i;
-            if(i < 10){k = '0'+i;}
-            timeMinutes.push(''+k);
-        }
-        for(var i = 1;i<32;i++){
-            var k = i;
-            if(i < 10){k = '0'+i;}
-            dateDays.push(''+k);
-        }
-        for(var i = 1;i<13;i++){
-            var k = i;
-            if(i < 10){k = '0'+i;}
-            dateMonth.push(''+k);
-        }
-        for(var i = 2019;i<2031;i++){
-            dateYears.push(''+i);
-        }
-        this.setState({timHours,timeMinutes,dateDays,dateMonth,dateYears});
+        var currentDate = new Date();
+        var startDay = ''+currentDate.getDate();
+        var startMonth = ''+(currentDate.getMonth()+1);
+        var startYear = ''+currentDate.getFullYear();
+        if(startDay < 10){startDay = '0'+startDay;}
+        if(startMonth < 10){startMonth = '0'+startMonth;}
+        this.setState({currentDate,startDay,startMonth,startYear});
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         var parampharm_id = this.props.navigation.getParam("pharm_id");
@@ -165,9 +141,10 @@ class NLSFormScreen extends Component{
         })
         .then(res=>res.json())
         .then(response=>{
-            this.setState({loading:false});
+            this.setState({loading:false,shiftName:''});
             Toast.show(response.message,Toast.SHORT);
-            this.props.navigation.navigate('JobListE');
+
+            //this.props.navigation.navigate('JobListE');
         })
         .catch(err=>{
             this.setState({loading:false});
@@ -175,6 +152,44 @@ class NLSFormScreen extends Component{
             Toast.show('Something went wrong',Toast.SHORT);
         });
     }
+    showStartDateTimePicker = () => {
+        this.setState({ isStartDateTimePickerVisible: true });
+    };
+    hideStartDateTimePicker = () => {
+        this.setState({ isStartDateTimePickerVisible: false });
+    };
+    handleStartDatePicked = date => {
+        var changeDate = new Date(date);
+        var dd = ''+changeDate.getDate();
+        var mm = ''+(changeDate.getMonth()+1);
+        var yy = ''+changeDate.getFullYear();
+        if(dd < 10){dd = '0'+dd;}
+        if(mm < 10){mm = '0'+mm;}
+        this.setState({
+            startDay:dd,startMonth:mm,startYear:yy
+        });
+        console.log("A date has been picked: ", dd,mm,yy);
+        this.hideDateTimePicker();
+    };
+    showEndDateTimePicker = () => {
+        this.setState({isEndDateTimePickerVisible:true});
+    };
+    hideEndDateTimePicker = () => {
+        this.setState({isEndDateTimePickerVisible:false});
+    };
+    handleEndDatePicked = date => {
+        var changeDate = new Date(date);
+        var dd = ''+changeDate.getDate();
+        var mm = ''+(changeDate.getMonth()+1);
+        var yy = ''+changeDate.getFullYear();
+        if(dd < 10){dd = '0'+dd;}
+        if(mm < 10){mm = '0'+mm;}
+        this.setState({
+            startDay:dd,startMonth:mm,startYear:yy
+        });
+        console.log("A date has been picked: ", dd,mm,yy);
+        this.hideDateTimePicker();
+    };
     render(){
         const RemoveHiehgt = height - 52;
         var behavior = (Platform.OS == 'ios')?'padding':'';
@@ -209,18 +224,8 @@ class NLSFormScreen extends Component{
                         </View>
                         {/* Locum Registration Heading Ends */}
                         <Image source={require('../../assets/dashed-border.png')} width={'100%'} height={2} />
-                        <View style={{
-                            justifyContent:'center',
-                            alignItems: 'center',
-                            paddingVertical:18,
-                            flexDirection: 'row',
-                        }}>
-                            <View style={{
-                                paddingVertical:10,
-                                paddingHorizontal:10,
-                                backgroundColor:'#959595',
-                                borderRadius:100
-                            }}>
+                        <View style={{justifyContent:'center',alignItems: 'center',paddingVertical:18,flexDirection: 'row',}}>
+                            <View style={{paddingVertical:10,paddingHorizontal:10,backgroundColor:'#959595',borderRadius:100}}>
                                 <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#FFFFFF',fontSize:12,}}>Select Pharmacy</Text>
                             </View>
                             <View style={{paddingHorizontal:10}}>
@@ -255,110 +260,55 @@ class NLSFormScreen extends Component{
                             <Text style={{color:'#ee1b24'}}>*</Text>
                         </Text>
                         <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center',marginTop:10}}>
-                        {
-                                Platform.OS == 'android' && 
-                                <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                    <Picker
-                                    selectedValue={this.state.startDay}
-                                    style={{
-                                        flex:1,
-                                        paddingVertical:2,
-                                        height:30,
-                                    }}
-                                    mode="dropdown"
-                                    textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemStyle={MainStyles.TInput}
-                                    onValueChange={(itemValue, itemIndex) => this.setState({startDay: itemValue})}>
-                                        <Picker.Item label="DD" value="" style={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}/>
-                                        {
-                                        this.state.dateDays.map(item=>{
-                                            return (
-                                            <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                            )
-                                        })
-                                        }
-                                    </Picker>
-                                </View>
-                            }
-                            {
-                                Platform.OS == 'ios' && 
-                                <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                    <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.startDay}</Text>
-                                </TouchableOpacity>
-                                
-                            }
+                            <TextInput 
+                                style={[MainStyles.TInput]} 
+                                returnKeyType={"next"} 
+                                ref={(input) => { this.startDay = input; }} 
+                                blurOnSubmit={false}
+                                keyboardType={"number-pad"}
+                                onChangeText={(text)=>this.setState({startDay:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.startDay}
+                                maxLength={2}
+                            />
                             <View style={{paddingHorizontal:5}}></View>
-                            {
-                                Platform.OS == 'android' && 
-                                <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                    <Picker
-                                    selectedValue={this.state.startMonth}
-                                    style={{
-                                        flex:1,
-                                        paddingVertical:2,
-                                        height:30,
-                                    }}
-                                    mode="dropdown"
-                                    textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemStyle={MainStyles.TInput}
-                                    onValueChange={(itemValue, itemIndex) => this.setState({startMonth: itemValue})}>
-                                        <Picker.Item label="MM" value="" style={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}/>
-                                        {
-                                        this.state.dateMonth.map(item=>{
-                                            return (
-                                            <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                            )
-                                        })
-                                        }
-                                    </Picker>
-                                </View>
-                            }
-                            {
-                                Platform.OS == 'ios' && 
-                                <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                    <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.startMonth}</Text>
-                                </TouchableOpacity>
-                                
-                            }
+                            <TextInput 
+                                style={[MainStyles.TInput]} 
+                                returnKeyType={"next"} 
+                                ref={(input) => { this.startMonth = input; }} 
+                                blurOnSubmit={false}
+                                keyboardType={"number-pad"}
+                                onChangeText={(text)=>this.setState({startMonth:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.startMonth}
+                                maxLength={2}
+                            />
                             <View style={{paddingHorizontal:5}}></View>
-                            {
-                                Platform.OS == 'android' && 
-                                <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                    <Picker
-                                    selectedValue={this.state.startYear}
-                                    style={{
-                                        flex:1,
-                                        paddingVertical:2,
-                                        height:30,
-                                    }}
-                                    mode="dropdown"
-                                    textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemStyle={MainStyles.TInput}
-                                    onValueChange={(itemValue, itemIndex) => this.setState({startYear: itemValue})}>
-                                        <Picker.Item label="YYYY" value="" style={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}/>
-                                        {
-                                        this.state.dateYears.map(item=>{
-                                            return (
-                                            <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                            )
-                                        })
-                                        }
-                                    </Picker>
-                                </View>
-                            }
-                            {
-                                Platform.OS == 'ios' && 
-                                <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                    <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.startYear}</Text>
-                                </TouchableOpacity>
-                                
-                            }
+                            <TextInput 
+                                style={[MainStyles.TInput]} 
+                                returnKeyType={"next"} 
+                                ref={(input) => { this.startYear = input; }} 
+                                blurOnSubmit={false}
+                                keyboardType={"number-pad"}
+                                onChangeText={(text)=>this.setState({startYear:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.startYear}
+                                maxLength={4}
+                            />
                             {/* End Date Year End*/}
                             <View style={{paddingHorizontal:5}}></View>
-                            <Image source={require('../../assets/calendar-icon.png')} style={{width:20,height:20}} />
+                            <DateTimePicker
+                            isVisible={this.state.isStartDateTimePickerVisible}
+                            onConfirm={this.handleStartDatePicked}
+                            onCancel={this.hideStartDateTimePicker}
+                            minimumDate={this.state.currentDate}
+                            />
+                            <TouchableOpacity   onPress={this.showStartDateTimePicker}>
+                                <Image source={require('../../assets/calendar-icon.png')} style={{width:20,height:20}} />
+                            </TouchableOpacity>
                         </View>
                         {/* First date of shift Ends */}
                         <View style={{marginTop:15}}></View>
@@ -367,270 +317,133 @@ class NLSFormScreen extends Component{
                             <Text style={{color:'#ee1b24'}}>*</Text>
                         </Text>
                         <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center',marginTop:10}}>
-                            {
-                                Platform.OS == 'android' && 
-                                <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                    <Picker
-                                    selectedValue={this.state.endDay}
-                                    style={{
-                                        flex:1,
-                                        paddingVertical:2,
-                                        height:30,
-                                    }}
-                                    mode="dropdown"
-                                    textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemStyle={MainStyles.TInput}
-                                    onValueChange={(itemValue, itemIndex) => this.setState({endDay: itemValue})}>
-                                        <Picker.Item label="DD" value="" style={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}/>
-                                        {
-                                        this.state.dateDays.map(item=>{
-                                            return (
-                                            <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                            )
-                                        })
-                                        }
-                                    </Picker>
-                                </View>
-                            }
-                            {
-                                Platform.OS == 'ios' && 
-                                <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                    <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.endDay}</Text>
-                                </TouchableOpacity>
-                                
-                            }
-                            {/* End Date Day End*/}
+                            <TextInput 
+                                style={[MainStyles.TInput]} 
+                                returnKeyType={"next"} 
+                                ref={(input) => { this.startDay = input; }} 
+                                blurOnSubmit={false}
+                                keyboardType={"number-pad"}
+                                onChangeText={(text)=>this.setState({endDay:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.startDay}
+                                maxLength={2}
+                            />
                             <View style={{paddingHorizontal:5}}></View>
-                            {
-                                Platform.OS == 'android' && 
-                                <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                    <Picker
-                                    selectedValue={this.state.endMonth}
-                                    style={{
-                                        flex:1,
-                                        paddingVertical:2,
-                                        height:30,
-                                    }}
-                                    mode="dropdown"
-                                    textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemStyle={MainStyles.TInput}
-                                    onValueChange={(itemValue, itemIndex) => this.setState({endMonth: itemValue})}>
-                                        <Picker.Item label="MM" value="" style={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}/>
-                                        {
-                                        this.state.dateMonth.map(item=>{
-                                            return (
-                                            <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                            )
-                                        })
-                                        }
-                                    </Picker>
-                                </View>
-                            }
-                            {
-                                Platform.OS == 'ios' && 
-                                <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                    <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.endMonth}</Text>
-                                </TouchableOpacity>
-                                
-                            }
-                            {/* End Date Month End*/}
+                            <TextInput 
+                                style={[MainStyles.TInput]} 
+                                returnKeyType={"next"} 
+                                ref={(input) => { this.startMonth = input; }} 
+                                blurOnSubmit={false}
+                                keyboardType={"number-pad"}
+                                onChangeText={(text)=>this.setState({endMonth:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.startMonth}
+                                maxLength={2}
+                            />
                             <View style={{paddingHorizontal:5}}></View>
-                            {
-                                Platform.OS == 'android' && 
-                                <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                    <Picker
-                                    selectedValue={this.state.endYear}
-                                    style={{
-                                        flex:1,
-                                        paddingVertical:2,
-                                        height:30,
-                                    }}
-                                    mode="dropdown"
-                                    textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemStyle={MainStyles.TInput}
-                                    onValueChange={(itemValue, itemIndex) => this.setState({endYear: itemValue})}>
-                                        <Picker.Item label="YYYY" value="" style={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}/>
-                                        {
-                                        this.state.dateYears.map(item=>{
-                                            return (
-                                            <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                            )
-                                        })
-                                        }
-                                    </Picker>
-                                </View>
-                            }
-                            {
-                                Platform.OS == 'ios' && 
-                                <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                    <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.endYear}</Text>
-                                </TouchableOpacity>
-                                
-                            }
+                            <TextInput 
+                                style={[MainStyles.TInput]} 
+                                returnKeyType={"next"} 
+                                ref={(input) => { this.startYear = input; }} 
+                                blurOnSubmit={false}
+                                keyboardType={"number-pad"}
+                                onChangeText={(text)=>this.setState({endYear:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.startYear}
+                                maxLength={4}
+                            />
                             {/* End Date Year End*/}
                             <View style={{paddingHorizontal:5}}></View>
-                            <Image source={require('../../assets/calendar-icon.png')} style={{width:20,height:20}} />
+                            <DateTimePicker
+                            isVisible={this.state.isEndDateTimePickerVisible}
+                            onConfirm={this.handleEndDatePicked}
+                            onCancel={this.hideEndDateTimePicker}
+                            minimumDate={this.state.currentDate}
+                            />
+                            <TouchableOpacity onPress={this.showEndDateTimePicker}>
+                                <Image source={require('../../assets/calendar-icon.png')} style={{width:20,height:20}} />
+                            </TouchableOpacity>
                         </View>
                         {/* Last date of shift Ends */}
                         <View style={{marginTop:15}}></View>
                         <View style={{flexDirection:'row'}}>
-                            <View style={{width:'45%'}}>
+                            <View style={{width:'48%'}}>
                                 <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                                     Start Time
                                     <Text style={{color:'#ee1b24'}}>*</Text>
                                 </Text>
                                 <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-evenly',marginTop:10}}>
-                                    {
-                                        Platform.OS == 'android' && 
-                                        <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                            <Picker
-                                            selectedValue={this.state.startHour}
-                                            style={{
-                                                flex:1,
-                                                paddingVertical:2,
-                                                height:30,
-                                            }}
-                                            mode="dropdown"
-                                            textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                            itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                            itemStyle={MainStyles.TInput}
-                                            onValueChange={(itemValue, itemIndex) => this.setState({startHour: itemValue})}>
-                                                <Picker.Item label="HH" value="" style={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}/>
-                                                {
-                                                this.state.timHours.map(item=>{
-                                                    return (
-                                                    <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                                    )
-                                                })
-                                                }
-                                            </Picker>
-                                        </View>
-                                    }
-                                    {
-                                        Platform.OS == 'ios' && 
-                                        <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                            <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.startHour}</Text>
-                                        </TouchableOpacity>
-                                        
-                                    }
-                                    <View style={{paddingHorizontal:5}}>
+                                    <TextInput 
+                                        style={[MainStyles.TInput]} 
+                                        returnKeyType={"next"} 
+                                        ref={(input) => { this.startHour = input; }} 
+                                        blurOnSubmit={false}
+                                        keyboardType={"number-pad"}
+                                        onChangeText={(text)=>this.setState({startHour:text})} 
+                                        placeholderTextColor="#bebebe" 
+                                        underlineColorAndroid="transparent" 
+                                        value={this.state.startHour}
+                                        maxLength={2}
+                                        placeholder="HH"
+                                    />
+                                    <View style={{paddingHorizontal:2}}>
                                         <Text style={{color:'#bebebe',fontFamily:'AvenirLTStd-Medium',fontSize:16}}>:</Text>
                                     </View>
-                                    {
-                                        Platform.OS == 'android' && 
-                                        <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                            <Picker
-                                            selectedValue={this.state.startMinute}
-                                            style={{
-                                                flex:1,
-                                                paddingVertical:2,
-                                                height:30,
-                                            }}
-                                            mode="dropdown"
-                                            textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                            itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                            itemStyle={MainStyles.TInput}
-                                            onValueChange={(itemValue, itemIndex) => this.setState({startMinute: itemValue})}>
-                                                <Picker.Item label="MM" value="" style={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}/>
-                                                {
-                                                this.state.timeMinutes.map(item=>{
-                                                    return (
-                                                    <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                                    )
-                                                })
-                                                }
-                                            </Picker>
-                                        </View>
-                                    }
-                                    {
-                                        Platform.OS == 'ios' && 
-                                        <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                            <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.startMinute}</Text>
-                                        </TouchableOpacity>
-                                        
-                                    }
+                                    <TextInput 
+                                        style={[MainStyles.TInput]} 
+                                        returnKeyType={"next"} 
+                                        ref={(input) => { this.startMinute = input; }} 
+                                        blurOnSubmit={false}
+                                        keyboardType={"number-pad"}
+                                        onChangeText={(text)=>this.setState({startMinute:text})} 
+                                        placeholderTextColor="#bebebe" 
+                                        underlineColorAndroid="transparent" 
+                                        value={this.state.startMinute}
+                                        maxLength={2}
+                                        placeholder="MM"
+                                    />
                                 </View>
                             </View>
                             {/* Start Time Ends */}
-                            <View style={{paddingHorizontal:10}}></View>
-                            <View style={{width:'45%'}}>
+                            <View style={{paddingHorizontal:'2%'}}></View>
+                            <View style={{width:'48%'}}>
                                 <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                                     End Time
                                     <Text style={{color:'#ee1b24'}}>*</Text>
                                 </Text>
-                                <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-evenly',marginTop:10}}>
-                                    {
-                                        Platform.OS == 'android' && 
-                                        <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                            <Picker
-                                            selectedValue={this.state.endHour}
-                                            style={{
-                                                flex:1,
-                                                paddingVertical:2,
-                                                height:30,
-                                            }}
-                                            mode="dropdown"
-                                            textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                            itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                            itemStyle={MainStyles.TInput}
-                                            onValueChange={(itemValue, itemIndex) => this.setState({endHour: itemValue})}>
-                                                <Picker.Item label="MM" value="" style={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}/>
-                                                {
-                                                this.state.timHours.map(item=>{
-                                                    return (
-                                                    <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                                    )
-                                                })
-                                                }
-                                            </Picker>
-                                        </View>
-                                    }
-                                    {
-                                        Platform.OS == 'ios' && 
-                                        <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                            <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.endHour}</Text>
-                                        </TouchableOpacity>
-                                        
-                                    }
-                                    <View style={{paddingHorizontal:5}}>
+                                <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginTop:10}}>
+                                <TextInput 
+                                        style={[MainStyles.TInput]} 
+                                        returnKeyType={"next"} 
+                                        ref={(input) => { this.endHour = input; }} 
+                                        blurOnSubmit={false}
+                                        keyboardType={"number-pad"}
+                                        onChangeText={(text)=>this.setState({endHour:text})} 
+                                        placeholderTextColor="#bebebe" 
+                                        underlineColorAndroid="transparent" 
+                                        value={this.state.endHour}
+                                        maxLength={2}
+                                        placeholder="HH"
+                                    />
+                                    <View style={{paddingHorizontal:2}}>
                                         <Text style={{color:'#bebebe',fontFamily:'AvenirLTStd-Medium',fontSize:16}}>:</Text>
                                     </View>
-                                    {
-                                        Platform.OS == 'android' && 
-                                        <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                            <Picker
-                                            selectedValue={this.state.endMinute}
-                                            style={{
-                                                flex:1,
-                                                paddingVertical:2,
-                                                height:30,
-                                            }}
-                                            mode="dropdown"
-                                            textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                            itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                            itemStyle={MainStyles.TInput}
-                                            onValueChange={(itemValue, itemIndex) => this.setState({endMinute: itemValue})}>
-                                                <Picker.Item label="MM" value="" style={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}/>
-                                                {
-                                                this.state.timeMinutes.map(item=>{
-                                                    return (
-                                                    <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                                    )
-                                                })
-                                                }
-                                            </Picker>
-                                        </View>
-                                    }
-                                    {
-                                        Platform.OS == 'ios' && 
-                                        <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                            <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.endMinute}</Text>
-                                        </TouchableOpacity>
-                                        
-                                    }
+                                    <TextInput 
+                                        style={[MainStyles.TInput]} 
+                                        returnKeyType={"next"} 
+                                        ref={(input) => { this.endMinute = input; }} 
+                                        blurOnSubmit={false}
+                                        keyboardType={"number-pad"}
+                                        onChangeText={(text)=>this.setState({endMinute:text})} 
+                                        placeholderTextColor="#bebebe" 
+                                        underlineColorAndroid="transparent" 
+                                        value={this.state.endMinute}
+                                        maxLength={2}
+                                        placeholder="MM"
+                                    />
                                 </View>
                             </View>
                             {/* End Time Ends */}

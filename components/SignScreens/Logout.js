@@ -65,6 +65,9 @@ class Logout extends Component{
     }
     
     componentDidMount(){
+        this.listner = this.props.navigation.addListener("didFocus", this.onFocus);
+    }
+    onFocus = ()=>{
         this.setUserData();
         setTimeout(()=>{
             this.authenticateSession();

@@ -8,6 +8,7 @@ import Loader from '../Loader';
 import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
+import DateTimePicker from "react-native-modal-datetime-picker";
 const { height, width } = Dimensions.get('window');
 class NPSFormScreen extends Component{
     constructor(props) {
@@ -42,7 +43,8 @@ class NPSFormScreen extends Component{
             technician:'',
             scripts:'',
             webster:'',
-            listing_role:''
+            listing_role:'',
+            isDateTimePickerVisible:false
         }
     }
     async setUserData(){
@@ -80,7 +82,13 @@ class NPSFormScreen extends Component{
         for(var i = 2019;i<2031;i++){
             dateYears.push(''+i);
         }
-        this.setState({timHours,timeMinutes,dateDays,dateMonth,dateYears});
+        var currentDate = new Date();
+        var startDay = ''+currentDate.getDate();
+        var startMonth = ''+(currentDate.getMonth()+1);
+        var startYear = ''+currentDate.getFullYear();
+        if(startDay < 10){startDay = '0'+startDay;}
+        if(startMonth < 10){startMonth = '0'+startMonth;}
+        this.setState({timHours,timeMinutes,dateDays,dateMonth,dateYears,currentDate,startDay,startMonth,startYear});
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         var parampharm_id = this.props.navigation.getParam("pharm_id");
@@ -201,6 +209,25 @@ class NPSFormScreen extends Component{
             Toast.show('Something went wrong',Toast.SHORT);
         });
     }
+    showDateTimePicker = () => {
+        this.setState({ isDateTimePickerVisible: true });
+    };
+    hideDateTimePicker = () => {
+        this.setState({ isDateTimePickerVisible: false });
+    };
+    handleDatePicked = date => {
+        var changeDate = new Date(date);
+        var dd = ''+changeDate.getDate();
+        var mm = ''+(changeDate.getMonth()+1);
+        var yy = ''+changeDate.getFullYear();
+        if(dd < 10){dd = '0'+dd;}
+        if(mm < 10){mm = '0'+mm;}
+        this.setState({
+            startDay:dd,startMonth:mm,startYear:yy
+        });
+        console.log("A date has been picked: ", dd,mm,yy);
+        this.hideDateTimePicker();
+    };
     render(){
         const RemoveHiehgt = height - 52;
         var behavior = (Platform.OS == 'ios')?'padding':'';
@@ -260,110 +287,56 @@ class NPSFormScreen extends Component{
                             <Text style={{color:'#ee1b24'}}>*</Text>
                         </Text>
                         <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center',marginTop:10}}>
-                        {
-                                Platform.OS == 'android' && 
-                                <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                    <Picker
-                                    selectedValue={this.state.startDay}
-                                    style={{
-                                        flex:1,
-                                        paddingVertical:2,
-                                        height:30,
-                                    }}
-                                    mode="dropdown"
-                                    textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemStyle={MainStyles.TInput}
-                                    onValueChange={(itemValue, itemIndex) => this.setState({startDay: itemValue})}>
-                                        <Picker.Item label="DD" value="" style={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}/>
-                                        {
-                                        this.state.dateDays.map(item=>{
-                                            return (
-                                            <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                            )
-                                        })
-                                        }
-                                    </Picker>
-                                </View>
-                            }
-                            {
-                                Platform.OS == 'ios' && 
-                                <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                    <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.startDay}</Text>
-                                </TouchableOpacity>
-                                
-                            }
+                            <TextInput 
+                                style={[MainStyles.TInput]} 
+                                returnKeyType={"next"} 
+                                ref={(input) => { this.startDay = input; }} 
+                                blurOnSubmit={false}
+                                keyboardType={"number-pad"}
+                                onChangeText={(text)=>this.setState({startDay:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.startDay}
+                                maxLength={2}
+                            />
                             <View style={{paddingHorizontal:5}}></View>
-                            {
-                                Platform.OS == 'android' && 
-                                <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                    <Picker
-                                    selectedValue={this.state.startMonth}
-                                    style={{
-                                        flex:1,
-                                        paddingVertical:2,
-                                        height:30,
-                                    }}
-                                    mode="dropdown"
-                                    textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemStyle={MainStyles.TInput}
-                                    onValueChange={(itemValue, itemIndex) => this.setState({startMonth: itemValue})}>
-                                        <Picker.Item label="MM" value="" style={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}/>
-                                        {
-                                        this.state.dateMonth.map(item=>{
-                                            return (
-                                            <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                            )
-                                        })
-                                        }
-                                    </Picker>
-                                </View>
-                            }
-                            {
-                                Platform.OS == 'ios' && 
-                                <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                    <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.startMonth}</Text>
-                                </TouchableOpacity>
-                                
-                            }
+                            <TextInput 
+                                style={[MainStyles.TInput]} 
+                                returnKeyType={"next"} 
+                                ref={(input) => { this.startMonth = input; }} 
+                                blurOnSubmit={false}
+                                keyboardType={"number-pad"}
+                                onChangeText={(text)=>this.setState({startMonth:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.startMonth}
+                                maxLength={2}
+                            />
                             <View style={{paddingHorizontal:5}}></View>
-                            {
-                                Platform.OS == 'android' && 
-                                <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                    <Picker
-                                    selectedValue={this.state.startYear}
-                                    style={{
-                                        flex:1,
-                                        paddingVertical:2,
-                                        height:30,
-                                    }}
-                                    mode="dropdown"
-                                    textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemStyle={MainStyles.TInput}
-                                    onValueChange={(itemValue, itemIndex) => this.setState({startYear: itemValue})}>
-                                        <Picker.Item label="YYYY" value="" style={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}/>
-                                        {
-                                        this.state.dateYears.map(item=>{
-                                            return (
-                                            <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                            )
-                                        })
-                                        }
-                                    </Picker>
-                                </View>
-                            }
-                            {
-                                Platform.OS == 'ios' && 
-                                <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                    <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.startYear}</Text>
-                                </TouchableOpacity>
-                                
-                            }
+                            <TextInput 
+                                style={[MainStyles.TInput]} 
+                                returnKeyType={"next"} 
+                                ref={(input) => { this.startYear = input; }} 
+                                blurOnSubmit={false}
+                                keyboardType={"number-pad"}
+                                onChangeText={(text)=>this.setState({startYear:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.startYear}
+                                maxLength={4}
+                            />
                             {/* End Date Year End*/}
                             <View style={{paddingHorizontal:5}}></View>
+                            <DateTimePicker
+                            isVisible={this.state.isDateTimePickerVisible}
+                            onConfirm={this.handleDatePicked}
+                            onCancel={this.hideDateTimePicker}
+                            minimumDate={this.state.currentDate}
+                            />
+                            <TouchableOpacity   onPress={this.showDateTimePicker}>
                             <Image source={require('../../assets/calendar-icon.png')} style={{width:20,height:20}} />
+                            </TouchableOpacity>
+                            
                         </View>
                         {/* Preferred Start Date Ends */}
                         <View style={{marginTop:15}}></View>
@@ -433,42 +406,6 @@ class NPSFormScreen extends Component{
                             value={this.state.benefits}
                         />
                         {/* Benefits Ends */}
-                        <View style={{marginTop:15}}></View>
-                        <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
-                            Roles
-                            <Text style={{color:'#ee1b24'}}>*</Text>
-                        </Text>
-                        <View style={{marginTop:10}}></View>
-                        <View style={{flexDirection:'row',justifyContent:'flex-start',alignItems:'flex-start',flexWrap:'wrap'}}>
-                            <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.setState({roles:'PK'});}}>
-                                <View style={[MainStyles.checkBoxStyle]}>
-                                    {this.state.roles == 'PK' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
-                                </View>
-                                <Text style={[MainStyles.checkBoxLabel]}>PK</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[MainStyles.checkBoxWrapper,{alignItems:'flex-start',marginLeft:78}]} onPress={()=>{this.setState({roles:'PK2'});}}>
-                                <View style={[MainStyles.checkBoxStyle]}>
-                                   {this.state.roles == 'PK2' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
-                                </View>
-                                <Text style={[MainStyles.checkBoxLabel]}>PK2</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{marginTop:10}}></View>
-                        <View style={{flexDirection:'row',justifyContent:'flex-start',alignItems:'flex-start',flexWrap:'wrap'}}>
-                            <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.setState({roles:'Manager'});}}>
-                                <View style={[MainStyles.checkBoxStyle]}>
-                                   {this.state.roles == 'Manager' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
-                                </View>
-                                <Text style={[MainStyles.checkBoxLabel]}>Manager</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[MainStyles.checkBoxWrapper,{alignItems:'flex-start',marginLeft:40}]} onPress={()=>{this.setState({roles:'Other'});}}>
-                                <View style={[MainStyles.checkBoxStyle]}>
-                                   {this.state.roles == 'Other' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
-                                </View>
-                                <Text style={[MainStyles.checkBoxLabel]}>Other</Text>
-                            </TouchableOpacity>
-                        </View>
-                        {/* Roles */}
                         <View style={{marginTop:15}}></View>
                         <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                         About the role

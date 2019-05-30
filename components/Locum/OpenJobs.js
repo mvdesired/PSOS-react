@@ -38,7 +38,6 @@ class JobList extends Component{
     async setUserData(){
         let userDataStringfy = await AsyncStorage.getItem('userData');
         let userData = JSON.parse(userDataStringfy);
-        console.log(userData);
         this.setState({userData});
     }
     componentDidMount = ()=>{
@@ -56,7 +55,6 @@ class JobList extends Component{
         })
         .then(res=>res.json())
         .then(response=>{
-            
             if(response.status == 200){
                 this.setState({shiftList:response.result});
             }
@@ -75,7 +73,6 @@ class JobList extends Component{
         })
         .then(res=>res.json())
         .then(response=>{
-            console.log(response);
             if(response.status == 200){
                 this.setState({permList:response.result});
             }
@@ -179,7 +176,6 @@ class JobList extends Component{
                                         {
                                             item.applied == 0 && 
                                             <TouchableOpacity style={MainStyles.JLELoopItem} onPress={()=>{
-                                                console.log(item.id);
                                                 this.props.navigation.navigate('JobDetails',{job_type:'perm',job_id:item.id});
                                             }}>
                                                 <View style={{flexWrap:'wrap'}}>

@@ -200,7 +200,7 @@ class EmployerScreen extends Component{
                             <Text style={{color:'#ee1b24'}}>*</Text>
                         </Text>
                         <View style={{marginTop:10}}></View>
-                        <TextInput 
+                        {/* <TextInput 
                             style={MainStyles.TInput} 
                             placeholder="Phone Number" 
                             returnKeyType={"go"} 
@@ -210,7 +210,33 @@ class EmployerScreen extends Component{
                             placeholderTextColor="#bebebe" 
                             underlineColorAndroid="transparent" 
                             value={this.state.phoneNo}
-                        />
+                        /> */}
+                        <View 
+                            style={{paddingLeft: 10,
+                                paddingVertical:2,
+                                height:30,
+                                fontSize:14,
+                                borderRadius:20,
+                                fontFamily:'AvenirLTStd-Medium',
+                                borderColor:'#a1a1a1',
+                                borderWidth: 1,
+                                borderStyle:"dashed"
+                            }}
+                        >
+                            <PhoneInput
+                            ref={(ref) => { this.phoneNo = ref; }}
+                            style={{
+                                flex:1,
+                                textAlign:'left',
+                                paddingLeft: 10,
+                                height:30,
+                                fontSize:14,
+                                fontFamily:'AvenirLTStd-Medium'
+                            }} 
+                            onChangePhoneNumber={(number)=>this.setState({phoneNo:number})}
+                            value={this.state.phoneNo}
+                            />
+                        </View>
                         {/* Phone Ends */}
                         <View style={{marginTop:15}}></View>
                         <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>

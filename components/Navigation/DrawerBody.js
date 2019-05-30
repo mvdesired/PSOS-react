@@ -63,7 +63,7 @@ class DrawerBody extends Component{
                         </TouchableOpacity>
                     }
                     {
-                        this.state.userData.user_type == 'Locum' && 
+                        this.state.userData.user_type == 'locum' && 
                         <TouchableOpacity style={styles.DIS} onPress={()=>this.navigateToScreen('Applied')}>
                             <Image source={require('../../assets/applied-d-icon.png')} style={{width:15,height:13}} />
                             <Text style={styles.DITS}>Applied Jobs</Text>

@@ -99,34 +99,27 @@ class LocumList extends Component{
                         <FlatList data={this.state.locumList} 
                             renderItem={({item}) => (
                                 <View>
-                                    {
-                                        item.status == 0 && 
-                                        <TouchableOpacity style={MainStyles.JLELoopItem} onPress={()=>{
-                                            console.log(item);
-                                            this.props.navigation.navigate('LocumDetails',{job_id:this.state.job_id,job_type:this.state.job_type,locum_id:item.locum_id})
-                                        }}>
-                                            <View style={{flexWrap:'wrap'}}>
-                                                <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                                <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.applied_date)}</Text>
-                                            </View>
-                                            <View style={{flexDirection:'row',alignItems:'center'}}>
-                                                <Image source={require('../../assets/list-fd-icon.png')} style={{width:8,height:15}}/>
-                                            </View>
-                                        </TouchableOpacity>
-
-                                    }
-                                    {
-                                        item.status == 1 && 
-                                        <View style={[MainStyles.JLELoopItem,{backgroundColor:'#e6e6e6'}]}>
-                                            <View style={{flexWrap:'wrap'}}>
-                                                <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                                <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.applied_date)}</Text>
-                                            </View>
+                                    <TouchableOpacity style={[MainStyles.JLELoopItem,(item.state == 1)?{backgroundColor:'#e6e6e6'}:'']} onPress={()=>{
+                                        console.log(item);
+                                        this.props.navigation.navigate('LocumDetails',{job_id:this.state.job_id,job_type:this.state.job_type,locum_id:item.locum_id,applied:item.status});
+                                    }}>
+                                        <View style={{flexWrap:'wrap'}}>
+                                            <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
+                                            <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.applied_date)}</Text>
+                                        </View>
+                                        {
+                                            item.status == 1 && 
                                             <View style={{flexDirection:'row',alignItems:'center'}}>
                                                 <Text style={{transform: [{ rotate: "45deg" }],color:'#61bf6f',fontFamily:'AvenirLTStd-Light',fontSize:14}}>Hired</Text>
                                             </View>
-                                        </View>
-                                    }
+                                        }
+                                        {
+                                            item.status == 0 && 
+                                            <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                <Image source={require('../../assets/list-fd-icon.png')} style={{width:8,height:15}}/>
+                                            </View>
+                                        }
+                                    </TouchableOpacity>
                                 </View>
                                 )}
                             keyExtractor={(item) => 'key-'+item.id}

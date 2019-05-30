@@ -40,7 +40,7 @@ class Notifications extends Component{
             this._fetchNotifications();
             this.clearTime = setInterval(()=>{
                 this._fetchNotifications();
-            },3000);
+            },10000);
         },1500);
     }
     _fetchNotifications = ()=>{
@@ -59,7 +59,8 @@ class Notifications extends Component{
             }
         })
         .catch(err=>{
-
+            console.log(err);
+            this.setState({loading:false});
         });
     }
     componentWillUnmount(){

@@ -38,9 +38,9 @@ class Dashboard extends Component{
     componentDidMount = ()=>{
         this._isMounted = true;
         //this.onFocus();
-        if(this.state.userData.user_type == 'employer'){
+        /*if(this.state.userData.user_type == 'employer'){
             this.fetchTotals();
-        }
+        }*/
         this.listener = this.props.navigation.addListener("didFocus", this.onFocus);
     }
     onFocus =()=>{
@@ -163,8 +163,8 @@ class Dashboard extends Component{
                             </TouchableOpacity>
                         </View>
                         <View style={[MainStyles.eDW,{marginTop:8}]}>
-                            <View style={{width:'48%',height:149}}>
-                                <View style={MainStyles.eDBWI}>
+                            <View style={{width:'48%',height:149,marginTop:8}}>
+                                <View style={[MainStyles.eDBWI,{height:149}]}>
                                     <View style={MainStyles.eDBWIIC}>
                                         <Image source={require('../../assets/total-job.png')} style={{width:30,height:27,marginBottom:8}}/>
                                         <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>{this.state.totalJobs}</Text>
@@ -172,8 +172,8 @@ class Dashboard extends Component{
                                     <Text style={MainStyles.eDBWIT}>Total Jobs</Text>
                                 </View>
                             </View>
-                            <View style={{width:'48%',height:149}}>
-                                <View style={MainStyles.eDBWI}>
+                            <View style={{width:'48%',height:149,marginTop:8}}>
+                                <View style={[MainStyles.eDBWI,{height:149}]}>
                                     <View style={MainStyles.eDBWIIC}>
                                         <Image source={require('../../assets/total-job.png')} style={{width:30,height:27,marginBottom:8}}/>
                                         <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>{this.state.totalPharmacy}</Text>
@@ -181,8 +181,8 @@ class Dashboard extends Component{
                                     <Text style={MainStyles.eDBWIT}>Total Pharmacy</Text>
                                 </View>
                             </View>
-                            <View style={{width:'48%',height:149}}>
-                                <View style={MainStyles.eDBWI}>
+                            <View style={{width:'48%',height:149,marginTop:8}}>
+                                <View style={[MainStyles.eDBWI,{height:149}]}>
                                     <View style={MainStyles.eDBWIIC}>
                                         <Image source={require('../../assets/total-applications.png')} style={{width:30,height:30,marginBottom:8}}/>
                                         <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>{this.state.totalApplications}</Text>
@@ -190,13 +190,13 @@ class Dashboard extends Component{
                                     <Text style={MainStyles.eDBWIT}>Total Applications</Text>
                                 </View>
                             </View>
-                            <View style={{width:'48%',height:149}}>
-                                <View style={MainStyles.eDBWI}>
+                            <View style={{width:'48%',height:149,marginTop:8}}>
+                                <View style={[MainStyles.eDBWI,{height:149}]}>
                                     <View style={MainStyles.eDBWIIC}>
                                         <Image source={require('../../assets/total-jb.png')} style={{width:30,height:32,marginBottom:8}}/>
                                         <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>{this.state.totalBookedLocums}</Text>
                                     </View>
-                                    <Text style={MainStyles.eDBWIT}>Total Locum Booked</Text>
+                                    <Text style={MainStyles.eDBWIT}>Locum Booked</Text>
                                 </View>
                             </View>
                         </View>

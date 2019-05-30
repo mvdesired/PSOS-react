@@ -30,6 +30,7 @@ import EChatListScreen from '../Employer/EChatList';
 import ChatScreen from '../Employer/ChatSingle';
 import Reviews from '../Employer/Reviews';
 import PayInvoice from '../Employer/PayInvoice';
+import AddPharmacy from '../Employer/AddPharmacy';
 /**Employer Screens ends */
 /**Locum Screens Starts */
 import JobListL from '../Locum/OpenJobs';
@@ -182,6 +183,9 @@ const Navigation = createStackNavigator({
     },
     PayInvoice:{
         screen:PayInvoice
+    },
+    AddPharmacy:{
+        screen:AddPharmacy
     },
     /*Employer Navigations Ends */
 

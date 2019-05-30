@@ -36,7 +36,7 @@ class LocumDetails extends Component{
     }
     componentDidMount = ()=>{
         this.setUserData();
-        this.fetchLocumDetails();
+        this.props.navigation.addListener("didFocus", this.fetchLocumDetails);
     }
     _fetchLocumDetails = ()=>{
         var fetchData = 'permanent_detail';
@@ -49,6 +49,7 @@ class LocumDetails extends Component{
         })
         .then(res=>res.json())
         .then(response=>{
+            
             if(response.status == 200){
                 this.setState({jobData:response.result});
             }
@@ -64,23 +65,24 @@ class LocumDetails extends Component{
     }
     applyForJob = ()=>{
         this.setState({loading:true});
+        var type = (this.state.job_type == 'shift')?'locum_shift':'permanent';
         var jsonArray = {
-            type:(this.state.job_type == 'shif')?'locum_shift':'permanent',
+            type:type,
             job_id:this.state.job_id,
             locum_id:this.state.userData.id
         }
         var fd = new FormData();
-        fd.append('type',(this.state.job_type == 'shif')?'locum_shift':'permanent');
+        fd.append('type',type);
         fd.append('job_id',this.state.job_id);
         fd.append('locum_id',this.state.userData.id);
+        fd.append('employer_id',this.state.jobData.employer_id);
         fetch(SERVER_URL+'apply_job',{
             method:'POST',
             headers: myHeaders,
             body: fd//JSON.stringify(jsonArray)
         })
-        .then((res)=>{console.log(res._bodyInit);return res.json()})
+        .then((res)=>res.json())
         .then(response=>{
-            console.log(response);
             this.setState({loading:false});
             Toast.show(''+response.message,Toast.SHORT);
             if(response.status == 200){

@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
-    Picker,Dimensions,RefreshControl,ImageBackground,
+    Picker,Dimensions,RefreshControl,ImageBackground,AsyncStorage,
     ActionSheetIOS,Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { DrawerActions,NavigationActions } from 'react-navigation';
@@ -27,6 +27,7 @@ class LocumDetails extends Component{
             job_id:this.props.navigation.getParam("job_id"),
             job_type:this.props.navigation.getParam("job_type"),
             locum_id:this.props.navigation.getParam("locum_id"),
+            applied:this.props.navigation.getParam("applied"),
         }
         this.fetchLocumDetails = this._fetchLocumDetails.bind(this);
     }
@@ -71,12 +72,12 @@ class LocumDetails extends Component{
             headers:myHeaders,
             body:fd
         })
-        .then(res=>{console.log(res);return res.json();})
+        .then(res=>res.json())
         .then(response=>{
+            Toast.show(response.message,Toast.SHORT);
             if(response.status == 200){
                 this.props.navigation.navigate('ChatScreen',{chat_id:response.result});
             }
-            console.log(response);
         })
         .catch(err=>{
             console.log(err);
@@ -84,15 +85,19 @@ class LocumDetails extends Component{
     }
     render(){
         const RemoveHiehgt = height - 50;
+        console.log(this.state.locumData.user_img);
         return(
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
                 <Loader loading={this.state.loading} />
                 <Header pageName="Locum Detail" />
                 <ScrollView style={{paddingHorizontal:15,height:RemoveHiehgt,flex:1}} keyboardShouldPersistTaps="always">
                     <View style={{justifyContent:'center',alignItems:'center',marginVertical: 15}}>
-                        <View style={{width:100,height:100,justifyContent:'flex-start',alignItems:'center',overflow:'hidden',borderRadius: 100,marginBottom: 10,}}>
-                            <Image source={require('../../assets/default.png')} />
-                        </View>
+                        {
+                            this.state.locumData.user_img && 
+                            <View style={{width:100,height:100,justifyContent:'flex-start',alignItems:'center',overflow:'hidden',borderRadius: 100,marginBottom: 10,}}> 
+                                <Image source={{uri:this.state.locumData.user_img}} width={100} height={100} style={{width:100,height:100}} />
+                            </View>
+                        }
                         <Text style={{fontFamily:'AvenirLTStd-Meduim',color:'#151515',fontSize:17}}>{this.state.locumData.fname+' '+this.state.locumData.lname}</Text>
                     </View>
                     <View style={MainStyles.locumProfileItemWrapper}>
@@ -110,28 +115,16 @@ class LocumDetails extends Component{
                         <Text style={MainStyles.LPISubHeading}>{this.state.locumData.js_software}</Text>
                     </View>
                     {/* Languga */}
-                    <View style={MainStyles.locumProfileItemWrapper}>
-                        <Text style={MainStyles.LPIHeading}>Pharmacotherapy</Text>
-                        <Text style={MainStyles.LPISubHeading}>{this.state.locumData.js_pharma}</Text>
-                    </View>
-                    {/* Languga */}
-                    <View style={MainStyles.locumProfileItemWrapper}>
-                        <Text style={MainStyles.LPIHeading}>Accredited Pharmacist</Text>
-                        <Text style={MainStyles.LPISubHeading}>{this.state.locumData.js_accredit}</Text>
-                    </View>
-                    {/* Languga */}
-                    <View style={MainStyles.locumProfileItemWrapper}>
-                        <Text style={MainStyles.LPIHeading}>Vaccination Pharmacist</Text>
-                        <Text style={MainStyles.LPISubHeading}>{this.state.locumData.js_vaccin}</Text>
-                    </View>
-                    {/* Languga */}
-                    <View style={{justifyContent:'center',alignItems:'center',marginTop: 10,marginBottom:15}}>
-                        <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{
-                            this.hireThis();
-                        }}>
-                            <Text style={MainStyles.psosBtnText}>Hire</Text>
-                        </TouchableOpacity>
-                    </View>
+                    {
+                        this.state.applied == 0 && 
+                        <View style={{justifyContent:'center',alignItems:'center',marginTop: 10,marginBottom:15}}>
+                            <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{
+                                this.hireThis();
+                            }}>
+                                <Text style={MainStyles.psosBtnText}>Hire</Text>
+                            </TouchableOpacity>
+                        </View>
+                    }
                 </ScrollView>
             </SafeAreaView>
         );

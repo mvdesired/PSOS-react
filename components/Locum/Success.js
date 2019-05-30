@@ -8,7 +8,7 @@ class SuccessScreen extends Component{
     componentDidMount(){
         setTimeout(()=>{
             this.props.navigation.navigate('Home');
-        },3500);
+        },4500);
     }
     render(){
         return (

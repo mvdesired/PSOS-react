@@ -411,6 +411,20 @@ class LocumReg1Screen extends Component{
                                 <Text style={{color:'#ee1b24'}}>*</Text>
                             </Text>
                             <View style={{paddingHorizontal:10}}></View>
+                            <View style={{flexDirection:'row',justifyContent:'space-between',flexWrap:'wrap',marginTop:10}}>
+                                <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.setState({js_restrict:'Yes'});}}>
+                                    <View style={[MainStyles.checkBoxStyle]}>
+                                    {this.state.js_restrict == 'Yes' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                    </View>
+                                    <Text style={[MainStyles.checkBoxLabel]}>Yes</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.setState({js_restrict:'No'});}}>
+                                    <View style={[MainStyles.checkBoxStyle]}>
+                                        {this.state.js_restrict == 'No' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                    </View>
+                                    <Text style={[MainStyles.checkBoxLabel]}>No</Text>
+                                </TouchableOpacity>
+                            </View>
                             <TextInput 
                                 style={MainStyles.TInput} 
                                 returnKeyType={"go"} 

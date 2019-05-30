@@ -26,7 +26,7 @@ class Header extends Component{
             this.clearTime = setInterval(()=>{
                 this.fetchNotifications();
             },3000);
-        },1500);
+        },2500);
     }
     _fetchNotifications = ()=>{
         fetch(SERVER_URL+'fetch_notification?user_id='+this.state.userData.id)
@@ -57,7 +57,9 @@ class Header extends Component{
                 </TouchableOpacity>
                 <Text style={{fontFamily:'AvenirLTStd-Roman',color:'#FFFFFF',fontSize:16}}>{this.props.pageName}</Text>
                 <View style={{flexDirection:'row',alignItems:'center'}}>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{
+                        this.props.navigation.navigate('Notifications')
+                    }}>
                         <Image source={require('../../assets/noti-icon.png')} width={20} height={23} style={{width:20,height:23}} />
                         {
                             this.state.count > 0 && 

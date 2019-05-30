@@ -10,6 +10,7 @@ import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import SignatureCapture from 'react-native-signature-capture';
+import DateTimePicker from "react-native-modal-datetime-picker";
 const { height, width } = Dimensions.get('window');
 class ETimeSheet extends Component{
     constructor(props) {
@@ -31,26 +32,17 @@ class ETimeSheet extends Component{
         let userDataStringfy = await AsyncStorage.getItem('userData');
         let userData = JSON.parse(userDataStringfy);
         this.setState({userData});
+        this.setState({fname:userData.fname,lname:userData.lname,email:userData.email});
     }
     componentDidMount(){
         this.setUserData();
-        var dateDays = [];
-        var dateMonth = [];
-        var dateYears = [];
-        for(var i = 1;i<32;i++){
-            var k = i;
-            if(i < 10){k = '0'+i;}
-            dateDays.push(''+k);
-        }
-        for(var i = 1;i<13;i++){
-            var k = i;
-            if(i < 10){k = '0'+i;}
-            dateMonth.push(''+k);
-        }
-        for(var i = 2019;i<2031;i++){
-            dateYears.push(''+i);
-        }
-        this.setState({dateDays,dateMonth,dateYears});
+        var currentDate = new Date();
+        var startDay = ''+currentDate.getDate();
+        var startMonth = ''+(currentDate.getMonth()+1);
+        var startYear = ''+currentDate.getFullYear();
+        if(startDay < 10){startDay = '0'+startDay;}
+        if(startMonth < 10){startMonth = '0'+startMonth;}
+        this.setState({currentDate,startDay,startMonth,startYear});
     }
     pickFile = ()=>{
         const options = {
@@ -96,6 +88,25 @@ class ETimeSheet extends Component{
         //result.pathName - for the file path name
         console.log(result);
     }
+    showDateTimePicker = () => {
+        this.setState({ isDateTimePickerVisible: true });
+    };
+    hideDateTimePicker = () => {
+        this.setState({ isDateTimePickerVisible: false });
+    };
+    handleDatePicked = date => {
+        var changeDate = new Date(date);
+        var dd = ''+changeDate.getDate();
+        var mm = ''+(changeDate.getMonth()+1);
+        var yy = ''+changeDate.getFullYear();
+        if(dd < 10){dd = '0'+dd;}
+        if(mm < 10){mm = '0'+mm;}
+        this.setState({
+            startDay:dd,startMonth:mm,startYear:yy
+        });
+        console.log("A date has been picked: ", dd,mm,yy);
+        this.hideDateTimePicker();
+    };
     render(){
         const RemoveHiehgt = height - 52;
         var behavior = (Platform.OS == 'ios')?'padding':'';
@@ -103,6 +114,9 @@ class ETimeSheet extends Component{
         <SafeAreaView style={{flex:1}}>
             <Loader loading={this.state.loading} />
             <View style={{paddingTop: 15,alignItems:'center',justifyContent:'center'}}>
+                <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}} style={{position:'absolute',left:8,top:8,paddingLeft:10,paddingRight:15,paddingVertical:15,}}>
+                    <Image source={require('../../assets/blue-back-icon.png')} style={{width:10,height:19}}/>
+                </TouchableOpacity>
                 <Image source={require('../../assets/web-logo.png')} style={{width:200,height:34}}/>
                 <Image source={require('../../assets/header-b.png')} style={{width:'100%',marginTop:15}}/>
             </View>
@@ -245,116 +259,64 @@ class ETimeSheet extends Component{
                             </Text>
                             <View style={{marginTop:10}}></View>
                             <View style={{flexDirection:'row',justifyContent:'space-evenly',alignItems:'center',marginTop:10}}>
-                                {
-                                    Platform.OS == 'android' && 
-                                    <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                        <Picker
-                                        selectedValue={this.state.startDay}
-                                        style={{
-                                            flex:1,
-                                            paddingVertical:2,
-                                            height:30,
-                                        }}
-                                        mode="dropdown"
-                                        textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                        itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                        itemStyle={MainStyles.TInput}
-                                        onValueChange={(itemValue, itemIndex) => this.setState({startDay: itemValue})}>
-                                            {
-                                            this.state.dateDays.map(item=>{
-                                                return (
-                                                <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                                )
-                                            })
-                                            }
-                                        </Picker>
-                                    </View>
-                                }
-                                {
-                                    Platform.OS == 'ios' && 
-                                    <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                        <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.startDay}</Text>
-                                    </TouchableOpacity>
-                                    
-                                }
+                                <TextInput 
+                                    style={[MainStyles.TInput]} 
+                                    returnKeyType={"next"} 
+                                    ref={(input) => { this.startDay = input; }} 
+                                    blurOnSubmit={false}
+                                    keyboardType={"number-pad"}
+                                    onChangeText={(text)=>this.setState({startDay:text})} 
+                                    placeholderTextColor="#bebebe" 
+                                    underlineColorAndroid="transparent" 
+                                    value={this.state.startDay}
+                                    maxLength={2}
+                                />
                                 <View style={{paddingHorizontal:5}}></View>
-                                {
-                                    Platform.OS == 'android' && 
-                                    <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                        <Picker
-                                        selectedValue={this.state.startMonth}
-                                        style={{
-                                            flex:1,
-                                            paddingVertical:2,
-                                            height:30,
-                                        }}
-                                        mode="dropdown"
-                                        textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                        itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                        itemStyle={MainStyles.TInput}
-                                        onValueChange={(itemValue, itemIndex) => this.setState({startMonth: itemValue})}>
-                                            {
-                                            this.state.dateMonth.map(item=>{
-                                                return (
-                                                <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                                )
-                                            })
-                                            }
-                                        </Picker>
-                                    </View>
-                                }
-                                {
-                                    Platform.OS == 'ios' && 
-                                    <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                        <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.startMonth}</Text>
-                                    </TouchableOpacity>
-                                    
-                                }
+                                <TextInput 
+                                    style={[MainStyles.TInput]} 
+                                    returnKeyType={"next"} 
+                                    ref={(input) => { this.startMonth = input; }} 
+                                    blurOnSubmit={false}
+                                    keyboardType={"number-pad"}
+                                    onChangeText={(text)=>this.setState({startMonth:text})} 
+                                    placeholderTextColor="#bebebe" 
+                                    underlineColorAndroid="transparent" 
+                                    value={this.state.startMonth}
+                                    maxLength={2}
+                                />
                                 <View style={{paddingHorizontal:5}}></View>
-                                {
-                                    Platform.OS == 'android' && 
-                                    <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                        <Picker
-                                        selectedValue={this.state.startYear}
-                                        style={{
-                                            flex:1,
-                                            paddingVertical:2,
-                                            height:30,
-                                        }}
-                                        mode="dropdown"
-                                        textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                        itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                        itemStyle={MainStyles.TInput}
-                                        onValueChange={(itemValue, itemIndex) => this.setState({startYear: itemValue})}>
-                                            {
-                                            this.state.dateYears.map(item=>{
-                                                return (
-                                                <Picker.Item key={'key-'+item} label={''+item} value={''+item} />
-                                                )
-                                            })
-                                            }
-                                        </Picker>
-                                    </View>
-                                }
-                                {
-                                    Platform.OS == 'ios' && 
-                                    <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                        <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.startYear}</Text>
-                                    </TouchableOpacity>
-                                    
-                                }
+                                <TextInput 
+                                    style={[MainStyles.TInput]} 
+                                    returnKeyType={"next"} 
+                                    ref={(input) => { this.startYear = input; }} 
+                                    blurOnSubmit={false}
+                                    keyboardType={"number-pad"}
+                                    onChangeText={(text)=>this.setState({startYear:text})} 
+                                    placeholderTextColor="#bebebe" 
+                                    underlineColorAndroid="transparent" 
+                                    value={this.state.startYear}
+                                    maxLength={4}
+                                />
+                                <DateTimePicker
+                                isVisible={this.state.isDateTimePickerVisible}
+                                onConfirm={this.handleDatePicked}
+                                onCancel={this.hideDateTimePicker}
+                                minimumDate={this.state.currentDate}
+                                />
                                 <View style={{paddingHorizontal:5}}></View>
-                                <Image source={require('../../assets/calendar-icon.png')} style={{width:20,height:20}} />
+                                <TouchableOpacity   onPress={this.showDateTimePicker}>
+                                    <Image source={require('../../assets/calendar-icon.png')} style={{width:20,height:20}} />
+                                </TouchableOpacity>
                             </View>
                             {/* End Date Year End*/}
                             <View style={{marginTop:15}}></View>
                             <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop:10}}>
-                                <View>
+                                <View style={{width:'32%'}}>
                                     <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                                         Start Time
                                         <Text style={{color:'#ee1b24'}}>*</Text>
                                     </Text>
-                                    <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center',marginTop:10}}>
+                                    <View style={{flexDirection:'row',justifyContent:'space-evenly',alignItems:'center',marginTop:10}}>
                                         <TextInput 
                                         style={[MainStyles.TInput]} 
                                         placeholder="HH"
@@ -383,7 +345,7 @@ class ETimeSheet extends Component{
                                     </View>
                                 </View>
                                 {/* Shift Start Time End*/}
-                                <View>
+                                <View style={{width:'32%'}}>
                                     <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                                         Unpaid Breaks
                                         <Text style={{color:'#ee1b24'}}>*</Text>
@@ -417,7 +379,7 @@ class ETimeSheet extends Component{
                                     </View>
                                 </View>
                                 {/* Shift Unpaid Breaks End*/}
-                                <View>
+                                <View style={{width:'32%'}}>
                                     <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                                         End Time
                                         <Text style={{color:'#ee1b24'}}>*</Text>
