@@ -215,14 +215,14 @@ class Dashboard extends Component{
                                 <Image source={require('../../assets/perm-pos.png')}  width={50} height={55} style={{width:50,height:55,marginBottom:10,}} />
                                 <Text style={[MainStyles.eDTWIT]}>eTIMESSHEET</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#00cec9',width:'100%'}]}>
+                            <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#00cec9',width:'100%'}]} onPress={()=>{this.props.navigation.navigate('LocumAvail')}}>
                                 <Image source={require('../../assets/job-list.png')}  width={50} height={57} style={{width:50,height:57,marginBottom:10}} />
                                 <Text style={[MainStyles.eDTWIT]}>SUBMIT YOUR AVAILABILITY</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#0984e3',width:'100%'}]}>
+                            {/* <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#0984e3',width:'100%'}]}>
                                 <Image source={require('../../assets/pay-invoice.png')}  width={50} height={50} style={{width:50,height:50,marginBottom:10,}} />
                                 <Text style={[MainStyles.eDTWIT]}>PAY RUN CALENDAR</Text>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
                             <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#e77f67',width:'100%'}]} onPress={()=>{this.props.navigation.navigate('Reviews')}}>
                                 <Image source={require('../../assets/feedback.png')}  width={50} height={52} style={{width:50,height:52,marginBottom:10}} />
                                 <Text style={[MainStyles.eDTWIT]}>FEEDBACK</Text>

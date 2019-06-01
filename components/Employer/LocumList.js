@@ -39,7 +39,34 @@ class LocumList extends Component{
         this.setState({userData});
     }
     componentDidMount(){
+        this.shiftDetails();
         this.fetchLocumList();
+    }
+    shiftDetails(){
+        var fetchFrom = (this.state.job_type == 'perm')?'permanent_details':'locumshift_details';
+        fetch(SERVER_URL+fetchFrom+'?id='+this.state.job_id,{
+            method:'GET',
+            headers:myHeaders
+        })
+        .then(res=>res.json())
+        .then(response=>{
+            var r = response.result;
+            console.log(response);
+            this.setState({
+                name:r.name,
+                FirstDate:r.start_date,
+                EndDate:r.end_date,
+                startTime:r.start_time,
+                endTime:r.end_time,
+                detail:r.detail,
+                dispense:r.dispense,
+                travel:r.travel,
+                offer:r.offer
+            });
+        })
+        .catch(err=>{
+            console.log(err);
+        })
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         var paramjob_id = this.props.navigation.getParam("job_id");
@@ -58,9 +85,8 @@ class LocumList extends Component{
             method:'GET',
             headers:myHeaders
         })
-        .then(res=>res.json())
+        .then(res=>{console.log(res);return res.json()})
         .then(response=>{
-            console.log(response);
             if(response.status == 200){
                 this.setState({locumList:response.result});
             }
@@ -72,32 +98,57 @@ class LocumList extends Component{
             this.setState({loading:false,isRefreshing:false});
         })
     }
-    timeSince = (date) => {
-        var newDateFormate = new Date(date);
-        var seconds = Math.floor((new Date() - newDateFormate) / 1000);
-        var interval = Math.floor(seconds / 31536000);      
-        if (interval > 1) {return interval + " years ago";}
-        interval = Math.floor(seconds / 2592000);
-        if (interval > 1) {return interval + " months ago";}
-        interval = Math.floor(seconds / 86400);
-        if (interval > 1) {return interval + " days ago";}
-        interval = Math.floor(seconds / 3600);
-        if (interval > 1) {return interval + " hours ago";}
-        interval = Math.floor(seconds / 60);
-        if (interval > 1) {return interval + " minutes ago";}
-        return Math.floor(seconds) + " seconds ago";
+    formatAMPM = (date) => {
+        var date = new Date(date);
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var dateToday = (new Date()).getDate();
+        var messageDate = date.getDate();
+        if(dateToday > messageDate){
+            var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return fullDate+' '+strTime;
+        }
+        else{
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return strTime;
+        }
     }
     render (){
         const RemoveHiehgt = height - 50;
         return(
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
                 <Loader loading={this.state.loading} />
-                <Header pageName="Locum List" />
+                <Header pageName="Shift Details" />
                 <View style={{height:RemoveHiehgt}}>
+                <View style={{
+                    backgroundColor:"#f7f7f7",
+                    padding:10,}}>
+                      <View style={{flexWrap:'wrap'}}>
+                      <Text style={{color:'#212121',fontFamily:'AvenirLTStd-Light',fontSize:14}}>Shift Name: {this.state.name}</Text>
+                      <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>First Date of Shift: {this.state.FirstDate}</Text>
+                      <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Last  Date of Shift: {this.state.EndDate} </Text>
+                      {(this.state.job_type != 'perm') && <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Start Time: {this.state.startTime}</Text>}
+                      {(this.state.job_type != 'perm') && <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>End Time: {this.state.endTime}</Text>}
+                      <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Shift Details: {this.state.detail}</Text>
+                      <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Dispensing  System: {this.state.dispense}</Text>
+                      <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Pharmacy offerss Pharmacotheraphy  System: {this.state.offer}</Text>
+                      <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Travel and Accommodation: {this.state.travel}</Text>
+                </View>
+                </View>
                     {
                         this.state.locumList.length > 0 && 
                         <FlatList data={this.state.locumList} 
-                            renderItem={({item}) => (
+                            renderItem={({item}) => { 
+                                return(
                                 <View>
                                     <TouchableOpacity style={[MainStyles.JLELoopItem,(item.state == 1)?{backgroundColor:'#e6e6e6'}:'']} onPress={()=>{
                                         console.log(item);
@@ -105,7 +156,7 @@ class LocumList extends Component{
                                     }}>
                                         <View style={{flexWrap:'wrap'}}>
                                             <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                            <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.applied_date)}</Text>
+                                            <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.applied_date)}</Text>
                                         </View>
                                         {
                                             item.status == 1 && 
@@ -121,13 +172,13 @@ class LocumList extends Component{
                                         }
                                     </TouchableOpacity>
                                 </View>
-                                )}
-                            keyExtractor={(item) => 'key-'+item.id}
+                                )}}
+                            keyExtractor={(item) => 'key-'+(new Date()).getTime()+item.job_id}
                             viewabilityConfig={this.viewabilityConfig}
                             refreshControl={
                                 <RefreshControl
                                     refreshing={this.state.isRefreshingShift}
-                                    onRefresh={()=>{this.setState({isRefreshingShift:true}),this.fetchLocumShifts()}}
+                                    onRefresh={()=>{this.setState({isRefreshingShift:true}),this.fetchLocumList()}}
                                     title="Pull to refresh"
                                     colors={["#1d7bc3","red", "green", "blue"]}
                                 />
@@ -135,6 +186,32 @@ class LocumList extends Component{
                             />
                     }
                 </View>
+                <TouchableOpacity style={{
+                    position:'absolute',
+                    right:10,
+                    bottom:20,
+                    width:40,
+                    height:40,
+                    backgroundColor:'#1d7bc3',
+                    borderRadius:35,
+                    zIndex:98562,
+                    justifyContent:'center',
+                    alignItems:'center',
+                    elevation:3,
+                    shadowColor:'#1e1e1e',
+                    shadowOffset:3,
+                    shadowOpacity:0.7,
+                    shadowRadius:3
+                }} onPress={()=>{
+                    if(this.state.job_type =='perm'){
+                        this.props.navigation.navigate('NPSForm',{job_id:this.state.job_id});
+                    }
+                    else{
+                        this.props.navigation.navigate('NLSForm',{job_id:this.state.job_id});
+                    }
+                }}>
+                    <Icon name="pencil" style={{color:'#FFFFFF',fontSize:17,}}/>
+                </TouchableOpacity>
             </SafeAreaView>
         );
     }

@@ -196,6 +196,7 @@ export default class Login extends Component{
                             fontSize:17,
                             fontFamily:'AvenirLTStd-Medium'
                         }} 
+                        initialCountry={"au"}
                         onChangePhoneNumber={(number)=>this.setState({mobileNumber:number})}
                         value={this.state.mobileNumber}
                         />

@@ -84,20 +84,29 @@ class JobList extends Component{
             this.setState({loading:false,isRefreshingPerm:false});
         })
     }
-    timeSince = (date) => {
-        var newDateFormate = new Date(date);
-        var seconds = Math.floor((new Date() - newDateFormate) / 1000);
-        var interval = Math.floor(seconds / 31536000);      
-        if (interval > 1) {return interval + " years";}
-        interval = Math.floor(seconds / 2592000);
-        if (interval > 1) {return interval + " months";}
-        interval = Math.floor(seconds / 86400);
-        if (interval > 1) {return interval + " days";}
-        interval = Math.floor(seconds / 3600);
-        if (interval > 1) {return interval + " hours";}
-        interval = Math.floor(seconds / 60);
-        if (interval > 1) {return interval + " minutes";}
-        return Math.floor(seconds) + " seconds";
+    formatAMPM = (date) => {
+        var date = new Date(date);
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var dateToday = (new Date()).getDate();
+        var messageDate = date.getDate();
+        if(dateToday > messageDate){
+            var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return fullDate+' '+strTime;
+        }
+        else{
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return strTime;
+        }
     }
     render(){
         const RemoveHiehgt = height - 88;
@@ -128,7 +137,7 @@ class JobList extends Component{
                                             }}>
                                                 <View style={{flexWrap:'wrap'}}>
                                                     <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                                    <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.created_on)}</Text>
+                                                    <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.created_on)}</Text>
                                                 </View>
                                                 <View style={{flexDirection:'row',alignItems:'center'}}>
                                                     <Image source={require('../../assets/list-fd-icon.png')} style={{width:8,height:15}}/>
@@ -140,7 +149,7 @@ class JobList extends Component{
                                             <View style={[MainStyles.JLELoopItem,{backgroundColor:'#e6e6e6'}]}>
                                                 <View style={{flexWrap:'wrap'}}>
                                                     <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                                    <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.created_on)}</Text>
+                                                    <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.created_on)}</Text>
                                                 </View>
                                                 <View style={{flexDirection:'row',alignItems:'center'}}>
                                                     <Text style={{transform: [{ rotate: "45deg" }],color:'#61bf6f',fontFamily:'AvenirLTStd-Light',fontSize:14}}>Applied</Text>
@@ -180,7 +189,7 @@ class JobList extends Component{
                                             }}>
                                                 <View style={{flexWrap:'wrap'}}>
                                                     <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                                    <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.created_on)}</Text>
+                                                    <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.created_on)}</Text>
                                                 </View>
                                                 <View style={{flexDirection:'row',alignItems:'center'}}>
                                                     <Image source={require('../../assets/list-fd-icon.png')} style={{width:8,height:15}}/>
@@ -192,7 +201,7 @@ class JobList extends Component{
                                             <View style={[MainStyles.JLELoopItem,{backgroundColor:'#e6e6e6'}]}>
                                                 <View style={{flexWrap:'wrap'}}>
                                                     <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                                    <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.created_on)}</Text>
+                                                    <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.created_on)}</Text>
                                                 </View>
                                                 <View style={{flexDirection:'row',alignItems:'center'}}>
                                                     <Text style={{transform: [{ rotate: "45deg" }],color:'#61bf6f',fontFamily:'AvenirLTStd-Light',fontSize:14}}>Applied</Text>

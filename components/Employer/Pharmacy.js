@@ -66,20 +66,29 @@ class Pharmacy extends Component{
             this.setState({isRefreshingShift:false,loading:false});
         });
     }
-    timeSince = (date) => {
-        var newDateFormate = new Date(date);
-        var seconds = Math.floor((new Date() - newDateFormate) / 1000);
-        var interval = Math.floor(seconds / 31536000);      
-        if (interval > 1) {return interval + " years";}
-        interval = Math.floor(seconds / 2592000);
-        if (interval > 1) {return interval + " months";}
-        interval = Math.floor(seconds / 86400);
-        if (interval > 1) {return interval + " days";}
-        interval = Math.floor(seconds / 3600);
-        if (interval > 1) {return interval + " hours";}
-        interval = Math.floor(seconds / 60);
-        if (interval > 1) {return interval + " minutes";}
-        return Math.floor(seconds) + " seconds";
+    formatAMPM = (date) => {
+        var date = new Date(date);
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var dateToday = (new Date()).getDate();
+        var messageDate = date.getDate();
+        if(dateToday > messageDate){
+            var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return fullDate+' '+strTime;
+        }
+        else{
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return strTime;
+        }
     }
     componentWillUnmount(){
         this._isMounted = false;
@@ -96,10 +105,10 @@ class Pharmacy extends Component{
                     this.state.pharmaList.length > 0 && 
                     <FlatList data={this.state.pharmaList} 
                         renderItem={({item}) => (
-                            <TouchableOpacity style={MainStyles.JLELoopItem} onPress={()=>{}}>
+                            <TouchableOpacity style={MainStyles.JLELoopItem} onPress={()=>{this.props.navigation.navigate('AddPharmacy',{pharm_id:item.pharm_id})}}>
                                 <View style={{flexWrap:'wrap'}}>
                                     <Text style={MainStyles.JLELoopItemName}>{item.business_name}</Text>
-                                    <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.created_on)}</Text>
+                                    <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.created_on)}</Text>
                                 </View>
                             </TouchableOpacity>
                             )}

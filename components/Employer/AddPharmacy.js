@@ -21,7 +21,9 @@ class AddPharmacy extends Component{
     constructor(props){
         super(props);
         this.state={
-            loading:false,
+            loading:true,
+            pharm_id:this.props.navigation.getParam("pharm_id"),
+            pageTitle:'Add Pharmacy'
         };
     }
     async setUserData(){
@@ -31,6 +33,23 @@ class AddPharmacy extends Component{
     }
     componentDidMount = ()=>{
         this.setUserData();
+        if(this.state.pharm_id){
+            console.log(this.state.pharm_id);
+            fetch(SERVER_URL+'pharmacy_details?p_id='+this.state.pharm_id)
+            .then(res=>{console.log(res); return res.json();})
+            .then(response=>{
+                console.log(response.result);
+                var results = response.result;
+                this.setState({loading:false,pageTitle:'Edit Pharmacy',bname:results.business_name,abn:results.abn,fname:results.f_name,lname:results.l_name,bEmail:results.email,bPhone:results.phone,bFax:results.fax,mNumber:results.mobile});
+            })
+            .catch(err=>{
+                console.log(err);
+                this.setState({loading:false,pageTitle:'Add Pharmacy'});
+            });
+        }
+        else{
+            this.setState({loading:false,pageTitle:'Add Pharmacy'});
+        }
     }
     submitPharmacy = ()=>{
         if(this.state.bname == ''){
@@ -68,7 +87,12 @@ class AddPharmacy extends Component{
         formdata.append('phone',this.state.bPhone);
         formdata.append('fax',this.state.bFax);
         formdata.append('mobile',this.state.mNumber);
-        fetch(SERVER_URL+'add_pharmacy',{
+        var ActionType = 'add_pharmacy';
+        if(this.state.pharm_id){
+            formdata.append('pharm_id',this.state.pharm_id);
+            ActionType = 'update_pharmacy';
+        }
+        fetch(SERVER_URL+ActionType,{
             method:'POST',
             headers: {Accept: 'application/json'},
             body:formdata
@@ -91,7 +115,7 @@ class AddPharmacy extends Component{
         return (
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
                 <Loader loading={this.state.loading} />
-                <Header pageName="Add Pharmacy" />
+                <Header pageName={this.state.pageTitle} />
                 <ScrollView style={{height:RemoveHiehgt,flex:1}} keyboardShouldPersistTaps="always">
                     <View style={{backgroundColor:'#FFFFFF',flex:1,marginTop:10,paddingHorizontal:10,paddingVertical:15}}>
                         <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>

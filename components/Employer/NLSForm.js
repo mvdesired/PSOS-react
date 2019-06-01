@@ -10,16 +10,24 @@ import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import DateTimePicker from "react-native-modal-datetime-picker";
 const { height, width } = Dimensions.get('window');
+var myHeaders = new Headers();
+myHeaders.set('Accept', 'application/json');
+//myHeaders.set('Content-Type', 'application/json');
+myHeaders.set('Cache-Control', 'no-cache');
+myHeaders.set('Pragma', 'no-cache');
+myHeaders.set('Expires', '0');
 class NLSFormScreen extends Component{
     constructor(props) {
         super(props);
         var dispensingList = ['WiniFRED','FredNXT','LOTS','Minfos','Simple','Quickscript','Merlin','Other'];
         var travelList = ['Travel and accommodation offered','Travel and accommodation NOT offered','Travel and accommodation may be negotiated'];
         this.state={
-            loading:false,
+            loading:true,
             isStartDateTimePickerVisible:false,
             isEndDateTimePickerVisible:false,
             pharm_id:this.props.navigation.getParam("pharm_id"),
+            job_id:this.props.navigation.getParam("job_id"),
+            pageTitle:'New Locum Shift',
             startDay:'01',
             startMonth:'01',
             startYear:'2019',
@@ -52,6 +60,46 @@ class NLSFormScreen extends Component{
         if(startDay < 10){startDay = '0'+startDay;}
         if(startMonth < 10){startMonth = '0'+startMonth;}
         this.setState({currentDate,startDay,startMonth,startYear});
+    }
+    componentDidMount(){
+        if(this.state.job_id){
+            fetch(SERVER_URL+'locumshift_details?id='+this.state.job_id,{
+                method:'GET',
+                headers:myHeaders
+            })
+            .then(res=>res.json())
+            .then(response=>{
+                var r = response.result;
+                var startArray = (r.start_date).split('-');
+                var endArray = (r.start_date).split('-');
+                var startTArray = (r.start_time).split(':');
+                var endTArray = (r.start_time).split(':');
+                this.setState({loading:false,pageTitle:'Edit Locum Shift',
+                shiftName:r.name,
+                startDay:startArray[2],
+                startMonth:startArray[1],
+                startYear:startArray[0],
+                endDay:endArray[2],
+                endMonth:endArray[1],
+                endYear:endArray[0],
+                startHour:startTArray[0],
+                startMinute:startTArray[1],
+                endHour:endTArray[1],
+                endMinute:endTArray[1],
+                shiftDetails:r.detail,
+                disSystem:r.dispense,
+                travelAcom:r.travel,
+                pOffers:r.offer
+                });
+            })
+            .catch(err=>{
+                console.log(err);
+                this.setState({loading:false,pageTitle:'New Locum Shift'});
+            });
+        }
+        else{
+            this.setState({loading:false,pageTitle:'New Locum Shift'});
+        }
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         var parampharm_id = this.props.navigation.getParam("pharm_id");
@@ -121,7 +169,7 @@ class NLSFormScreen extends Component{
         }
         this.setState({loading:true});
         var formdata = new FormData();
-        formdata.append('pharm_id',this.state.pharm_id);
+        
         formdata.append('user_id',this.state.userData.id);
         formdata.append('name',this.state.shiftName);
         formdata.append('start_date',this.state.startYear+'-'+this.state.startMonth+'-'+this.state.startDay);
@@ -132,7 +180,15 @@ class NLSFormScreen extends Component{
         formdata.append('dispense',this.state.disSystem);
         formdata.append('offer',this.state.pOffers);
         formdata.append('travel',this.state.travelAcom);
-        fetch(SERVER_URL+'add_locumshift',{
+        var actionTYpe = 'add_locumshift';
+        if(this.state.job_id){
+            actionTYpe = 'update_locumshift';
+            formdata.append('id',this.state.job_id);
+        }
+        else{
+            formdata.append('pharm_id',this.state.pharm_id);
+        }
+        fetch(SERVER_URL+actionTYpe,{
             method:'POST',
             headers: {
                 Accept: 'application/json',
@@ -169,7 +225,7 @@ class NLSFormScreen extends Component{
             startDay:dd,startMonth:mm,startYear:yy
         });
         console.log("A date has been picked: ", dd,mm,yy);
-        this.hideDateTimePicker();
+        this.hideStartDateTimePicker();
     };
     showEndDateTimePicker = () => {
         this.setState({isEndDateTimePickerVisible:true});
@@ -185,10 +241,10 @@ class NLSFormScreen extends Component{
         if(dd < 10){dd = '0'+dd;}
         if(mm < 10){mm = '0'+mm;}
         this.setState({
-            startDay:dd,startMonth:mm,startYear:yy
+            endDay:dd,endMonth:mm,endYear:yy
         });
         console.log("A date has been picked: ", dd,mm,yy);
-        this.hideDateTimePicker();
+        this.hideEndDateTimePicker();
     };
     render(){
         const RemoveHiehgt = height - 52;
@@ -211,7 +267,7 @@ class NLSFormScreen extends Component{
                 <KeyboardAvoidingView style={{flex:1,}} enabled behavior={behavior}>
                     <ScrollView style={{paddingHorizontal:15,height:RemoveHiehgt}} keyboardShouldPersistTaps="always">
                         <View style={{paddingVertical:20,}}>
-                            <Text style={{fontFamily:'AvenirLTStd-Heavy',color:'#151515',fontSize:16}}>New Locum Shift</Text>
+                            <Text style={{fontFamily:'AvenirLTStd-Heavy',color:'#151515',fontSize:16}}>{this.state.pageTitle}</Text>
                             <Text style={{
                                 marginTop:5,
                                 fontFamily:'AvenirLTStd-Medium',

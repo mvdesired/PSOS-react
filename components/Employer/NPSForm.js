@@ -10,14 +10,21 @@ import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import DateTimePicker from "react-native-modal-datetime-picker";
 const { height, width } = Dimensions.get('window');
+var myHeaders = new Headers();
+myHeaders.set('Accept', 'application/json');
+//myHeaders.set('Content-Type', 'application/json');
+myHeaders.set('Cache-Control', 'no-cache');
+myHeaders.set('Pragma', 'no-cache');
+myHeaders.set('Expires', '0');
 class NPSFormScreen extends Component{
     constructor(props) {
         super(props);
         var dispensingList = ['WiniFRED','FredNXT','LOTS','Minfos','Simple','Quickscript','Merlin','Other'];
         var travelList = ['Travel and accommodation offered','Travel and accommodation NOT offered','Travel and accommodation may be negotiated'];
         this.state={
-            loading:false,
+            loading:true,
             pharm_id:this.props.navigation.getParam("pharm_id"),
+            job_id:this.props.navigation.getParam("job_id"),
             timHours:{},
             timeMinutes:{},
             dateDays:{},
@@ -89,6 +96,50 @@ class NPSFormScreen extends Component{
         if(startDay < 10){startDay = '0'+startDay;}
         if(startMonth < 10){startMonth = '0'+startMonth;}
         this.setState({timHours,timeMinutes,dateDays,dateMonth,dateYears,currentDate,startDay,startMonth,startYear});
+    }
+    componentDidMount(){
+        if(this.state.job_id){
+            fetch(SERVER_URL+'permanent_details?id='+this.state.job_id,{
+                method:'GET',
+                headers:myHeaders
+            })
+            .then(res=>res.json())
+            .then(response=>{
+                console.log(response);
+                var r = response.result;
+                var startArray = (r.start_date).split('-');
+                this.setState({
+                    loading:false,
+                    pageTitle:'Edit Permanent Position',
+                    startDay:startArray[2],
+                    startMonth:startArray[1],
+                    startYear:startArray[0],
+                    travelAcom:r.travel,
+                    disSystem:r.dispense,
+                    pOffers:r.offer,
+                    shiftName:r.name,
+                    rate_hour:r.rate_hour,
+                    rate_annum:r.rate_annum,
+                    benefits:r.benefits,
+                    roles:r.roles,
+                    abt_role:r.abt_role,
+                    position_name:r.position_name,
+                    position_type:r.position_type,
+                    pharmacy_type:r.pharmacy_type,
+                    technician:r.technician,
+                    scripts:r.scripts,
+                    webster:r.webster,
+                    listing_role:r.listing_role,
+                    shiftDetails:r.detail
+                });
+            })
+            .catch(err=>{
+                this.setState({loading:false,pageTitle:'New Permanent Position'});
+            });
+        }
+        else{
+            this.setState({loading:false,pageTitle:'New Permanent Position'});
+        }
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         var parampharm_id = this.props.navigation.getParam("pharm_id");
@@ -190,7 +241,15 @@ class NPSFormScreen extends Component{
         formdata.append('scripts',this.state.scripts);
         formdata.append('webster',this.state.webster);
         formdata.append('listing_role',this.state.listing_role);
-        fetch(SERVER_URL+'add_permanent',{
+        var actionTYpe = 'add_permanent';
+        if(this.state.job_id){
+            actionTYpe = 'update_permanent';
+            formdata.append('id',this.state.job_id);
+        }
+        else{
+            formdata.append('pharm_id',this.state.pharm_id);
+        }
+        fetch(SERVER_URL+actionTYpe,{
             method:'POST',
             headers: {
                 Accept: 'application/json',
@@ -244,7 +303,7 @@ class NPSFormScreen extends Component{
                 <KeyboardAvoidingView style={{flex:1,}} enabled behavior={behavior}>
                     <ScrollView style={{paddingHorizontal:15,height:RemoveHiehgt}} keyboardShouldPersistTaps="always">
                         <View style={{paddingVertical:20,}}>
-                            <Text style={{fontFamily:'AvenirLTStd-Heavy',color:'#151515',fontSize:16}}>New Permanent Position</Text>
+                            <Text style={{fontFamily:'AvenirLTStd-Heavy',color:'#151515',fontSize:16}}>{this.state.pageTitle}</Text>
                             <Text style={{marginTop:5,fontFamily:'AvenirLTStd-Medium',color:'#676767',fontSize:13,marginBottom:5,}}>
                                For quick, easy and efficient New Permanent Position, please use this form
                             </Text>

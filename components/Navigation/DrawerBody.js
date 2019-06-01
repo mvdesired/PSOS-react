@@ -47,10 +47,10 @@ class DrawerBody extends Component{
                             <Text style={{color:'#feffff',fontFamily:'AvenirLTStd-Light'}}>{this.state.userData.email}</Text>
                         </View>
                     </ImageBackground>
-                    <TouchableOpacity style={styles.DIS} onPress={()=>this.navigateToScreen('Home')}>
+                    {/* <TouchableOpacity style={styles.DIS} onPress={()=>this.navigateToScreen('Home')}>
                         <Image source={require('../../assets/home-d-icon.png')} style={{width:15,height:13}} />
                         <Text style={styles.DITS}>Home</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <TouchableOpacity style={styles.DIS} onPress={()=>this.navigateToScreen('Profile')}>
                         <Image source={require('../../assets/user-d-icon.png')} style={{width:15,height:15}} />
                         <Text style={styles.DITS}>Profile</Text>
@@ -77,14 +77,14 @@ class DrawerBody extends Component{
                         <Image source={require('../../assets/globe-icon.png')} style={{width:15,height:15}} />
                         <Text style={styles.DITS}>Website</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.DIS} onPress={()=>this.navigateToScreen('Twitter')}>
+                    {/* <TouchableOpacity style={styles.DIS} onPress={()=>this.navigateToScreen('Twitter')}>
                         <Image source={require('../../assets/t-d-icon.png')} style={{width:15,height:12}} />
                         <Text style={styles.DITS}>Twitter</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.DIS} onPress={()=>this.navigateToScreen('Facebook')}>
                         <Image source={require('../../assets/f-d-icon.png')} style={{width:15,height:15}} />
                         <Text style={styles.DITS}>Facebook</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <TouchableOpacity style={styles.DIS} onPress={()=>this.navigateToScreen('ShareApp')}>
                         <Image source={require('../../assets/share-d-icon.png')} style={{width:15,height:15}} />
                         <Text style={styles.DITS}>Share App</Text>

@@ -344,6 +344,7 @@ class LocumReg1Screen extends Component{
                                     fontSize:14,
                                     fontFamily:'AvenirLTStd-Medium'
                                 }} 
+                                initialCountry={"au"}
                                 onChangePhoneNumber={(number)=>this.setState({phoneNo:number})}
                                 value={this.state.phoneNo}
                                 />

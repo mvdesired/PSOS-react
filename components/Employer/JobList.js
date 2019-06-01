@@ -18,7 +18,6 @@ myHeaders.set('Cache-Control', 'no-cache');
 myHeaders.set('Pragma', 'no-cache');
 myHeaders.set('Expires', '0');
 class JobList extends Component{
-    
     constructor(props) {
         super(props);
         this.state={
@@ -54,7 +53,7 @@ class JobList extends Component{
             method:'GET',
             headers:myHeaders
         })
-        .then(res=>res.json())
+        .then(res=>{console.log(res);return res.json()})
         .then(response=>{
             console.log(response);
             if(response.status == 200){
@@ -64,7 +63,7 @@ class JobList extends Component{
             this.setState({loading:false,isRefreshingShift:false});
         })
         .catch(err=>{
-            Toast.show('Please check ou internet connection',Toast.SHORT);
+            Toast.show('Please check out internet connection',Toast.SHORT);
             this.setState({loading:false,isRefreshingShift:false});
         })
     }
@@ -82,24 +81,33 @@ class JobList extends Component{
             this.setState({loading:false,isRefreshingPerm:false});
         })
         .catch(err=>{
-            Toast.show('Please check ou internet connection',Toast.SHORT);
+            Toast.show('Please check out internet connection',Toast.SHORT);
             this.setState({loading:false,isRefreshingPerm:false});
         })
     }
-    timeSince = (date) => {
-        var newDateFormate = new Date(date);
-        var seconds = Math.floor((new Date() - newDateFormate) / 1000);
-        var interval = Math.floor(seconds / 31536000);      
-        if (interval > 1) {return interval + " years";}
-        interval = Math.floor(seconds / 2592000);
-        if (interval > 1) {return interval + " months";}
-        interval = Math.floor(seconds / 86400);
-        if (interval > 1) {return interval + " days";}
-        interval = Math.floor(seconds / 3600);
-        if (interval > 1) {return interval + " hours";}
-        interval = Math.floor(seconds / 60);
-        if (interval > 1) {return interval + " minutes";}
-        return Math.floor(seconds) + " seconds";
+    formatAMPM = (date) => {
+        var date = new Date(date);
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var dateToday = (new Date()).getDate();
+        var messageDate = date.getDate();
+        if(dateToday > messageDate){
+            var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return fullDate+' '+strTime;
+        }
+        else{
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return strTime;
+        }
     }
     render(){
         const RemoveHiehgt = height - 88;
@@ -128,7 +136,7 @@ class JobList extends Component{
                                     }}>
                                         <View style={{flexWrap:'wrap'}}>
                                             <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                            <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.created_on)}</Text>
+                                            <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.created_on)}</Text>
                                         </View>
                                         <View style={{flexDirection:'row',alignItems:'center'}}>
                                             <Text style={MainStyles.JLELoopItemCount}>{item.applier}</Text>
@@ -164,7 +172,7 @@ class JobList extends Component{
                                     }}>
                                         <View style={{flexWrap:'wrap'}}>
                                             <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                            <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.created_on)}</Text>
+                                            <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.created_on)}</Text>
                                         </View>
                                         <View style={{flexDirection:'row',alignItems:'center'}}>
                                             <Text style={MainStyles.JLELoopItemCount}>{item.applier}</Text>

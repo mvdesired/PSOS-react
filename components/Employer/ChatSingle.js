@@ -58,7 +58,7 @@ class ChatScreen extends Component{
                 method:'GET',
                 headers:myHeaders
             })
-            .then(res=>{return res.json()})
+            .then(res=>{console.log(res);return res.json()})
             .then(response=>{
                 if(response.status == 200){
                     this.setState({
@@ -71,11 +71,11 @@ class ChatScreen extends Component{
                     for(var i=0;i<response.result.media_list.length;i++){
                         images.push({source:{uri:response.result.media_list[i]}});
                     }
-                    this.setState({images});
+                    this.setState({loading:false,images});
                 }
             })
             .catch(err=>{
-    
+                this.setState({loading:false,});
             })
         }
     }
