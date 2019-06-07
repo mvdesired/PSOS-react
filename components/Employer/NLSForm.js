@@ -25,6 +25,8 @@ class NLSFormScreen extends Component{
             loading:true,
             isStartDateTimePickerVisible:false,
             isEndDateTimePickerVisible:false,
+            isStartTimePickerVisible:false,
+            isEndTimePickerVisible:false,
             pharm_id:this.props.navigation.getParam("pharm_id"),
             job_id:this.props.navigation.getParam("job_id"),
             pageTitle:'New Locum Shift',
@@ -57,9 +59,13 @@ class NLSFormScreen extends Component{
         var startDay = ''+currentDate.getDate();
         var startMonth = ''+(currentDate.getMonth()+1);
         var startYear = ''+currentDate.getFullYear();
+        var startHour = ''+currentDate.getHours();
+        var startMinute = ''+currentDate.getMinutes();
         if(startDay < 10){startDay = '0'+startDay;}
         if(startMonth < 10){startMonth = '0'+startMonth;}
-        this.setState({currentDate,startDay,startMonth,startYear});
+        if(startHour < 10){startHour = '0'+startHour;}
+        if(startMinute < 10){startMinute = '0'+startMinute;}
+        this.setState({currentDate,startDay,startMonth,startYear,startHour,startMinute});
     }
     componentDidMount(){
         if(this.state.job_id){
@@ -199,8 +205,9 @@ class NLSFormScreen extends Component{
         .then(response=>{
             this.setState({loading:false,shiftName:''});
             Toast.show(response.message,Toast.SHORT);
-
-            //this.props.navigation.navigate('JobListE');
+            if(this.state.job_id){
+                this.props.navigation.navigate('JobListE');
+            }
         })
         .catch(err=>{
             this.setState({loading:false});
@@ -245,6 +252,40 @@ class NLSFormScreen extends Component{
         });
         console.log("A date has been picked: ", dd,mm,yy);
         this.hideEndDateTimePicker();
+    };
+    showStartTimePicker = () => {
+        this.setState({isStartTimePickerVisible:true});
+    };
+    hideStartTimePicker = () => {
+        this.setState({isStartTimePickerVisible:false});
+    };
+    handleStartTimePicked = date => {
+        var changeDate = new Date(date);
+        var hh = ''+changeDate.getHours();
+        var mm = ''+(changeDate.getMinutes());
+        if(hh < 10){hh = '0'+hh;}
+        if(mm < 10){mm = '0'+mm;}
+        this.setState({
+            startHour:hh,startMinute:mm
+        });
+        this.hideStartTimePicker();
+    };
+    showEndTimePicker = () => {
+        this.setState({isEndTimePickerVisible:true});
+    };
+    hideEndTimePicker = () => {
+        this.setState({isEndTimePickerVisible:false});
+    };
+    handleEndTimePicked = date => {
+        var changeDate = new Date(date);
+        var hh = ''+changeDate.getHours();
+        var mm = ''+(changeDate.getMinutes());
+        if(hh < 10){hh = '0'+hh;}
+        if(mm < 10){mm = '0'+mm;}
+        this.setState({
+            endHour:hh,endMinute:mm
+        });
+        this.hideEndTimePicker();
     };
     render(){
         const RemoveHiehgt = height - 52;
@@ -461,6 +502,18 @@ class NLSFormScreen extends Component{
                                         maxLength={2}
                                         placeholder="MM"
                                     />
+                                    <View style={{paddingHorizontal:2}}>
+                                        <TouchableOpacity onPress={()=>{this.showStartTimePicker()}}>
+                                            <Icon name="clock-o" style={{fontSize:17}} />
+                                        </TouchableOpacity>
+                                        <DateTimePicker
+                                        isVisible={this.state.isStartTimePickerVisible}
+                                        onConfirm={this.handleStartTimePicked}
+                                        onCancel={this.hideStartTimePicker}
+                                        mode="time"
+                                        minimumDate={this.state.currentDate}
+                                        />
+                                    </View>
                                 </View>
                             </View>
                             {/* Start Time Ends */}
@@ -500,6 +553,18 @@ class NLSFormScreen extends Component{
                                         maxLength={2}
                                         placeholder="MM"
                                     />
+                                    <View style={{paddingHorizontal:2}}>
+                                        <TouchableOpacity onPress={()=>{this.showEndTimePicker()}}>
+                                            <Icon name="clock-o" style={{fontSize:17}} />
+                                        </TouchableOpacity>
+                                        <DateTimePicker
+                                        isVisible={this.state.isEndTimePickerVisible}
+                                        onConfirm={this.handleEndTimePicked}
+                                        onCancel={this.hideEndTimePicker}
+                                        mode="time"
+                                        minimumDate={this.state.currentDate}
+                                        />
+                                    </View>
                                 </View>
                             </View>
                             {/* End Time Ends */}

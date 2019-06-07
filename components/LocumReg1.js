@@ -2,6 +2,7 @@ import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
     Picker,Dimensions,AsyncStorage,
     ActionSheetIOS,Platform } from 'react-native';
+    import Icon from 'react-native-vector-icons/FontAwesome';
 import Loader from './Loader';
 import MainStyles from './Styles';
 import Toast from 'react-native-simple-toast';
@@ -12,6 +13,7 @@ import ImagePicker from 'react-native-image-picker';
 import RNFS from 'react-native-fs';
 import { SERVER_URL,SENDER_ID } from '../Constants';
 import PushNotification from 'react-native-push-notification';
+import DateTimePicker from "react-native-modal-datetime-picker";
 const { height, width } = Dimensions.get('window');
 var myHeaders = new Headers();
 myHeaders.set('Content-Type', 'application/json');
@@ -43,7 +45,8 @@ class LocumReg1Screen extends Component{
             js_admin_vaccin:'No',
             js_comfort:'No',
             js_medi_review:'No',
-            des_restrict:''
+            des_restrict:'',
+            isDatePickerVisible:false
         }
     }
     componentDidMount(){
@@ -52,6 +55,10 @@ class LocumReg1Screen extends Component{
                 BackHandler.exitApp();
             }
         });
+    }
+    componentWillMount(){
+        var currentDate = new Date();
+        this.setState({currentDate});
     }
     async saveDetails(key,value){
         await AsyncStorage.setItem(key,value);
@@ -245,6 +252,25 @@ class LocumReg1Screen extends Component{
             this.setState({js_software:selected});
         }
     }
+    showDatePicker = () => {
+        this.setState({ isDatePickerVisible: true });
+    };
+    hideDatePicker = () => {
+        this.setState({ isDatePickerVisible: false });
+    };
+    handleDatePicked = date => {
+        var changeDate = new Date(date);
+        var dd = ''+changeDate.getDate();
+        var mm = ''+(changeDate.getMonth()+1);
+        var yy = ''+changeDate.getFullYear();
+        if(dd < 10){dd = '0'+dd;}
+        if(mm < 10){mm = '0'+mm;}
+        this.setState({
+            dd,mm,yy
+        });
+        console.log("A date has been picked: ", dd,mm,yy);
+        this.hideDatePicker();
+    };
     render(){
         const RemoveHiehgt = height - 66;
         var behavior = (Platform.OS == 'ios')?'padding':'';
@@ -456,7 +482,8 @@ class LocumReg1Screen extends Component{
                                     returnKeyType={"go"} 
                                     ref={(input) => { this.pz = input; }} 
                                     blurOnSubmit={false}
-                                    keyboardType={"name-phone-pad"}
+                                    keyboardType="number-pad"
+                                    maxLength={4}
                                     onChangeText={(text)=>this.setState({pz:text})} 
                                     placeholderTextColor="#bebebe" 
                                     underlineColorAndroid="transparent" 
@@ -564,11 +591,11 @@ class LocumReg1Screen extends Component{
                             {/* Picture Ends */}
                             <View style={{marginTop:15}}></View>
                             <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop:10}}>
-                                <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:13,width:'50%'}}>
+                                <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:13,width:'40%'}}>
                                     Date of Birth
                                     <Text style={{color:'#ee1b24'}}>*</Text>
                                 </Text>
-                                <View style={{flexDirection:'row',justifyContent:'space-around',width:'50%'}}>
+                                <View style={{flexDirection:'row',justifyContent:'space-around',width:'60%'}}>
                                     <TextInput 
                                         style={MainStyles.TInput} 
                                         placeholder="DD" 
@@ -613,6 +640,17 @@ class LocumReg1Screen extends Component{
                                         value={this.state.yy}
                                         keyboardType="number-pad"
                                     />
+                                    <View style={{paddingLeft:4,alignItems:'center',justifyContent:'center'}}>
+                                        <TouchableOpacity onPress={this.showDatePicker}>
+                                            <Image source={require('../assets/calendar-icon.png')} style={{width:20,height:20}} />
+                                        </TouchableOpacity>
+                                        <DateTimePicker
+                                        isVisible={this.state.isDatePickerVisible}
+                                        onConfirm={this.handleDatePicked}
+                                        onCancel={this.hideDatePicker}
+                                        maximumDate={this.state.currentDate}
+                                        />
+                                    </View>
                                 </View>
                             </View>
                             {/* DOB Ends */}

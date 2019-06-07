@@ -51,6 +51,7 @@ class Reviews extends Component{
                 })
                 .then(res=>res.json())
                 .then(response=>{
+                    console.log(response);
                     if(response.status == 200){
                         this.setState({locumList:response.result});
                     }
@@ -65,6 +66,7 @@ class Reviews extends Component{
                 })
                 .then(res=>res.json())
                 .then(response=>{
+                    console.log(response);
                     if(response.status == 200){
                         this.setState({myList:response.result});
                     }
@@ -76,7 +78,7 @@ class Reviews extends Component{
                 });
             }
             else{
-                this.setState({pageTitle:'EMPLOYER REVIEW'});
+                this.setState({pageTitle:'LOCUM REVIEW'});
                 fetch(SERVER_URL+'employer_review?employer_id='+this.state.userData.id,{
                     headers:myHeaders
                 })
@@ -193,7 +195,7 @@ class Reviews extends Component{
                                         </View>
                                     </View>
                                     )}}
-                                keyExtractor={(item) => 'key-'+item.review_id}
+                                keyExtractor={(item) => 'key-my-'+item.review_id}
                                 viewabilityConfig={this.viewabilityConfig}
                                 refreshControl={
                                     <RefreshControl
@@ -248,7 +250,7 @@ class Reviews extends Component{
                                         </View>
                                     </View>
                                     )}}
-                                keyExtractor={(item) => 'key-'+item.review_id}
+                                keyExtractor={(item) => 'key-o-'+item.review_id}
                                 viewabilityConfig={this.viewabilityConfig}
                                 refreshControl={
                                     <RefreshControl

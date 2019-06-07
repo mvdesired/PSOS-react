@@ -26,6 +26,7 @@ class LocumList extends Component{
             isRefreshing:false,
             job_id:this.props.navigation.getParam("job_id"),
             job_type:this.props.navigation.getParam("job_type"),
+            is_end:this.props.navigation.getParam("isEnd")
         }
         this.viewabilityConfig = {
             waitForInteraction: true,
@@ -51,7 +52,6 @@ class LocumList extends Component{
         .then(res=>res.json())
         .then(response=>{
             var r = response.result;
-            console.log(response);
             this.setState({
                 name:r.name,
                 FirstDate:r.start_date,
@@ -85,7 +85,7 @@ class LocumList extends Component{
             method:'GET',
             headers:myHeaders
         })
-        .then(res=>{console.log(res);return res.json()})
+        .then(res=>res.json())
         .then(response=>{
             if(response.status == 200){
                 this.setState({locumList:response.result});
@@ -142,6 +142,10 @@ class LocumList extends Component{
                       <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Dispensing  System: {this.state.dispense}</Text>
                       <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Pharmacy offerss Pharmacotheraphy  System: {this.state.offer}</Text>
                       <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Travel and Accommodation: {this.state.travel}</Text>
+                      {
+                          this.state.is_end == 1 && 
+                          <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Completed</Text>
+                      }
                 </View>
                 </View>
                     {
@@ -151,8 +155,7 @@ class LocumList extends Component{
                                 return(
                                 <View>
                                     <TouchableOpacity style={[MainStyles.JLELoopItem,(item.state == 1)?{backgroundColor:'#e6e6e6'}:'']} onPress={()=>{
-                                        console.log(item);
-                                        this.props.navigation.navigate('LocumDetails',{job_id:this.state.job_id,job_type:this.state.job_type,locum_id:item.locum_id,applied:item.status});
+                                        this.props.navigation.navigate('LocumDetails',{job_id:this.state.job_id,job_type:this.state.job_type,locum_id:item.locum_id,applied:item.status,isEnd:this.state.is_end});
                                     }}>
                                         <View style={{flexWrap:'wrap'}}>
                                             <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
@@ -186,32 +189,36 @@ class LocumList extends Component{
                             />
                     }
                 </View>
-                <TouchableOpacity style={{
-                    position:'absolute',
-                    right:10,
-                    bottom:20,
-                    width:40,
-                    height:40,
-                    backgroundColor:'#1d7bc3',
-                    borderRadius:35,
-                    zIndex:98562,
-                    justifyContent:'center',
-                    alignItems:'center',
-                    elevation:3,
-                    shadowColor:'#1e1e1e',
-                    shadowOffset:3,
-                    shadowOpacity:0.7,
-                    shadowRadius:3
-                }} onPress={()=>{
-                    if(this.state.job_type =='perm'){
-                        this.props.navigation.navigate('NPSForm',{job_id:this.state.job_id});
-                    }
-                    else{
-                        this.props.navigation.navigate('NLSForm',{job_id:this.state.job_id});
-                    }
-                }}>
-                    <Icon name="pencil" style={{color:'#FFFFFF',fontSize:17,}}/>
-                </TouchableOpacity>
+                {
+                    this.state.is_end == 0 && 
+                    <TouchableOpacity style={{
+                        position:'absolute',
+                        right:10,
+                        bottom:20,
+                        width:40,
+                        height:40,
+                        backgroundColor:'#1d7bc3',
+                        borderRadius:35,
+                        zIndex:98562,
+                        justifyContent:'center',
+                        alignItems:'center',
+                        elevation:3,
+                        shadowColor:'#1e1e1e',
+                        shadowOffset:3,
+                        shadowOpacity:0.7,
+                        shadowRadius:3
+                    }} onPress={()=>{
+                        if(this.state.job_type =='perm'){
+                            this.props.navigation.navigate('NPSForm',{job_id:this.state.job_id});
+                        }
+                        else{
+                            this.props.navigation.navigate('NLSForm',{job_id:this.state.job_id});
+                        }
+                    }}>
+                        <Icon name="pencil" style={{color:'#FFFFFF',fontSize:17,}}/>
+                    </TouchableOpacity>
+                }
+                
             </SafeAreaView>
         );
     }

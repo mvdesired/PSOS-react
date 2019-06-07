@@ -51,7 +51,7 @@ class EChatList extends Component{
                 method:'GET',
                 headers:myHeaders,
             })
-            .then(res=>{console.log(res);res.json()})
+            .then(res=>res.json())
             .then(response=>{
                 if(response.status == 200){
                     this.setState({chatList:response.result});
@@ -133,7 +133,11 @@ class EChatList extends Component{
                                         <Text style={[MainStyles.JLELoopItemName,{marginLeft:10,flexWrap:'wrap'}]}>{item.full_name}</Text>
                                     </View>
                                     <View style={{alignItems:'center'}}>
-                                        <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#676767',fontSize:11}}>{this.formatAMPM(item.lastMsg)}</Text>
+                                        {
+                                            item.lastMsg > 0 && 
+                                            <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#676767',fontSize:11}}>{this.formatAMPM(item.lastMsg)}</Text>
+                                        }
+                                        
                                         {
                                             item.unread > 0 && 
                                             <View style={{marginTop:5,backgroundColor:'#02aeee',width:18,height:18,alignItems:'center',justifyContent:'center',borderRadius:100}}>
@@ -144,7 +148,7 @@ class EChatList extends Component{
                                     </View>
                                 </TouchableOpacity>
                                 )}
-                            keyExtractor={(item) => 'key-'+item.id}
+                            keyExtractor={(item) => 'key-'+item.user_id}
                             viewabilityConfig={this.viewabilityConfig}
                             refreshControl={
                                 <RefreshControl

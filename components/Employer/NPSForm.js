@@ -183,10 +183,10 @@ class NPSFormScreen extends Component{
             Toast.show('Benefits should not be empty',Toast.SHORT);
             return false;
         }
-        if(this.state.roles == ''){
+        /*if(this.state.roles == ''){
             Toast.show('Roles should not be empty',Toast.SHORT);
             return false;
-        }
+        }*/
         if(this.state.abt_role == ''){
             Toast.show('About role should not be empty',Toast.SHORT);
             return false;
@@ -665,6 +665,18 @@ class NPSFormScreen extends Component{
                                    {this.state.position_name == 'Retail Assistant' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
                                 </View>
                                 <Text style={[MainStyles.checkBoxLabel]}>Retail Assistant</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.setState({position_name:'PIC'});}}>
+                                <View style={[MainStyles.checkBoxStyle]}>
+                                    {this.state.position_name == 'PIC' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                </View>
+                                <Text style={[MainStyles.checkBoxLabel]}>PIC</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.setState({position_name:'PIC2'});}}>
+                                <View style={[MainStyles.checkBoxStyle]}>
+                                   {this.state.position_name == 'PIC2' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                </View>
+                                <Text style={[MainStyles.checkBoxLabel]}>PIC2</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[MainStyles.checkBoxWrapper,{alignItems:'flex-start'}]} onPress={()=>{this.setState({position_name:'Other'});}}>
                                 <View style={[MainStyles.checkBoxStyle]}>

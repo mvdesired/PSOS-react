@@ -9,6 +9,8 @@ import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import { FlatList } from 'react-native-gesture-handler';
+import Dialog, { SlideAnimation,DialogTitle,DialogButton } from 'react-native-popup-dialog';
+import StarRating from 'react-native-star-rating';
 import Header from '../Navigation/Header';
 const { height, width } = Dimensions.get('window');
 var myHeaders = new Headers();
@@ -26,7 +28,9 @@ class JobList extends Component{
             shiftList:{},
             permList:{},
             isRefreshingPerm:false,
-            isRefreshingShift:false
+            isRefreshingShift:false,
+            modalVisible:false,
+            starCount: 5
         }
         this.viewabilityConfig = {
             waitForInteraction: true,
@@ -55,6 +59,7 @@ class JobList extends Component{
         })
         .then(res=>res.json())
         .then(response=>{
+            console.log(response);
             if(response.status == 200){
                 this.setState({shiftList:response.result});
             }
@@ -108,6 +113,31 @@ class JobList extends Component{
             return strTime;
         }
     }
+    submitFeedBack = ()=>{
+        this.setState({loading:true});
+        var fd = new FormData();
+        fd.append("job_id",this.state.job_id);
+        fd.append("employer_id",this.state.emp_id);
+        fd.append("locum_id",this.state.userData.id);
+        fd.append("review",this.state.starCount);
+        fetch(SERVER_URL+'add_employerreview',{
+            method:"POST",
+            header:myHeaders,
+            body:fd
+        })
+        .then(res=>{console.log(res);return res.json()})
+        .then(response=>{
+            if(response.status == 200){
+                this.props.navigation.navigate("Home");
+                this.setState({modalVisible:false,loading:false});
+            }
+            Toast.show(response.message,Toast.SHORT);
+        })
+        .catch(err=>{
+            this.setState({loading:false});
+            console.log(err);
+        });
+    }
     render(){
         const RemoveHiehgt = height - 88;
         return(
@@ -147,13 +177,34 @@ class JobList extends Component{
                                         {
                                             item.applied == 1 && 
                                             <View style={[MainStyles.JLELoopItem,{backgroundColor:'#e6e6e6'}]}>
-                                                <View style={{flexWrap:'wrap'}}>
+                                                <View style={{flexWrap:'wrap',flex:1}}>
                                                     <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
                                                     <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.created_on)}</Text>
                                                 </View>
-                                                <View style={{flexDirection:'row',alignItems:'center'}}>
-                                                    <Text style={{transform: [{ rotate: "45deg" }],color:'#61bf6f',fontFamily:'AvenirLTStd-Light',fontSize:14}}>Applied</Text>
+                                                <View style={{flexDirection:'row',alignItems:'center',flexWrap:'wrap',justifyContent:'flex-end',flex:1}}>
+                                                    {
+                                                        item.is_end == 0 && 
+                                                        <Text style={{transform: [{ rotate: "45deg" }],color:'#61bf6f',fontFamily:'AvenirLTStd-Light',fontSize:10}}>Applied</Text>
+                                                    }
+                                                    {
+                                                        item.is_end == 0 && 
+                                                        <View style={{width:15,height:15,backgroundColor:'#61bf6f',borderRadius:50,marginLeft:5,marginRight:5}}></View>
+                                                    }
+                                                    {
+                                                        item.is_end == 0 && item.is_review == 0 && 
+                                                        <TouchableOpacity onPress={()=>{
+                                                            this.setState({job_id:item.id,emp_id:item.employer_id,modalVisible:true});
+                                                        }}>
+                                                            <Icon name="star" style={{fontSize:20,color:'#fc8c15'}} />
+                                                        </TouchableOpacity>
+                                                    }
+                                                    
                                                 </View>
+                                                {/* {
+                                                    item.is_end == 1 &&  */}
+                                                    <View>
+                                                        
+                                                    </View>
                                             </View>
                                         }
                                     </View>
@@ -226,6 +277,36 @@ class JobList extends Component{
                     </View>
                 }
                 {/* Shift Tab Content Ends */}
+                <Dialog
+                visible={this.state.modalVisible}
+                width={0.85}
+                dialogStyle={{padding:0,maxHeight:"75%",alignItems:'center',paddingBottom:20}}
+                dialogAnimation={new SlideAnimation()}
+                containerStyle={{zIndex: 10,flex:1}}
+                rounded={true} 
+                >
+                    <DialogTitle title="Give Feedback" style={{width:'100%',backgroundColor:'#147dbf',borderRadius:0}} textStyle={{fontFamily:'AvenirLTStd-Medium',color:'#FFF',fontSize: 20,}} />
+                    <View style={{marginTop: 22,width:250}}>
+                        <StarRating
+                            disabled={false}
+                            fullStarColor="#fc8c15"
+                            starSize={25}
+                            containerStyle={{paddingHorizontal:15,justifyContent:'center'}}
+                            starStyle={{marginHorizontal:2.5}}
+                            maxStars={5}
+                            rating={this.state.starCount}
+                            selectedStar={(rating) => {this.setState({starCount:rating})}}
+                        />
+                        <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center',marginTop:15}}>
+                            <DialogButton text="Submit" style={[{borderRadius: 35,width:20,backgroundColor:'#147dbf',height:20}]} textStyle={[MainStyles.psosBtnText,MainStyles.psosBtnXsText]} onPress={() => {
+                                this.submitFeedBack();
+                            }}/>
+                            <DialogButton text="Close" style={[{borderRadius: 35,width:20,backgroundColor:'#147dbf',height:20}]} textStyle={[MainStyles.psosBtnText,MainStyles.psosBtnXsText]} onPress={() => {
+                                this.setState({modalVisible:false});
+                            }}/>
+                        </View>
+                    </View>
+                </Dialog>
             </SafeAreaView>
         )
     }

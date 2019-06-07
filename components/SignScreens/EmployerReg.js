@@ -328,6 +328,8 @@ class EmployerScreen extends Component{
                                 returnKeyType={"go"} 
                                 ref={(input) => { this.pz = input; }} 
                                 blurOnSubmit={false}
+                                keyboardType="number-pad"
+                                maxLength={4}
                                 onChangeText={(text)=>this.setState({pz:text})} 
                                 placeholderTextColor="#bebebe" 
                                 underlineColorAndroid="transparent" 

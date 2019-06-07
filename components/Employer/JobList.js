@@ -53,9 +53,8 @@ class JobList extends Component{
             method:'GET',
             headers:myHeaders
         })
-        .then(res=>{console.log(res);return res.json()})
+        .then(res=>res.json())
         .then(response=>{
-            console.log(response);
             if(response.status == 200){
                 this.setState({shiftList:response.result});
             }
@@ -120,7 +119,7 @@ class JobList extends Component{
                         <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'shift')?MainStyles.activeJLEItemText:'']}>LOCUM SHIFT</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[MainStyles.jobListETabsItem,(this.state.currentTab == 'perm')?MainStyles.activeJLEItem:'']} onPress={()=>{this.setState({currentTab:'perm'})}}>
-                        <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'perm')?MainStyles.activeJLEItemText:'']}>PARMANENT POSITION</Text>
+                        <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'perm')?MainStyles.activeJLEItemText:'']}>PERMANENT POSITION</Text>
                     </TouchableOpacity>
                 </View>
                 {
@@ -131,8 +130,7 @@ class JobList extends Component{
                             <FlatList data={this.state.shiftList} 
                                 renderItem={({item}) => (
                                     <TouchableOpacity style={MainStyles.JLELoopItem} onPress={()=>{
-                                        console.log(item);
-                                        this.props.navigation.navigate('LocumList',{job_type:'shift',job_id:item.id});
+                                        this.props.navigation.navigate('LocumList',{job_type:'shift',job_id:item.id,isEnd:item.is_end});
                                     }}>
                                         <View style={{flexWrap:'wrap'}}>
                                             <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
@@ -141,6 +139,11 @@ class JobList extends Component{
                                         <View style={{flexDirection:'row',alignItems:'center'}}>
                                             <Text style={MainStyles.JLELoopItemCount}>{item.applier}</Text>
                                             <Icon name="eye" style={MainStyles.JLELoopItemIcon}/>
+                                            {
+                                                item.is_end == 0 &&
+                                                <View style={{width:15,height:15,backgroundColor:'#61bf6f',borderRadius:50,marginLeft:5}}></View>
+                                                // <Text style={{marginLeft:5,color:'#61bf6f',fontFamily:'AvenirLTStd-Light',fontSize:10}}>Completed</Text>
+                                            }
                                         </View>
                                     </TouchableOpacity>
                                     )}
@@ -167,8 +170,7 @@ class JobList extends Component{
                             <FlatList data={this.state.permList} 
                                 renderItem={({item}) => (
                                     <TouchableOpacity style={MainStyles.JLELoopItem} onPress={()=>{
-                                        console.log(item);
-                                        this.props.navigation.navigate('LocumList',{job_type:'perm',job_id:item.id});
+                                        this.props.navigation.navigate('LocumList',{job_type:'perm',job_id:item.id,isEnd:item.is_end});
                                     }}>
                                         <View style={{flexWrap:'wrap'}}>
                                             <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>

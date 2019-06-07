@@ -48,10 +48,10 @@ class AppliedJob extends Component{
         setTimeout(()=>{
             this.fetchLocumShifts();
             this.fetchPermShifts();
-            this.clearTime = setInterval(()=>{
-                this.fetchLocumShifts();
-                this.fetchPermShifts();
-            },3000);
+            // this.clearTime = setInterval(()=>{
+            //     this.fetchLocumShifts();
+            //     this.fetchPermShifts();
+            // },3000);
         },1500);
         
     }
@@ -62,6 +62,7 @@ class AppliedJob extends Component{
         })
         .then(res=>res.json())
         .then(response=>{
+            console.log(response);
             if(response.status == 200){
                 this.setState({shiftList:response.result});
             }
@@ -89,24 +90,33 @@ class AppliedJob extends Component{
             this.setState({loading:false,isRefreshingPerm:false});
         })
     }
-    timeSince = (date) => {
-        var newDateFormate = new Date(date);
-        var seconds = Math.floor((new Date() - newDateFormate) / 1000);
-        var interval = Math.floor(seconds / 31536000);      
-        if (interval > 1) {return interval + " years";}
-        interval = Math.floor(seconds / 2592000);
-        if (interval > 1) {return interval + " months";}
-        interval = Math.floor(seconds / 86400);
-        if (interval > 1) {return interval + " days";}
-        interval = Math.floor(seconds / 3600);
-        if (interval > 1) {return interval + " hours";}
-        interval = Math.floor(seconds / 60);
-        if (interval > 1) {return interval + " minutes";}
-        return Math.floor(seconds) + " seconds";
+    formatAMPM = (date) => {
+        var date = new Date(date);
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var dateToday = (new Date()).getDate();
+        var messageDate = date.getDate();
+        if(dateToday > messageDate){
+            var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return fullDate+' '+strTime;
+        }
+        else{
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return strTime;
+        }
     }
     componentWillUnmount(){
         this._isMounted = false;
-        clearTimeout(this.clearTime);
+        //clearTimeout(this.clearTime);
     }
     render(){
         const RemoveHiehgt = height - 88;
@@ -134,7 +144,7 @@ class AppliedJob extends Component{
                                     }}>
                                         <View style={{flexWrap:'wrap'}}>
                                             <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                            <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.created_on)}</Text>
+                                            <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.applied_date)}</Text>
                                         </View>
                                         <View style={{flexDirection:'row',alignItems:'center'}}>
                                             <Text style={MainStyles.JLELoopItemCount}>{item.applier}</Text>
@@ -170,7 +180,7 @@ class AppliedJob extends Component{
                                     }}>
                                         <View style={{flexWrap:'wrap'}}>
                                             <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                            <Text style={MainStyles.JLELoopItemTime}>{this.timeSince(item.created_on)}</Text>
+                                            <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.applied_date)}</Text>
                                         </View>
                                         <View style={{flexDirection:'row',alignItems:'center'}}>
                                             <Text style={MainStyles.JLELoopItemCount}>{item.applier}</Text>
