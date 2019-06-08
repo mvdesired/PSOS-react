@@ -4,7 +4,7 @@ import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,Key
     ActionSheetIOS,Platform } from 'react-native';
 import Loader from './Loader';
 import MainStyles from './Styles';
-import countryList from 'react-select-country-list';
+//import countryList from 'react-select-country-list';
 import Dialog, { SlideAnimation } from "react-native-popup-dialog";
 import { DocumentPicker, DocumentPickerUtil } from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-picker';
@@ -23,8 +23,8 @@ myHeaders.set('Content-Type', 'application/json');
 class LocumReg1Screen extends Component{
     constructor(props) {
         super(props);
-        var cOptionsList = countryList().getLabels();
-        cOptionsList.unshift('Cancel');
+        //var cOptionsList = countryList().getLabels();
+        //cOptionsList.unshift('Cancel');
         this.state={
             loading:false,
             showTerms:false,

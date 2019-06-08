@@ -42,7 +42,9 @@ class DrawerBody extends Component{
                         paddingHorizontal:10
                     }}>
                         <View>
-                            <Image source={{uri:this.state.userData.user_img}} style={{width:60,height:60,marginBottom:7,borderRadius:100}}/>
+                            <View style={{width:60,height:60,overflow:'hidden',borderRadius:50,marginBottom:7}}>
+                                <Image source={{uri:this.state.userData.user_img}} style={{width:60,height:60}}/>
+                            </View>
                             <Text style={{color:'#feffff',fontFamily:'AvenirLTStd-Light',marginBottom:5}}>{this.state.userData.fname} {this.state.userData.lname}</Text>
                             <Text style={{color:'#feffff',fontFamily:'AvenirLTStd-Light'}}>{this.state.userData.email}</Text>
                         </View>

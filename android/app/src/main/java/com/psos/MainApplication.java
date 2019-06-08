@@ -5,17 +5,16 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.decoder.SimpleProgressiveJpegConfig;
 import com.facebook.react.ReactApplication;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+import com.reactnativecommunity.webview.RNCWebViewPackage;
 import cl.json.RNSharePackage;
-import com.rssignaturecapture.RSSignatureCapturePackage;
-import com.merryjs.PhotoViewer.MerryPhotoViewPackage;
+import com.imagepicker.ImagePickerPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.rnfs.RNFSPackage;
 import com.reactnativedocumentpicker.ReactNativeDocumentPicker;
-import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
-import com.imagepicker.ImagePickerPackage;
-import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
-import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
-import com.vonovak.AddCalendarEventPackage;
+import com.merryjs.PhotoViewer.MerryPhotoViewPackage;
+import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -36,17 +35,16 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ReactNativePushNotificationPackage(),
+            new RNCWebViewPackage(),
             new RNSharePackage(),
-            new RSSignatureCapturePackage(),
-            new MerryPhotoViewPackage(),
+            new ImagePickerPackage(),
+            new VectorIconsPackage(),
+            new RNGestureHandlerPackage(),
             new RNFSPackage(),
             new ReactNativeDocumentPicker(),
-            new ReactNativePushNotificationPackage(),
-            new VectorIconsPackage(),
-            new ImagePickerPackage(),
-            new RNGestureHandlerPackage(),
-            new RNFusedLocationPackage(),
-            new AddCalendarEventPackage()
+            new MerryPhotoViewPackage(),
+            new RNCWebViewPackage()
       );
     }
 

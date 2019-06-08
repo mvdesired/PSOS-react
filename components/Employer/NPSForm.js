@@ -20,7 +20,9 @@ class NPSFormScreen extends Component{
     constructor(props) {
         super(props);
         var dispensingList = ['WiniFRED','FredNXT','LOTS','Minfos','Simple','Quickscript','Merlin','Other'];
+        dispensingList.unshift('Cancel');
         var travelList = ['Travel and accommodation offered','Travel and accommodation NOT offered','Travel and accommodation may be negotiated'];
+        travelList.unshift('Cancel');
         this.state={
             loading:true,
             pharm_id:this.props.navigation.getParam("pharm_id"),
@@ -35,8 +37,8 @@ class NPSFormScreen extends Component{
             startYear:'2019',
             dispensingList:dispensingList,
             travelList:travelList,
-            travelAcom:'',
-            disSystem:'',
+            travelAcom:'Travel and accommodation offered',
+            disSystem:'WiniFRED',
             pOffers:'',
             shiftName:'',
             rate_hour:'',
@@ -287,6 +289,28 @@ class NPSFormScreen extends Component{
         console.log("A date has been picked: ", dd,mm,yy);
         this.hideDateTimePicker();
     };
+    pickerDispenseList = () => {
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: this.state.dispensingList,
+            cancelButtonIndex: 0,
+          },
+          (buttonIndex) => {
+            if(buttonIndex != 0){
+              this.setState({disSystem: this.state.dispensingList[buttonIndex]});
+            }
+          });
+    }
+    pickerTravelList = () => {
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: this.state.travelList,
+            cancelButtonIndex: 0,
+          },
+          (buttonIndex) => {
+            if(buttonIndex != 0){
+              this.setState({travelAcom: this.state.travelList[buttonIndex]});
+            }
+          });
+    }
     render(){
         const RemoveHiehgt = height - 52;
         var behavior = (Platform.OS == 'ios')?'padding':'';
@@ -517,7 +541,7 @@ class NPSFormScreen extends Component{
                         }
                         {
                             Platform.OS == 'ios' && 
-                            <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
+                            <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerDispenseList()}}>
                                 <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.disSystem}</Text>
                             </TouchableOpacity>
                             
@@ -578,7 +602,7 @@ class NPSFormScreen extends Component{
                         }
                         {
                             Platform.OS == 'ios' && 
-                            <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
+                            <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerTravelList()}}>
                                 <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.travelAcom}</Text>
                             </TouchableOpacity>
                             

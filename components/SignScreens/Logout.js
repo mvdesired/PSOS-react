@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import {View,AsyncStorage,Image,ImageBackground} from 'react-native';
+import {View,AsyncStorage,Image,ImageBackground,Platform} from 'react-native';
 import Loader from '../Loader';
-import { SERVER_URL } from '../../Constants';
+import { SERVER_URL,SENDER_ID } from '../../Constants';
 import PushNotification from 'react-native-push-notification';
 class Logout extends Component{
     constructor(props) {
@@ -20,25 +20,31 @@ class Logout extends Component{
         this.setState({userData});
     }
     getToken = (onToken)=>{
-        PushNotification.configure({
-            onRegister: onToken,
-            onNotification: function(notification) {
-                console.log('NOTIFICATION:', notification );
-            },
-            senderID: "71450108131",
-            permissions: {
-                alert: true,
-                badge: true,
-                sound: true
-            },
-            popInitialNotification: true,
-            requestPermissions: true,
-        });
+        if(Platform.OS == 'android'){
+            PushNotification.configure({
+                onRegister: onToken,
+                onNotification: function(notification) {
+                    console.log('NOTIFICATION:', notification );
+                },
+                senderID: SENDER_ID,
+                permissions: {
+                    alert: true,
+                    badge: true,
+                    sound: true
+                },
+                popInitialNotification: true,
+                requestPermissions: true,
+            });
+        }
+        else{
+            onToken();
+        }
     }
     authenticateSession(){
         this.getToken(this.logoutFromServer.bind(this));
     }
     logoutFromServer(token){
+        var tokenGenerated = (typeof(token) != "undefined")?token.token:'';
         fetch(SERVER_URL+'user_logout',{
             method:'POST',
             headers: {
@@ -47,7 +53,7 @@ class Logout extends Component{
             },
             body: JSON.stringify({
                 user_id: this.state.userData.id,
-                device_key:token.token
+                device_key:tokenGenerated
             })
         })
         .then(res=>res.json())

@@ -1,0 +1,67 @@
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '9.0'
+
+target 'psos' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  #use_frameworks!
+  rn_path = '../node_modules/react-native'
+
+  # See http://facebook.github.io/react-native/docs/integration-with-existing-apps.html#configuring-cocoapods-dependencies
+  pod 'yoga', path: "#{rn_path}/ReactCommon/yoga/yoga.podspec"
+  pod 'React', path: rn_path, subspecs: [
+    'Core',
+    'CxxBridge',
+    'DevSupport',
+    'RCTActionSheet',
+    'RCTAnimation',
+    'RCTImage',
+    'RCTLinkingIOS',
+    'RCTNetwork',
+    'RCTSettings',
+    'RCTText',
+    'RCTVibration',
+    'RCTWebSocket',
+  ]
+  pod 'DoubleConversion', :podspec => "#{rn_path}/third-party-podspecs/DoubleConversion.podspec"
+  pod 'glog', :podspec => "#{rn_path}/third-party-podspecs/glog.podspec"
+  # If you are using React Native <0.54, you will get the following error:
+  # "The name of the given podspec `GLog` doesn't match the expected one `glog`"
+  # Use the following line instead:
+  #pod 'GLog', :podspec => "#{rn_path}/third-party-podspecs/GLog.podspec"
+  pod 'Folly', :podspec => "#{rn_path}/third-party-podspecs/Folly.podspec"
+  # Pods for psos
+  #pod "PPSSignatureView"
+  pod 'Firebase/Core'
+
+
+
+
+
+
+  
+
+  pod 'MerryPhotoViewer', :path => '../node_modules/@merryjs/photo-viewer'
+
+  pod 'react-native-document-picker', :path => '../node_modules/react-native-document-picker'
+
+  #pod 'RNFS', :path => '../node_modules/react-native-fs'
+
+  #pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
+  #pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
+  pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
+
+  pod 'ReactNativePermissions', :path => '../node_modules/react-native-permissions'
+
+  #pod 'react-native-webview', :path => '../node_modules/react-native-webview'
+
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target| 
+    if target.name == "React"
+      target.remove_from_project
+    end
+  end
+end

@@ -25,7 +25,7 @@ class EChatList extends Component{
         this.state={
             loading:true,
             isRefreshing:false,
-            chatList:{}
+            chatList:[]
         };
         //this.fetchChatList = this._fetchChatList.bind(this);
     }
@@ -140,8 +140,8 @@ class EChatList extends Component{
                                         
                                         {
                                             item.unread > 0 && 
-                                            <View style={{marginTop:5,backgroundColor:'#02aeee',width:18,height:18,alignItems:'center',justifyContent:'center',borderRadius:100}}>
-                                                <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#FFFFFF',fontSize:10}}>{item.unread}</Text>
+                                            <View style={{marginTop:5,backgroundColor:'#02aeee',width:18,height:18,alignItems:'center',justifyContent:'center',borderRadius:100,alignContent:'center'}}>
+                                                <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#FFFFFF',fontSize:10,lineHeight:20,textAlign:"center"}}>{item.unread}</Text>
                                             </View>
                                         }
                                         
@@ -159,6 +159,18 @@ class EChatList extends Component{
                                 />
                             }
                             />
+                    }
+                    {
+                        this.state.chatList.length < 1 && 
+                        <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+                            <Text style={{fontFamily:'AvenirLTStd-Medium',fontSize: 18,}}>No chats here</Text>
+                            <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnXm,{marginTop:10}]} onPress={()=>{
+                                this.setState({loading:true,isRefreshing:true});
+                                this._fetchChatList();
+                            }}>
+                                <Text style={[MainStyles.psosBtnText,MainStyles.psosBtnXsText]}>Retry</Text>
+                            </TouchableOpacity>
+                        </View>
                     }
                 </View>
             </SafeAreaView>

@@ -20,7 +20,7 @@ class SuccessScreen extends Component{
                 <Image source={require('../../assets/share-app-icon.png')} style={{width:70,height:65,marginTop:25}}/>
                </View>
                <View style={{justifyContent: 'center',alignItems:'center'}}>
-                   <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#151515',lineHeight:16,textAlign:"center",fontSize:17}}>Thanks for applying.</Text>
+                   <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#151515',textAlign:"center",fontSize:20}}>Thanks for applying.</Text>
                    <Text style={{fontFamily:'AvenirLTStd-Medium',fontSize:13,color:'#151515',flexWrap:'wrap',padding:10,lineHeight:16,textAlign:"center"}}>We'll let you know once we review  your application. </Text>
            
                </View>

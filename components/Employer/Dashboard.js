@@ -52,7 +52,7 @@ class Dashboard extends Component{
             this.fetchNotifications();
             this.clearTime = setInterval(()=>{
                 this.fetchNotifications();
-            },3000);
+            },10000);
         },1500);
     }
     fetchTotals = ()=>{
@@ -76,7 +76,7 @@ class Dashboard extends Component{
             method:'GET',
             headers:myHeaders
         })
-        .then(res=>res.json())
+        .then(res=>{console.log(res);return res.json()})
         .then(response=>{
             if (this._isMounted) {
                 if(response.status == 200){
@@ -100,13 +100,13 @@ class Dashboard extends Component{
         return(
             <SafeAreaView style={{flex:1}}>
                 <View style={{flexDirection:'row',justifyContent:"space-between",paddingVertical: 13,paddingHorizontal: 10,backgroundColor:'#1d7bc3',alignItems: 'center'}}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.dispatch(DrawerActions.toggleDrawer())}}>
+                    <TouchableOpacity style={{paddingHorizontal:6}} onPress={()=>{this.props.navigation.dispatch(DrawerActions.toggleDrawer())}}>
                         <Icon name="bars" style={{
-                            fontSize:20,
+                            fontSize:23,
                             color:'#FFFFFF'
                         }} />
                     </TouchableOpacity>
-                    <Image source={require('../../assets/web-logo-wight.png')} width={150} height={26} style={{width:150,height:26}} />
+                    <Image source={require('../../assets/web-logo-wight.png')} width={140} height={24} style={{width:140,height:24}} />
                     <View style={{flexDirection:'row',alignItems:'center'}}>
                         {/* <TouchableOpacity style={{marginRight:10}}>
                             <Image source={require('../../assets/share-icon.png')} width={20} height={20} style={{width:20,height:20}} />

@@ -137,23 +137,23 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-share')
-    compile project(':react-native-signature-capture')
-    compile project(':@merryjs_photo-viewer')
-    compile project(':react-native-fs')
-    compile project(':react-native-document-picker')
-    compile project(':react-native-push-notification')
-    compile project(':react-native-vector-icons')
-    compile project(':react-native-image-picker')
-    compile project(':react-native-gesture-handler')
-    compile project(':react-native-geolocation-service')
-    compile project(':react-native-add-calendar-event')
-    compile "com.android.support:exifinterface:+"
-    compile "com.android.support:support-annotations:+"
-    compile "com.android.support:support-v4:+"
+    implementation project(':react-native-push-notification')
+    implementation project(':react-native-webview')
+    implementation project(':react-native-share')
+    implementation project(':react-native-image-picker')
+    implementation project(':react-native-vector-icons')
+    implementation project(':react-native-gesture-handler')
+    implementation project(':react-native-fs')
+    implementation project(':react-native-document-picker')
+    implementation project(':@merryjs_photo-viewer')
+    implementation project(':react-native-webview')
+    implementation "com.android.support:exifinterface:+"
+    implementation "com.android.support:support-annotations:+"
+    implementation "com.android.support:support-v4:+"
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation 'com.google.firebase:firebase-core:16.0.9'
 }
 configurations.all {
     resolutionStrategy {
@@ -166,3 +166,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.compile
     into 'libs'
 }
+apply plugin: 'com.google.gms.google-services'

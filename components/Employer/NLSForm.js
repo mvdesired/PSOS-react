@@ -9,6 +9,7 @@ import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import DateTimePicker from "react-native-modal-datetime-picker";
+import Dialog, { SlideAnimation } from "react-native-popup-dialog";
 const { height, width } = Dimensions.get('window');
 var myHeaders = new Headers();
 myHeaders.set('Accept', 'application/json');
@@ -20,7 +21,9 @@ class NLSFormScreen extends Component{
     constructor(props) {
         super(props);
         var dispensingList = ['WiniFRED','FredNXT','LOTS','Minfos','Simple','Quickscript','Merlin','Other'];
+        dispensingList.unshift('Cancel');
         var travelList = ['Travel and accommodation offered','Travel and accommodation NOT offered','Travel and accommodation may be negotiated'];
+        travelList.unshift('Cancel');
         this.state={
             loading:true,
             isStartDateTimePickerVisible:false,
@@ -29,6 +32,8 @@ class NLSFormScreen extends Component{
             isEndTimePickerVisible:false,
             pharm_id:this.props.navigation.getParam("pharm_id"),
             job_id:this.props.navigation.getParam("job_id"),
+            travelList,
+            dispensingList,
             pageTitle:'New Locum Shift',
             startDay:'01',
             startMonth:'01',
@@ -40,18 +45,30 @@ class NLSFormScreen extends Component{
             startMinute:'01',
             endHour:'02',
             endMinute:'02',
-            dispensingList:dispensingList,
-            travelList:travelList,
-            travelAcom:'',
-            disSystem:'',
+            shiftDetails:'',
+            travelAcom:'Travel and accommodation offered',
+            disSystem:'WiniFRED',
             pOffers:'',
             shiftName:'',
+            successApplied:false
         }
     }
     async setUserData(){
         let userDataStringfy = await AsyncStorage.getItem('userData');
         let userData = JSON.parse(userDataStringfy);
         this.setState({userData});
+    }
+    async setPharmData(){
+        let pharmacyDataStringify = await AsyncStorage.getItem('pharmacyData');
+        let pharmacyData = JSON.parse(pharmacyDataStringify);
+        if(pharmacyData){
+            if(pharmacyData.pharm_id == this.state.pharm_id){
+                this.setState({disSystem:pharmacyData.disSystem,travelAcom:pharmacyData.travelAcom,pOffers:pharmacyData.pOffers});
+            }
+        }
+    }
+    async setStorageItem(key,value){
+        await AsyncStorage.setItem(key,value);
     }
     componentWillMount =()=>{
         this.setUserData();
@@ -104,6 +121,7 @@ class NLSFormScreen extends Component{
             });
         }
         else{
+            this.setPharmData();
             this.setState({loading:false,pageTitle:'New Locum Shift'});
         }
     }
@@ -161,10 +179,10 @@ class NLSFormScreen extends Component{
             Toast.show('Please select end minute',Toast.SHORT);
             return false;
         }
-        if(this.state.shiftDetails == ''){
-            Toast.show('Shif details should not be empty',Toast.SHORT);
-            return false;
-        }
+        // if(this.state.shiftDetails == ''){
+        //     Toast.show('Shif details should not be empty',Toast.SHORT);
+        //     return false;
+        // }
         if(this.state.disSystem == ''){
             Toast.show('Please choose dispensing system',Toast.SHORT);
             return false;
@@ -175,7 +193,6 @@ class NLSFormScreen extends Component{
         }
         this.setState({loading:true});
         var formdata = new FormData();
-        
         formdata.append('user_id',this.state.userData.id);
         formdata.append('name',this.state.shiftName);
         formdata.append('start_date',this.state.startYear+'-'+this.state.startMonth+'-'+this.state.startDay);
@@ -204,9 +221,18 @@ class NLSFormScreen extends Component{
         .then(res=>res.json())
         .then(response=>{
             this.setState({loading:false,shiftName:''});
+            if(!this.state.job_id){
+                this.setStorageItem('pharmacyData',JSON.stringify({pharm_id:this.state.pharm_id,travelAcom:this.state.travelAcom,disSystem:this.state.disSystem,pOffers:this.state.pOffers}));
+            }
             Toast.show(response.message,Toast.SHORT);
+            this.setState({successApplied:true});
+            setTimeout(()=>{
+                this.setState({successApplied:false});
+            },5000)
             if(this.state.job_id){
-                this.props.navigation.navigate('JobListE');
+                setTimeout(()=>{
+                    this.props.navigation.navigate('JobListE');
+                },5000)
             }
         })
         .catch(err=>{
@@ -287,10 +313,31 @@ class NLSFormScreen extends Component{
         });
         this.hideEndTimePicker();
     };
+    pickerDispenseList = () => {
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: this.state.dispensingList,
+            cancelButtonIndex: 0,
+          },
+          (buttonIndex) => {
+            if(buttonIndex != 0){
+              this.setState({disSystem: this.state.dispensingList[buttonIndex]});
+            }
+          });
+    }
+    pickerTravelList = () => {
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: this.state.travelList,
+            cancelButtonIndex: 0,
+          },
+          (buttonIndex) => {
+            if(buttonIndex != 0){
+              this.setState({travelAcom: this.state.travelList[buttonIndex]});
+            }
+          });
+    }
     render(){
         const RemoveHiehgt = height - 52;
         var behavior = (Platform.OS == 'ios')?'padding':'';
-        
         return(
             <SafeAreaView style={{flexDirection:'column',flex:1}}>
                 <Loader loading={this.state.loading} />
@@ -368,6 +415,7 @@ class NLSFormScreen extends Component{
                                 underlineColorAndroid="transparent" 
                                 value={this.state.startDay}
                                 maxLength={2}
+                                editable={false}
                             />
                             <View style={{paddingHorizontal:5}}></View>
                             <TextInput 
@@ -381,6 +429,7 @@ class NLSFormScreen extends Component{
                                 underlineColorAndroid="transparent" 
                                 value={this.state.startMonth}
                                 maxLength={2}
+                                editable={false}
                             />
                             <View style={{paddingHorizontal:5}}></View>
                             <TextInput 
@@ -394,6 +443,7 @@ class NLSFormScreen extends Component{
                                 underlineColorAndroid="transparent" 
                                 value={this.state.startYear}
                                 maxLength={4}
+                                editable={false}
                             />
                             {/* End Date Year End*/}
                             <View style={{paddingHorizontal:5}}></View>
@@ -425,6 +475,7 @@ class NLSFormScreen extends Component{
                                 underlineColorAndroid="transparent" 
                                 value={this.state.startDay}
                                 maxLength={2}
+                                editable={false}
                             />
                             <View style={{paddingHorizontal:5}}></View>
                             <TextInput 
@@ -438,6 +489,7 @@ class NLSFormScreen extends Component{
                                 underlineColorAndroid="transparent" 
                                 value={this.state.startMonth}
                                 maxLength={2}
+                                editable={false}
                             />
                             <View style={{paddingHorizontal:5}}></View>
                             <TextInput 
@@ -451,6 +503,7 @@ class NLSFormScreen extends Component{
                                 underlineColorAndroid="transparent" 
                                 value={this.state.startYear}
                                 maxLength={4}
+                                editable={false}
                             />
                             {/* End Date Year End*/}
                             <View style={{paddingHorizontal:5}}></View>
@@ -484,6 +537,7 @@ class NLSFormScreen extends Component{
                                         underlineColorAndroid="transparent" 
                                         value={this.state.startHour}
                                         maxLength={2}
+                                        editable={false}
                                         placeholder="HH"
                                     />
                                     <View style={{paddingHorizontal:2}}>
@@ -500,6 +554,7 @@ class NLSFormScreen extends Component{
                                         underlineColorAndroid="transparent" 
                                         value={this.state.startMinute}
                                         maxLength={2}
+                                        editable={false}
                                         placeholder="MM"
                                     />
                                     <View style={{paddingHorizontal:2}}>
@@ -535,6 +590,7 @@ class NLSFormScreen extends Component{
                                         underlineColorAndroid="transparent" 
                                         value={this.state.endHour}
                                         maxLength={2}
+                                        editable={false}
                                         placeholder="HH"
                                     />
                                     <View style={{paddingHorizontal:2}}>
@@ -551,6 +607,7 @@ class NLSFormScreen extends Component{
                                         underlineColorAndroid="transparent" 
                                         value={this.state.endMinute}
                                         maxLength={2}
+                                        editable={false}
                                         placeholder="MM"
                                     />
                                     <View style={{paddingHorizontal:2}}>
@@ -573,7 +630,6 @@ class NLSFormScreen extends Component{
                         <View style={{marginTop:15}}></View>
                         <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                             Shift Details
-                            <Text style={{color:'#ee1b24'}}>*</Text>
                         </Text>
                         <View style={{marginTop:10}}></View>
                         <TextInput 
@@ -622,7 +678,7 @@ class NLSFormScreen extends Component{
                         }
                         {
                             Platform.OS == 'ios' && 
-                            <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
+                            <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerDispenseList()}}>
                                 <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.disSystem}</Text>
                             </TouchableOpacity>
                             
@@ -687,7 +743,7 @@ class NLSFormScreen extends Component{
                         }
                         {
                             Platform.OS == 'ios' && 
-                            <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
+                            <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerTravelList()}}>
                                 <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.travelAcom}</Text>
                             </TouchableOpacity>
                             
@@ -710,6 +766,30 @@ class NLSFormScreen extends Component{
                         <View style={{marginTop:20}}></View>
                     </ScrollView>
                 </KeyboardAvoidingView>
+                <Dialog
+                    visible={this.state.successApplied}
+                    dialogStyle={{ width: "95%", padding: 0, maxHeight: "95%",marginTop:30 ,flex:1,backgroundColor:'transparent',justifyContent:'center',alignItems:'center'}}
+                    dialogAnimation={new SlideAnimation()}
+                    containerStyle={{
+                        zIndex: 10,
+                        flex: 1,
+                        justifyContent:'center',
+                        alignItems:'center',
+                        backgroundColor:'transparent',
+                    }}
+                    onTouchOutside={()=>{this.setState({successApplied:false})}}
+                    rounded={false}
+                    >
+                    <View style={{paddingHorizontal: 10,paddingVertical:40,borderRadius:15,backgroundColor:'#FFFFFF',width:'100%'}}>
+                        <View style={{alignItems:'center',justifyContent:'center',paddingVertical: 35,}}>
+                            <Text style={{color:'#147dbf',marginBottom:5,fontFamily:'AvenirLTStd-Roman',fontSize:35}}>Success</Text>
+                            <Image source={require('../../assets/share-app-icon.png')} style={{width:70,height:65,marginTop:25}}/>
+                        </View>
+                        <View style={{justifyContent: 'center',alignItems:'center'}}>
+                            <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#151515',lineHeight:16,textAlign:"center",fontSize:17}}>Your shift has been submitted</Text>
+                        </View>
+                    </View>
+                </Dialog>
             </SafeAreaView>
         )
     }

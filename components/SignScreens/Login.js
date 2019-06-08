@@ -1,11 +1,11 @@
 import React,{Component} from 'React';
-import {View,Text,Image,TextInput,TouchableOpacity,SafeAreaView,ImageBackground,
+import {View,Text,Image,TextInput,TouchableOpacity,SafeAreaView,ImageBackground,ScrollView,KeyboardAvoidingView,
     AsyncStorage,Platform,NetInfo} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Loader from '../Loader';
 import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
-import { SERVER_URL } from '../../Constants';
+import { SERVER_URL,SENDER_ID } from '../../Constants';
 import PushNotification from 'react-native-push-notification';
 import PhoneInput from 'react-native-phone-input'
 export default class Login extends Component{
@@ -13,7 +13,7 @@ export default class Login extends Component{
         super(props);
         this.state = {
             loading:false,
-            mobileNumber:'',
+            mobileNumber:'4',
             otp:'',
             serverOtp:'',
             otpField:false,
@@ -83,14 +83,15 @@ export default class Login extends Component{
         });
     }
     sendDataToServer(token){
+        var tokenGenerated = (typeof(token) != "undefined")?token.token:'';
         var fd = new FormData();
         fd.append('phone',this.state.mobileNumber);
         fd.append('device_type',Platform.OS);
-        fd.append('device_key',token.token);
+        fd.append('device_key',tokenGenerated);
         var jsonArray = {
             phone: this.state.mobileNumber,
             device_type:Platform.OS,
-            device_key:token.token
+            device_key:tokenGenerated
         };
         console.log(jsonArray);
         fetch(SERVER_URL+'user_login',{
@@ -123,20 +124,25 @@ export default class Login extends Component{
         this.checkNetInfo();
     }
     getToken = (onToken)=>{
-        PushNotification.configure({
-            onRegister: onToken,
-            onNotification: function(notification) {
-                console.log('NOTIFICATION:', notification );
-            },
-            senderID: "71450108131",
-            permissions: {
-                alert: true,
-                badge: true,
-                sound: true
-            },
-            popInitialNotification: true,
-            requestPermissions: true,
-        });
+        if(Platform.OS == 'android'){
+            PushNotification.configure({
+                onRegister: onToken,
+                onNotification: function(notification) {
+                    console.log('NOTIFICATION:', notification );
+                },
+                senderID: SENDER_ID,
+                permissions: {
+                    alert: true,
+                    badge: true,
+                    sound: true
+                },
+                popInitialNotification: true,
+                requestPermissions: true,
+            });
+        }
+        else{
+            onToken();
+        }
     }
     checkNetInfo = ()=>{
         if (Platform.OS === "android") {
@@ -163,172 +169,103 @@ export default class Login extends Component{
         }
     };
     render(){
+        var behavior = Platform.OS == 'ios' ? 'padding' :'';
         return(
             <ImageBackground source={require('../../assets/splash-bg.png')} style={{flex:1,backgroundColor:'#FFFFFF',justifyContent:'center',alignItems:'center'}}>
                 <Loader loading={this.state.loading} />
-                <Image source={require('../../assets/web-logo.png')} style={{width:280,height:48}} />
-                <View style={{
-                    marginTop: 60,
-                    width:'100%',
-                    maxWidth:'70%'
-                }}>
-                {
-                    !this.state.otpField && 
-                    <View 
-                        style={{borderRadius: 35,borderStyle:"dashed",borderWidth: 3,borderColor: '#147dbf',
-                        width:'100%',
-                        paddingHorizontal: 12,
-                        paddingVertical: 6,
-                        flexDirection: 'row',
-                        marginBottom: 22.5,
-                        justifyContent:'center',
-                        alignItems: 'center',
-                        marginTop:10
-                        }}
-                    >
-                        <PhoneInput
-                        ref={(ref) => { this.mobileNumber = ref; }}
-                        style={{
-                            flex:1,
-                            textAlign:'left',
-                            paddingLeft: 10,
-                            height:40,
-                            fontSize:17,
-                            fontFamily:'AvenirLTStd-Medium'
-                        }} 
-                        initialCountry={"au"}
-                        onChangePhoneNumber={(number)=>this.setState({mobileNumber:number})}
-                        value={this.state.mobileNumber}
-                        />
-                        {/* <Image source={require('../../assets/envelope.png')} width={18} height={14} style={{width:18,height:14}}/>
-                        <TextInput 
-                        style={{
-                            flex:1,
-                            textAlign:'left',
-                            paddingLeft: 10,
-                            height:40,
-                            fontSize:17,
-                            fontFamily:'AvenirLTStd-Medium'
-                        }} 
-                        placeholder="Mobile Number *" 
-                        returnKeyType={"go"} 
-                        ref={(input) => { this.mobileNumber = input; }}  
-                        blurOnSubmit={true}
-                        onChangeText={(text)=>this.setState({mobileNumber:text})} 
-                        keyboardType="phone-pad" 
-                        autoCapitalize='none' 
-                        placeholderTextColor="#147dbf" 
-                        underlineColorAndroid="transparent" 
-                        value={this.state.mobileNumber}
-                        /> */}
-                    </View>
-                }
-                    
-                    {
-                        this.state.otpField && 
-                        <View style={{
-                            borderRadius: 35,
-                            borderStyle:"dashed",
-                            borderWidth: 3,
-                            borderColor: '#bebebe',
-                            width:'100%',
-                            paddingHorizontal: 12,
-                            paddingVertical: 6,
-                            flexDirection: 'row',
-                            justifyContent:'center',
-                            alignItems: 'center',
-                            }}
-                        >
-                            <Image source={require('../../assets/lock-disable.png')} width={18} height={24} style={{width:18,height:24}}/>
-                            <TextInput 
-                                style={{
-                                    flex:1,
-                                    textAlign:'left',
-                                    paddingLeft: 10,
-                                    height:40,
-                                    fontSize:17,
-                                    fontFamily:'AvenirLTStd-Medium',
-                                }} 
-                                placeholder="OTP *" 
-                                returnKeyType={"go"} 
-                                keyboardType="number-pad"
-                                ref={(input) => { this.otp = input; }} 
-                                blurOnSubmit={false}
-                                onChangeText={(text)=>this.setState({otp:text})} 
-                                placeholderTextColor="#bebebe" 
-                                underlineColorAndroid="transparent" 
-                                value={this.state.otp}
-                            />
+                <KeyboardAvoidingView enabled style={{flex:1,justifyContent:'center',alignItems:'center',width:'100%',height:'100%'}} behavior={behavior}>
+                    <ScrollView contentContainerStyle={{flex:1,justifyContent:'center',alignItems:'center'}}>
+                        <Image source={require('../../assets/web-logo.png')} style={{width:280,height:48}} />
+                        <View style={{marginTop: 60,width:'100%',maxWidth:'70%'}}>
+                            {
+                                !this.state.otpField && 
+                                <View 
+                                    style={{borderRadius: 35,borderStyle:"dashed",borderWidth: 3,borderColor: '#147dbf',
+                                    width:'100%',
+                                    paddingHorizontal: 12,
+                                    paddingVertical: 6,
+                                    flexDirection: 'row',
+                                    marginBottom: 22.5,
+                                    justifyContent:'center',
+                                    alignItems: 'center',
+                                    marginTop:10
+                                    }}
+                                >
+                                    <PhoneInput
+                                    ref={(ref) => { this.mobileNumber = ref; }}
+                                    style={{
+                                        flex:1,
+                                        textAlign:'left',
+                                        paddingLeft: 10,
+                                        height:40,
+                                        fontSize:17,
+                                        fontFamily:'AvenirLTStd-Medium'
+                                    }} 
+                                    initialCountry={"au"}
+                                    onChangePhoneNumber={(number)=>this.setState({mobileNumber:number})}
+                                    value={this.state.mobileNumber}
+                                    />
+                                    
+                                </View>
+                            }
+                            {
+                                this.state.otpField && 
+                                <View style={{borderRadius: 35,borderStyle:"dashed",borderWidth: 3,
+                                    borderColor: '#bebebe',
+                                    width:'100%',
+                                    paddingHorizontal: 12,
+                                    paddingVertical: 6,
+                                    flexDirection: 'row',
+                                    justifyContent:'center',
+                                    alignItems: 'center',
+                                    }}
+                                >
+                                    <Image source={require('../../assets/lock-disable.png')} width={18} height={24} style={{width:18,height:24}}/>
+                                    <TextInput 
+                                        style={{
+                                            flex:1,
+                                            textAlign:'left',
+                                            paddingLeft: 10,
+                                            height:40,
+                                            fontSize:17,
+                                            fontFamily:'AvenirLTStd-Medium',
+                                        }} 
+                                        placeholder="OTP *" 
+                                        returnKeyType={"go"} 
+                                        keyboardType="number-pad"
+                                        ref={(input) => { this.otp = input; }} 
+                                        blurOnSubmit={false}
+                                        onChangeText={(text)=>this.setState({otp:text})} 
+                                        placeholderTextColor="#bebebe" 
+                                        underlineColorAndroid="transparent" 
+                                        value={this.state.otp}
+                                    />
+                                </View>
+                            }
+                            <View style={{justifyContent:'center',alignItems:'center',marginTop:26}}>
+                                <TouchableOpacity style={MainStyles.psosBtn} onPress={()=>{this.signIn()}}>
+                                    <Text style={MainStyles.psosBtnText}>Login</Text>
+                                </TouchableOpacity>
+                                { 
+                                    this.state.otpField && 
+                                    <TouchableOpacity style={{marginTop:10}} onPress={()=>{
+                                        this.setState({otpField:false});
+                                    }}>
+                                        <Text style={{color:'#147dbf',fontFamily:'AvenirLTStd-Roman'}}>Previous</Text>
+                                    </TouchableOpacity>
+                                }
+                            </View>
+                            <View style={{flexDirection:'row',alignItems: 'center',width:'100%',justifyContent:'center',marginTop:35}}>
+                                <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Roman'}}>Don’t have an Account ?</Text>
+                                <TouchableOpacity style={{marginLeft:5}}
+                                onPress={()=>{this.props.navigation.navigate('Registration')}}
+                                >
+                                    <Text style={{color:'#147dbf',fontFamily:'AvenirLTStd-Roman'}}>Register.</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                    }
-                    {/* <View style={{width:'100%',alignItems:'flex-end',marginTop:15}}>
-                        <TouchableOpacity onPress={()=>{}}>
-                            <Text style={{
-                                color:'#ed1d24',
-                                fontFamily:'AvenirLTStd-Roman'
-                            }}>Forgot Password ?</Text>
-                        </TouchableOpacity>
-                    </View> */}
-                    <View style={{
-                        justifyContent:'center',
-                        alignItems:'center',
-                        marginTop:26
-                    }}>
-                        <TouchableOpacity style={MainStyles.psosBtn} onPress={()=>{this.signIn()}}>
-                            <Text style={MainStyles.psosBtnText}>Login</Text>
-                        </TouchableOpacity>
-                        { 
-                            this.state.otpField && 
-                            <TouchableOpacity style={{marginTop:10}} onPress={()=>{
-                                this.setState({otpField:false});
-                            }}>
-                                <Text style={{color:'#147dbf',fontFamily:'AvenirLTStd-Roman'}}>Previous</Text>
-                            </TouchableOpacity>
-                        }
-                    </View>
-                    {/* <View style={{
-                        marginTop:25
-                    }}>
-                        <Image source={require('../../assets/or-strip.png')} width={'100%'} style={{width:'100%'}}/>
-                    </View> */}
-                    {/* <View style={{
-                        flexDirection:'row',
-                        justifyContent:'center',
-                        alignItems:'center',
-                        marginTop:20
-                    }}>
-                        <TouchableOpacity>
-                            <Image source={require('../../assets/fb-icon.png')} width={40} height={40} style={{
-                                width:40,
-                                height:40
-                            }}/>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{
-                            marginLeft:24
-                        }}>
-                            <Image source={require('../../assets/g-icon.png')} width={40} height={40} style={{
-                                width:40,
-                                height:40
-                            }}/>
-                        </TouchableOpacity>
-                    </View> */}
-                    <View style={{
-                        flexDirection:'row',
-                        alignItems: 'center',
-                        width:'100%',
-                        justifyContent:'center',
-                        marginTop:35
-                    }}>
-                        <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Roman'}}>Don’t have an Account ?</Text>
-                        <TouchableOpacity style={{
-                            marginLeft:5
-                        }}
-                        onPress={()=>{this.props.navigation.navigate('Registration')}}
-                        >
-                            <Text style={{color:'#147dbf',fontFamily:'AvenirLTStd-Roman'}}>Register.</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                    </ScrollView>
+                </KeyboardAvoidingView>
             </ImageBackground>
         );
     }

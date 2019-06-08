@@ -1,10 +1,10 @@
 import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
-    Picker,Dimensions,AsyncStorage,
+    Picker,Dimensions,AsyncStorage,Keyboard,BackHandler,
     ActionSheetIOS,Platform } from 'react-native';
 import Loader from '../Loader';
 import MainStyles from '../Styles';
-import countryList from 'react-select-country-list';
+//import countryList from 'react-select-country-list';
 import Dialog, { SlideAnimation } from "react-native-popup-dialog";
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
@@ -13,22 +13,28 @@ const { height, width } = Dimensions.get('window');
 class EmployerScreen extends Component{
     constructor(props) {
         super(props);
-        var cOptionsList = countryList().getLabels();
+        var cOptionsList = ['Australia'];
         cOptionsList.unshift('Cancel');
+        var sOptions = ['VIC','NSW','QLD','ACT','TAS','NT','WA','SA'];
+        sOptions.unshift('Cancel');
         this.state={
             loading:false,
-            CountryList:['Australia','New Zealand'],
-            stateList:['VIC','NSW','QLD','ACT','TAS','NT','WA','SA','North Island','South Island'],
+            CountryList:['Australia'],
+            stateList:['VIC','NSW','QLD','ACT','TAS','NT','WA','SA'],
             cOptions:cOptionsList,
+            sOptions:sOptions,
             showTerms:false,
             firsName:'',
             lastName:'',
-            phoneNo:'',
+            phoneNo:'4',
             emailAddress:'',
             city:'',
             spr:'VIC',
             pz:'',
             country:'Australia',
+            otpVisible:false,
+            otp:'',
+            serverOtp:''
         }
         this.singup = this._signup.bind(this);
     }
@@ -36,7 +42,11 @@ class EmployerScreen extends Component{
         await AsyncStorage.setItem(key,value);
     }
     componentDidMount = () => {
-
+        this.props.navigation.addListener('willFocus',payload=>{
+            if((payload.context).search('Navigation/BACK_Root') != -1){
+                BackHandler.exitApp();
+            }
+        });
     }
     _signup = () => {
         
@@ -77,6 +87,7 @@ class EmployerScreen extends Component{
             return false;
         }
         this.setState({loading:true});
+        
         var formdata = new FormData();
         formdata.append('fname',this.state.firsName);
         formdata.append('lname',this.state.lastName);
@@ -98,12 +109,13 @@ class EmployerScreen extends Component{
         })
         .then((res)=>{console.log(res);return res.json()})
         .then((response)=>{
+            console.log(response);
             if(response.status == 200){
                 Toast.show(response.message,Toast.SHORT);
-                this.saveDetails('isUserLoggedIn',"true");
-                this.saveDetails('userData',JSON.stringify(response.result));
-                this.setState({showTerms:false});
-                this.props.navigation.navigate('Home');
+                //this.saveDetails('isUserLoggedIn',"true");
+                //this.saveDetails('userData',JSON.stringify(response.result));
+                this.setState({showTerms:false,otpVisible:true,serverOtp:response.result.otp,userId:response.result.id});
+                //this.props.navigation.navigate('Login',{user_id:response.id,otp:response.otp});
             }
             else{
                 Toast.show(response.message,Toast.SHORT);
@@ -125,6 +137,61 @@ class EmployerScreen extends Component{
               this.setState({country: this.state.cOptions[buttonIndex]});
             }
           });
+    }
+    pickerState = ()=>{
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: this.state.sOptions,
+            cancelButtonIndex: 0,
+          },
+          (buttonIndex) => {
+            if(buttonIndex != 0){
+              this.setState({spr: this.state.sOptions[buttonIndex]})
+            }
+          });
+    }
+    checkOtp =()=>{
+        console.log(this.state.otp, this.state.serverOtp);
+        if(this.state.otp == ''){
+            Toast.show('OTP should not be blank',Toast.SHORT);
+            return false;
+        }
+        if(this.state.otp != this.state.serverOtp){
+            Toast.show('OTP not matched',Toast.SHORT);
+            return false;
+        }
+        this.setState({loading:true});
+        fetch(SERVER_URL+'userdata',{
+            method:'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: this.state.userId
+            })
+        })
+        .then((res)=>{console.log(res._bodyInit);return res.json()})
+        .then((response)=>{
+            console.log(response);
+            if(response.status == 200){
+                Toast.show(response.message,Toast.SHORT);
+                this.saveDetails('isUserLoggedIn',"true");
+                this.saveDetails('userData',JSON.stringify(response.result));
+                //if(response.result.user_type == 'employer'){
+                    this.props.navigation.navigate('Home');
+                    this.setState({otpVisible:false,serverOtp:'',userId:'',otp:''});
+                //}
+            }
+            else{
+                Toast.show(response.message,Toast.SHORT);
+            }
+            this.setState({loading:false});
+        })
+        .catch((err)=>{
+            console.log(err);
+            this.checkNetInfo();
+            this.setState({loading:false});
+        });
     }
     render(){
         const RemoveHiehgt = height - 66;
@@ -315,7 +382,7 @@ class EmployerScreen extends Component{
                             }
                             {
                                 Platform.OS == 'ios' && 
-                                <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
+                                <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerState()}}>
                                     <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.spr}</Text>
                                 </TouchableOpacity>
                                 
@@ -375,7 +442,7 @@ class EmployerScreen extends Component{
                             alignItems:'center',
                             marginTop:26
                         }}>
-                            <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.setState({showTerms:true});}}>
+                            <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{Keyboard.dismiss();this.setState({showTerms:true});}}>
                                 <Text style={MainStyles.psosBtnText}>Submit</Text>
                             </TouchableOpacity>
                         </View>
@@ -384,63 +451,105 @@ class EmployerScreen extends Component{
                 </KeyboardAvoidingView>
                 <Dialog
                     visible={this.state.showTerms}
-                    dialogStyle={{ width: "95%", padding: 0, maxHeight: "95%" }}
+                    dialogStyle={{ width: "95%", padding: 0, maxHeight: "95%",marginTop:30 ,flex:1,backgroundColor:'transparent'}}
                     dialogAnimation={new SlideAnimation()}
                     containerStyle={{
                         zIndex: 10,
                         flex: 1,
-                        justifyContent: "space-between"
+                        justifyContent: "space-between",
+                        backgroundColor:'transparent',
+                    }}
+                    onTouchOutside={()=>{this.setState({showTerms:false})}}
+                    rounded={false}
+                    >
+                    <SafeAreaView style={{flex:1,width:'100%',height:'95%',padding:0,borderWidth: 0,overflow:'visible'}}>
+                        <View style={MainStyles.modalHeader} >
+                            <Text style={MainStyles.modalHeaderHeading}>Terms and Conditions</Text>
+                            <TouchableOpacity onPress={() =>{this.setState({showTerms:false})}}>
+                                <Image source={require('../../assets/cross-icon.png')} width={21} height={21} style={{height:21,width:21}} />
+                            </TouchableOpacity>
+                        </View>
+                        <ScrollView contentContainerStyle={{paddingHorizontal: 10,paddingVertical:10,backgroundColor:'#FFFFFF'}}>
+                            <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#1476c0',fontSize:15}}>
+                                Our Terms and Conditions
+                            </Text>
+                            <View style={MainStyles.tacItems}>
+                                <Text style={MainStyles.tacItemsH}>1. Lorem Ipsum has been</Text>
+                                <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
+                                <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
+                            </View>
+                            <View style={MainStyles.tacItems}>
+                                <Text style={MainStyles.tacItemsH}>2. Lorem Ipsum has been</Text>
+                                <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
+                                <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
+                            </View>
+                            <View style={MainStyles.tacItems}>
+                                <Text style={MainStyles.tacItemsH}>3. Lorem Ipsum has been</Text>
+                                <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
+                                <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
+                            </View>
+                            <View style={MainStyles.tacItems}>
+                                <Text style={MainStyles.tacItemsH}>4. Lorem Ipsum has been</Text>
+                                <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
+                                <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
+                            </View>
+                            <View style={MainStyles.tacItems}>
+                                <Text style={MainStyles.tacItemsH}>5. Lorem Ipsum has been</Text>
+                                <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
+                                <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
+                            </View>
+                            <View style={MainStyles.tacItems}>
+                                <Text style={MainStyles.tacItemsH}>6. Lorem Ipsum has been</Text>
+                                <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
+                                <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
+                            </View>
+                        </ScrollView>
+                        <View style={MainStyles.modalFooter}>
+                            <TouchableOpacity style={[MainStyles.psosBtn, MainStyles.psosBtnXm]} onPress={()=>{this.singup()}}>
+                                <Text style={[MainStyles.psosBtnText,MainStyles.psosBtnXsText]}>I Agree</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </SafeAreaView>
+                </Dialog>
+                <Dialog
+                    visible={this.state.otpVisible}
+                    dialogStyle={{ width: "95%", padding: 0, maxHeight: "95%",marginTop:30 ,flex:1,backgroundColor:'transparent'}}
+                    dialogAnimation={new SlideAnimation()}
+                    containerStyle={{
+                        zIndex: 10,
+                        flex: 1,
+                        justifyContent: "space-between",
+                        backgroundColor:'transparent',
                     }}
                     rounded={false}
                     >
-                    <View
-                        style={MainStyles.modalHeader}
-                    >
-                        <Text style={MainStyles.modalHeaderHeading}>Terms and Conditions</Text>
-                        <TouchableOpacity onPress={() =>{this.setState({showTerms:false})}}>
-                            <Image source={require('../../assets/cross-icon.png')} width={21} height={21} style={{height:21,width:21}} />
-                        </TouchableOpacity>
-                    </View>
-                    <ScrollView contentContainerStyle={{paddingHorizontal: 10,paddingVertical:10}}>
-                        <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#1476c0',fontSize:15}}>
-                            Our Terms and Conditions
-                        </Text>
-                        <View style={MainStyles.tacItems}>
-                            <Text style={MainStyles.tacItemsH}>1. Lorem Ipsum has been</Text>
-                            <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                            <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
+                    <SafeAreaView style={{flex:1,width:'100%',height:'95%',padding:0,borderWidth: 0,overflow:'visible'}}>
+                        <View style={MainStyles.modalHeader} >
+                            <Text style={MainStyles.modalHeaderHeading}>Enter OTP</Text>
                         </View>
-                        <View style={MainStyles.tacItems}>
-                            <Text style={MainStyles.tacItemsH}>2. Lorem Ipsum has been</Text>
-                            <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                            <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
-                        </View>
-                        <View style={MainStyles.tacItems}>
-                            <Text style={MainStyles.tacItemsH}>3. Lorem Ipsum has been</Text>
-                            <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                            <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
-                        </View>
-                        <View style={MainStyles.tacItems}>
-                            <Text style={MainStyles.tacItemsH}>4. Lorem Ipsum has been</Text>
-                            <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                            <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
-                        </View>
-                        <View style={MainStyles.tacItems}>
-                            <Text style={MainStyles.tacItemsH}>5. Lorem Ipsum has been</Text>
-                            <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                            <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
-                        </View>
-                        <View style={MainStyles.tacItems}>
-                            <Text style={MainStyles.tacItemsH}>6. Lorem Ipsum has been</Text>
-                            <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                            <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
-                        </View>
-                    </ScrollView>
-                    <View style={MainStyles.modalFooter}>
-                        <TouchableOpacity style={[MainStyles.psosBtn, MainStyles.psosBtnXm]} onPress={()=>{this.singup()}}>
-                            <Text style={[MainStyles.psosBtnText,MainStyles.psosBtnXsText]}>I Agree</Text>
-                        </TouchableOpacity>
-                    </View>
+                        <KeyboardAvoidingView enabled behavior={behavior}>
+                            <ScrollView keyboardShouldPersistTaps="always"  contentContainerStyle={{paddingHorizontal: 10,paddingVertical:10,backgroundColor:'#FFFFFF'}}>
+                                <TextInput 
+                                style={MainStyles.TInput} 
+                                placeholder="OTP" 
+                                returnKeyType={"go"} 
+                                ref={(input) => { this.otp = input; }} 
+                                onBlur={()=>{Keyboard.dismiss()}}
+                                blurOnSubmit={false}
+                                keyboardType="number-pad"
+                                onChangeText={(text)=>this.setState({otp:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.otp}
+                            />
+                            <View style={{justifyContent:'center',alignItems:'center',marginTop:26}}>
+                                <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.checkOtp();}}>
+                                    <Text style={MainStyles.psosBtnText}>Submit</Text>
+                                </TouchableOpacity>
+                            </View>
+                            </ScrollView>
+                        </KeyboardAvoidingView>
+                    </SafeAreaView>
                 </Dialog>
             </SafeAreaView>
         );

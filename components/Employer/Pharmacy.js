@@ -128,8 +128,8 @@ class Pharmacy extends Component{
                     position:'absolute',
                     right:10,
                     bottom:20,
-                    width:40,
-                    height:40,
+                    width:60,
+                    height:60,
                     backgroundColor:'#1d7bc3',
                     borderRadius:35,
                     zIndex:98562,
@@ -139,9 +139,10 @@ class Pharmacy extends Component{
                     shadowColor:'#1e1e1e',
                     shadowOffset:3,
                     shadowOpacity:0.7,
-                    shadowRadius:3
+                    shadowRadius:3,
+                    alignContent:'center'
                 }} onPress={()=>{this.props.navigation.navigate('AddPharmacy');}}>
-                    <Icon name="plus" style={{color:'#FFFFFF',fontSize:17,}}/>
+                    <Icon name="plus" style={{color:'#FFFFFF',fontSize:25,}}/>
                 </TouchableOpacity>
             </SafeAreaView>
         );

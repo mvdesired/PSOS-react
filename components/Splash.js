@@ -53,7 +53,7 @@ class SplashScreen extends Component{
                     bottom:20
                 }}>
                     <Text style={{color:'#147dbf',marginBottom:5,fontFamily:'AvenirLTStd-Roman'}}>Version 1.0.0</Text>
-                    <Text style={{color:'#147dbf',fontFamily:'AvenirLTStd-Roman'}}>Powerd by Pharmacy SOS</Text>
+                    <Text style={{color:'#147dbf',fontFamily:'AvenirLTStd-Roman'}}>Powered by Pharmacy SOS</Text>
                 </View>
             </ImageBackground>
         );

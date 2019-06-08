@@ -33,10 +33,16 @@ class NewPermShift extends Component{
         this.setState({userData});
     }
     componentDidMount = ()=>{
+        this.listener = this.props.navigation.addListener("didFocus", this.onFocus);
+    }
+    onFocus =()=>{
         this.setUserData();
         setTimeout(()=>{
             this.fetchPharmacyList();
-        },1000);
+            /*this.clearTime = setInterval(()=>{
+                //this.fetchPharma();
+            },3500);*/
+        },1500);
     }
     fetchPharmacyList = ()=>{
         fetch(SERVER_URL+'pharmacy_list?user_id='+this.state.userData.id,{
@@ -147,6 +153,25 @@ class NewPermShift extends Component{
                         <View style={{marginVertical:5}}></View>
                     </ScrollView>
                 </KeyboardAvoidingView>
+                <TouchableOpacity style={{
+                    position:'absolute',
+                    right:10,
+                    bottom:20,
+                    width:60,
+                    height:60,
+                    backgroundColor:'#1d7bc3',
+                    borderRadius:35,
+                    zIndex:98562,
+                    justifyContent:'center',
+                    alignItems:'center',
+                    elevation:3,
+                    shadowColor:'#1e1e1e',
+                    shadowOffset:3,
+                    shadowOpacity:0.7,
+                    shadowRadius:3
+                }} onPress={()=>{this.props.navigation.navigate('AddPharmacy');}}>
+                    <Icon name="plus" style={{color:'#FFFFFF',fontSize:25,}}/>
+                </TouchableOpacity>
             </SafeAreaView>
         );
     }
