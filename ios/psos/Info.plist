@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>LSApplicationCategoryType</key>
+	<string/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -93,6 +95,13 @@
 		<string>AvenirLTStd-MediumOblique.otf</string>
 		<string>AvenirLTStd-Oblique.otf</string>
 		<string>AvenirLTStd-Roman.otf</string>
+		<string>AvenirLTStd-Black.ttf</string>
+		<string>AvenirLTStd-Book.ttf</string>
+		<string>AvenirLTStd-Heavy.ttf</string>
+		<string>AvenirLTStd-Light.ttf</string>
+		<string>AvenirLTStd-Medium.ttf</string>
+		<string>AvenirLTStd-Oblique.ttf</string>
+		<string>AvenirLTStd-Roman.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

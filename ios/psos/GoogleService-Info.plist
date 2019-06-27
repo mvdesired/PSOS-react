@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>483388838623-kah98rlkra5cs94biikd7aah01nr7rgi.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.483388838623-kah98rlkra5cs94biikd7aah01nr7rgi</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCeg86xs94ff9vzQUccm35f57e_ePJ6EFY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>483388838623</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.psos.diss</string>
+	<key>PROJECT_ID</key>
+	<string>pharmacy-sos</string>
+	<key>STORAGE_BUCKET</key>
+	<string>pharmacy-sos.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:483388838623:ios:44cc6aea24d850c8</string>
+	<key>DATABASE_URL</key>
+	<string>https://pharmacy-sos.firebaseio.com</string>
+</dict>
+</plist>

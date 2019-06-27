@@ -10,11 +10,21 @@ import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import DateTimePicker from "react-native-modal-datetime-picker";
-import PhoneInput from 'react-native-phone-input'
+import PhoneInput from 'react-native-phone-input';
 const { height, width } = Dimensions.get('window');
 class ETimeSheet extends Component{
     constructor(props) {
         super(props);
+        var newDate = new Date();
+        var extendedDate = new Date(newDate.getTime()+30*60000);
+        var sH = newDate.getHours();
+        var sM = newDate.getMinutes();
+        var eH = extendedDate.getHours();
+        var eM = extendedDate.getMinutes();
+        if(sH < 10){sH = '0'+sH;}
+        if(sM < 10){sM = '0'+sM;}
+        if(eH < 10){eH = '0'+eH;}
+        if(eM < 10){sM = '0'+eM;}
         this.state={
             loading:false,
             activeTab:'cd',
@@ -25,7 +35,11 @@ class ETimeSheet extends Component{
             dateDays:{},
             dateMonth:{},
             dateYears:{},
-            haveMore:'No'
+            haveMore:'No',
+            sSTH:''+sH,
+            startMinute:''+sM,
+            endHour:''+eH,
+            endMinute:''+eM,
         }
     }
     async setUserData(){
@@ -182,6 +196,40 @@ class ETimeSheet extends Component{
             Toast.show('Something went wrong',Toast.SHORT);
         });
     }
+    showStartTimePicker = () => {
+        this.setState({isStartTimePickerVisible:true});
+    };
+    hideStartTimePicker = () => {
+        this.setState({isStartTimePickerVisible:false});
+    };
+    handleStartTimePicked = date => {
+        var changeDate = new Date(date);
+        var hh = ''+changeDate.getHours();
+        var mm = ''+(changeDate.getMinutes());
+        if(hh < 10){hh = '0'+hh;}
+        if(mm < 10){mm = '0'+mm;}
+        this.setState({
+            sSTH:hh,startMinute:mm
+        });
+        this.hideStartTimePicker();
+    };
+    showEndTimePicker = () => {
+        this.setState({isEndTimePickerVisible:true});
+    };
+    hideEndTimePicker = () => {
+        this.setState({isEndTimePickerVisible:false});
+    };
+    handleEndTimePicked = date => {
+        var changeDate = new Date(date);
+        var hh = ''+changeDate.getHours();
+        var mm = ''+(changeDate.getMinutes());
+        if(hh < 10){hh = '0'+hh;}
+        if(mm < 10){mm = '0'+mm;}
+        this.setState({
+            endHour:hh,endMinute:mm
+        });
+        this.hideEndTimePicker();
+    };
     render(){
         const RemoveHiehgt = height - 52;
         var behavior = (Platform.OS == 'ios')?'padding':'';
@@ -203,7 +251,7 @@ class ETimeSheet extends Component{
                             Let us know when you are available in next few days
                         </Text>
                         <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#676767',fontSize:13,marginBottom:5,}}>
-                            Please Note: WHen you click SUBMIT - you will return to this page. There is no submission if you include an email address.
+                            Please Note: WHen you click SUBMIT - you will return to this page. There is no submission confirmation page. You will get an email of your submission if you include an email address.
                         </Text>
                     </View>
                     {/* Locum Registration Heading Ends */}
@@ -297,10 +345,9 @@ class ETimeSheet extends Component{
                     {/* End Date Year End*/}
                     <View style={{marginTop:15}}></View>
                     <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop:10}}>
-                        <View style={{width:'32%'}}>
+                        <View style={{width:'40%'}}>
                             <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                                 Start Time
-                                <Text style={{color:'#ee1b24'}}>*</Text>
                             </Text>
                             <View style={{flexDirection:'row',justifyContent:'space-evenly',alignItems:'center',marginTop:10}}>
                                 <TextInput 
@@ -330,13 +377,25 @@ class ETimeSheet extends Component{
                                 underlineColorAndroid="transparent" 
                                 value={this.state.startMinute}
                             />
+                            <View style={{paddingHorizontal:5}}></View>
+                            <View style={{paddingHorizontal:2}}>
+                                <TouchableOpacity onPress={()=>{this.showStartTimePicker()}}>
+                                    <Icon name="clock-o" style={{fontSize:17}} />
+                                </TouchableOpacity>
+                                <DateTimePicker
+                                isVisible={this.state.isStartTimePickerVisible}
+                                onConfirm={this.handleStartTimePicked}
+                                onCancel={this.hideStartTimePicker}
+                                mode="time"
+                                minimumDate={this.state.currentDate}
+                                />
+                            </View>
                             </View>
                         </View>
                         {/* Shift Start Time End*/}
-                        <View style={{width:'32%'}}>
+                        <View style={{width:'40%'}}>
                             <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                                 End Time
-                                <Text style={{color:'#ee1b24'}}>*</Text>
                             </Text>
                             <View style={{flexDirection:'row',justifyContent:'space-evenly',alignItems:'center',marginTop:10}}>
                                 <TextInput 
@@ -366,6 +425,19 @@ class ETimeSheet extends Component{
                                     underlineColorAndroid="transparent" 
                                     value={this.state.endMinute}
                                 />
+                                <View style={{paddingHorizontal:5}}></View>
+                                <View style={{paddingHorizontal:2}}>
+                                    <TouchableOpacity onPress={()=>{this.showEndTimePicker()}}>
+                                        <Icon name="clock-o" style={{fontSize:17}} />
+                                    </TouchableOpacity>
+                                    <DateTimePicker
+                                    isVisible={this.state.isEndTimePickerVisible}
+                                    onConfirm={this.handleEndTimePicked}
+                                    onCancel={this.hideEndTimePicker}
+                                    mode="time"
+                                    minimumDate={this.state.currentDate}
+                                    />
+                                </View>
                             </View>
                         </View>
                         {/* Shift Unpaid Breaks End*/}

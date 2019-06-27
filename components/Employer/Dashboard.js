@@ -76,7 +76,7 @@ class Dashboard extends Component{
             method:'GET',
             headers:myHeaders
         })
-        .then(res=>{console.log(res);return res.json()})
+        .then(res=>res.json())
         .then(response=>{
             if (this._isMounted) {
                 if(response.status == 200){
@@ -106,7 +106,7 @@ class Dashboard extends Component{
                             color:'#FFFFFF'
                         }} />
                     </TouchableOpacity>
-                    <Image source={require('../../assets/web-logo-wight.png')} width={140} height={24} style={{width:140,height:24}} />
+                    <Image source={require('../../assets/web-logo-wight.png')} width={140} height={24} style={{width:154,height:26}} />
                     <View style={{flexDirection:'row',alignItems:'center'}}>
                         {/* <TouchableOpacity style={{marginRight:10}}>
                             <Image source={require('../../assets/share-icon.png')} width={20} height={20} style={{width:20,height:20}} />

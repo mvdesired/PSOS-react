@@ -2,6 +2,7 @@ import React,{Component} from 'react';
 import { ScrollView, TouchableOpacity,View,SafeAreaView,ImageBackground,Image,Text,AsyncStorage,StyleSheet } from 'react-native';
 import { DrawerItems,NavigationActions,withNavigation } from 'react-navigation';
 class DrawerBody extends Component{
+    isMount = false;
     constructor(props){
         super(props);
         this.state = {
@@ -17,14 +18,29 @@ class DrawerBody extends Component{
     async setUserData(){
         let userDataStringfy = await AsyncStorage.getItem('userData');
         let userData = JSON.parse(userDataStringfy);
-        this.setState({userData});
+        if(userData){
+            this.setState({userData});
+        }
+    }
+    setBlankUserData = ()=>{
+        this.setState({userData:{name:'',user_img:''}});
     }
     componentDidMount(){
+        this.isMount = true;
         this.setUserData();
     }
-    /*componentDidUpdate(){
-        this.setUserData();
-    }*/
+    componentDidUpdate(){
+        if(this.isMount == true){
+            this.setUserData();
+        }
+        else{
+
+        }
+    }
+    componentWillUnmount(){
+        this.setBlankUserData();
+        this.isMount = false;
+    }
     render(){
         const {items} = this.props.props;
         return (

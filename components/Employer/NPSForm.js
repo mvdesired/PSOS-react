@@ -37,9 +37,10 @@ class NPSFormScreen extends Component{
             startYear:'2019',
             dispensingList:dispensingList,
             travelList:travelList,
-            travelAcom:'Travel and accommodation offered',
+            travelAcom:'Travel and accommodation NOT offered',
             disSystem:'WiniFRED',
-            pOffers:'',
+            disSystemOther:'',
+            pOffers:'Yes',
             shiftName:'',
             rate_hour:'',
             rate_annum:'',
@@ -132,7 +133,8 @@ class NPSFormScreen extends Component{
                     scripts:r.scripts,
                     webster:r.webster,
                     listing_role:r.listing_role,
-                    shiftDetails:r.detail
+                    shiftDetails:r.detail,
+                    
                 });
             })
             .catch(err=>{
@@ -234,6 +236,7 @@ class NPSFormScreen extends Component{
         formdata.append('roles',this.state.roles);
         formdata.append('abt_role',this.state.abt_role);
         formdata.append('dispense',this.state.disSystem);
+        formdata.append('dispense_other',this.state.disSystemOther);
         formdata.append('offer',this.state.pOffers);
         formdata.append('travel',this.state.travelAcom);
         formdata.append('position_name',this.state.position_name);
@@ -261,8 +264,10 @@ class NPSFormScreen extends Component{
         .then(res=>{console.log(res);return res.json()})
         .then(response=>{
             this.setState({loading:false});
-            Toast.show(response.message,Toast.SHORT);
-            this.props.navigation.navigate('JobListE');
+            setTimeout(()=>{
+                Toast.show(response.message,Toast.SHORT);
+                this.props.navigation.navigate('JobListE');
+            },200)
         })
         .catch(err=>{
             this.setState({loading:false});
@@ -321,7 +326,7 @@ class NPSFormScreen extends Component{
                     <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}} style={{position:'absolute',left:8,top:8,paddingLeft:5,paddingRight:15,paddingVertical:15}}>
                         <Image source={require('../../assets/blue-back-icon.png')} style={{width:10,height:19}}/>
                     </TouchableOpacity>
-                    <Image source={require('../../assets/web-logo.png')} style={{width:200,height:34}}/>
+                    <Image source={require('../../assets/web-logo.png')} style={{width:205,height:35}}/>
                     <Image source={require('../../assets/header-b.png')} style={{width:'100%',marginTop:15}}/>
                 </View>
                 <KeyboardAvoidingView style={{flex:1,}} enabled behavior={behavior}>
@@ -545,6 +550,23 @@ class NPSFormScreen extends Component{
                                 <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.disSystem}</Text>
                             </TouchableOpacity>
                             
+                        }
+                        {
+                            this.state.disSystem == 'Other' && 
+                            <View>
+                                <View style={{marginTop:15}}></View>
+                                <TextInput 
+                                    style={[MainStyles.TInput]} 
+                                    returnKeyType={"go"} 
+                                    ref={(input) => { this.disSystemOther = input; }} 
+                                    blurOnSubmit={false}
+                                    onChangeText={(text)=>this.setState({disSystemOther:text})} 
+                                    placeholder="Dispensing System Other"
+                                    placeholderTextColor="#bebebe" 
+                                    underlineColorAndroid="transparent" 
+                                    value={this.state.disSystemOther}
+                                />
+                            </View>
                         }
                         {/* Dispensing System Ends */}
                         <View style={{marginTop:15}}></View>

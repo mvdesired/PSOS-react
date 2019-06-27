@@ -12,6 +12,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import Dialog, { SlideAnimation,DialogTitle,DialogButton } from 'react-native-popup-dialog';
 import StarRating from 'react-native-star-rating';
 import Header from '../Navigation/Header';
+import moment from 'moment';
 const { height, width } = Dimensions.get('window');
 var myHeaders = new Headers();
 myHeaders.set('Accept', 'application/json');
@@ -139,7 +140,7 @@ class JobList extends Component{
         });
     }
     render(){
-        const RemoveHiehgt = height - 88;
+        const RemoveHiehgt = height - 100;
         return(
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
                 <Loader loading={this.state.loading} />
@@ -154,22 +155,30 @@ class JobList extends Component{
                 </View>
                 {
                     this.state.currentTab == 'shift' && 
-                    <View style={{height:RemoveHiehgt}}>
-                        {
                             this.state.shiftList.length > 0 && 
-                            <FlatList data={this.state.shiftList} 
+                            <FlatList data={this.state.shiftList} style={{height:RemoveHiehgt,paddingBottom:10}}
                                 renderItem={({item}) => (
                                     <View>
                                         {
                                             item.applied == 0 && 
                                             <TouchableOpacity style={MainStyles.JLELoopItem} onPress={()=>{
-                                                this.props.navigation.navigate('JobDetails',{job_type:'shift',job_id:item.id});
+                                                this.props.navigation.navigate('JobDetails',{job_type:'shift',job_id:item.id,is_end:item.is_end,is_cancelled:item.is_cancelled});
                                             }}>
                                                 <View style={{flexWrap:'wrap'}}>
                                                     <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                                    <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.created_on)}</Text>
+                                                    <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM((item.created_on).replace(' ', 'T'))}</Text>
                                                 </View>
                                                 <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                    {
+                                                        item.is_cancelled == 1 && 
+                                                        <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                            <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Cancelled</Text>
+                                                        </View>
+                                                    }
+                                                    {
+                                                        item.is_end == 1 && 
+                                                        <View style={{width:15,height:15,backgroundColor:'#bf9161',borderRadius:50,marginLeft:5,marginRight:5}}></View>
+                                                    }
                                                     <Image source={require('../../assets/list-fd-icon.png')} style={{width:8,height:15}}/>
                                                 </View>
                                             </TouchableOpacity>
@@ -179,32 +188,32 @@ class JobList extends Component{
                                             <View style={[MainStyles.JLELoopItem,{backgroundColor:'#e6e6e6'}]}>
                                                 <View style={{flexWrap:'wrap',flex:1}}>
                                                     <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                                    <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.created_on)}</Text>
+                                                    <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM((item.created_on).replace(' ', 'T'))}</Text>
                                                 </View>
                                                 <View style={{flexDirection:'row',alignItems:'center',flexWrap:'wrap',justifyContent:'flex-end',flex:1}}>
                                                     {
-                                                        item.is_end == 0 && 
+                                                        item.applied == 1 && 
                                                         <Text style={{transform: [{ rotate: "45deg" }],color:'#61bf6f',fontFamily:'AvenirLTStd-Light',fontSize:10}}>Applied</Text>
                                                     }
                                                     {
-                                                        item.is_end == 0 && 
+                                                        item.is_end == 1 && 
                                                         <View style={{width:15,height:15,backgroundColor:'#61bf6f',borderRadius:50,marginLeft:5,marginRight:5}}></View>
                                                     }
                                                     {
-                                                        item.is_end == 0 && item.is_review == 0 && 
+                                                        item.is_cancelled == 1 && 
+                                                        <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                            <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Cancelled</Text>
+                                                        </View>
+                                                    }
+                                                    {
+                                                        item.is_end == 1 && item.is_review == 0 && 
                                                         <TouchableOpacity onPress={()=>{
                                                             this.setState({job_id:item.id,emp_id:item.employer_id,modalVisible:true});
                                                         }}>
                                                             <Icon name="star" style={{fontSize:20,color:'#fc8c15'}} />
                                                         </TouchableOpacity>
                                                     }
-                                                    
                                                 </View>
-                                                {/* {
-                                                    item.is_end == 1 &&  */}
-                                                    <View>
-                                                        
-                                                    </View>
                                             </View>
                                         }
                                     </View>
@@ -221,60 +230,66 @@ class JobList extends Component{
                                     />
                                 }
                              />
-                        }
-                    </View>
                 }
                 {/* Shift Tab Content Ends */}
                 {
                     this.state.currentTab == 'perm' && 
-                    <View style={{height:RemoveHiehgt}}>
-                        {
-                            this.state.permList.length > 0 && 
-                            <FlatList data={this.state.permList} 
-                                renderItem={({item}) => (
-                                    <View>
-                                        {
-                                            item.applied == 0 && 
-                                            <TouchableOpacity style={MainStyles.JLELoopItem} onPress={()=>{
-                                                this.props.navigation.navigate('JobDetails',{job_type:'perm',job_id:item.id});
-                                            }}>
-                                                <View style={{flexWrap:'wrap'}}>
-                                                    <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                                    <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.created_on)}</Text>
-                                                </View>
-                                                <View style={{flexDirection:'row',alignItems:'center'}}>
-                                                    <Image source={require('../../assets/list-fd-icon.png')} style={{width:8,height:15}}/>
-                                                </View>
-                                            </TouchableOpacity>
-                                        }
-                                        {
-                                            item.applied == 1 && 
-                                            <View style={[MainStyles.JLELoopItem,{backgroundColor:'#e6e6e6'}]}>
-                                                <View style={{flexWrap:'wrap'}}>
-                                                    <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                                    <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.created_on)}</Text>
-                                                </View>
-                                                <View style={{flexDirection:'row',alignItems:'center'}}>
-                                                    <Text style={{transform: [{ rotate: "45deg" }],color:'#61bf6f',fontFamily:'AvenirLTStd-Light',fontSize:14}}>Applied</Text>
-                                                </View>
+                        this.state.permList.length > 0 && 
+                        <FlatList data={this.state.permList}  style={{height:RemoveHiehgt,paddingBottom:10}}
+                            renderItem={({item}) => (
+                                <View>
+                                    {
+                                        (item.applied == 0 && item.is_cancelled == 0) && 
+                                        <TouchableOpacity style={MainStyles.JLELoopItem} onPress={()=>{
+                                            this.props.navigation.navigate('JobDetails',{job_type:'perm',job_id:item.id,is_cancelled:item.is_cancelled});
+                                        }}>
+                                            <View style={{flexWrap:'wrap'}}>
+                                                <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
+                                                <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM((item.created_on).replace(' ', 'T'))}</Text>
                                             </View>
-                                        }
-                                    </View>
-                                    
-                                    )}
-                                keyExtractor={(item) => 'key-'+item.id}
-                                viewabilityConfig={this.viewabilityConfig}
-                                refreshControl={
-                                    <RefreshControl
-                                        refreshing={this.state.isRefreshingPerm}
-                                        onRefresh={()=>{this.setState({isRefreshingPerm:true}),this.fetchPermShifts()}}
-                                        title="Pull to refresh"
-                                        colors={["#1d7bc3","red", "green", "blue"]}
-                                    />
-                                }
-                            />
-                        }
-                    </View>
+                                            {
+                                                item.is_cancelled == 1 && 
+                                                <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                    <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Cancelled</Text>
+                                                </View>
+                                            }
+                                            <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                <Image source={require('../../assets/list-fd-icon.png')} style={{width:8,height:15}}/>
+                                            </View>
+                                        </TouchableOpacity>
+                                    }
+                                    {
+                                        item.applied == 1 && 
+                                        <View style={[MainStyles.JLELoopItem,{backgroundColor:'#e6e6e6'}]}>
+                                            <View style={{flexWrap:'wrap'}}>
+                                                <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
+                                                <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM((item.created_on).replace(' ', 'T'))}</Text>
+                                            </View>
+                                            <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                <Text style={{transform: [{ rotate: "45deg" }],color:'#61bf6f',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Applied</Text>
+                                                {
+                                                    item.is_cancelled == 1 && 
+                                                    <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                        <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Cancelled</Text>
+                                                    </View>
+                                                }
+                                            </View>
+                                        </View>
+                                    }
+                                </View>
+                                
+                                )}
+                            keyExtractor={(item) => 'key-'+item.id}
+                            viewabilityConfig={this.viewabilityConfig}
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={this.state.isRefreshingPerm}
+                                    onRefresh={()=>{this.setState({isRefreshingPerm:true}),this.fetchPermShifts()}}
+                                    title="Pull to refresh"
+                                    colors={["#1d7bc3","red", "green", "blue"]}
+                                />
+                            }
+                        />
                 }
                 {/* Shift Tab Content Ends */}
                 <Dialog
@@ -307,6 +322,29 @@ class JobList extends Component{
                         </View>
                     </View>
                 </Dialog>
+                <TouchableOpacity style={{
+                    position:'absolute',
+                    right:10,
+                    bottom:20,
+                    width:50,
+                    height:50,
+                    backgroundColor:'#1d7bc3',
+                    borderRadius:35,
+                    zIndex:98562,
+                    justifyContent:'center',
+                    alignItems:'center',
+                    elevation:3,
+                    shadowColor:'#1e1e1e',
+                    shadowOffset:3,
+                    shadowOpacity:0.7,
+                    shadowRadius:3
+                }} onPress={()=>{
+                    this.setState({isRefreshingPerm:true,isRefreshingShift:true});
+                    this.fetchLocumShifts();
+                    this.fetchPermShifts();
+                }}>
+                    <Icon name="refresh" style={{color:'#FFFFFF',fontSize:20,}}/>
+                </TouchableOpacity>
             </SafeAreaView>
         )
     }

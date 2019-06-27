@@ -9,7 +9,7 @@ class Registration extends Component {
         super(props);
         this.state = {
             loading: false,
-            registertingFrom: ''
+            registertingFrom: ""
         }
     }
     checkbuttonClick = (selected) => {

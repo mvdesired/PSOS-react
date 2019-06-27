@@ -34,7 +34,7 @@ class Header extends Component{
         .then(response=>{
             if (this._isMounted) {
                 if(response.status == 200){
-                    this.setState({count:response.result.length});
+                    this.setState({count:response.result.read_count});
                 }
                 else{
                     this.setState({count:0});

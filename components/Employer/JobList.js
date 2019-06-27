@@ -1,7 +1,6 @@
 import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
-    Picker,Dimensions,RefreshControl,AsyncStorage,
-    ActionSheetIOS,Platform } from 'react-native';
+    Picker,Dimensions,RefreshControl,AsyncStorage,ActionSheetIOS,Modal,StyleSheet,Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { DrawerActions,NavigationActions } from 'react-navigation';
 import Loader from '../Loader';
@@ -11,6 +10,8 @@ import { SERVER_URL } from '../../Constants';
 import { FlatList } from 'react-native-gesture-handler';
 const { height, width } = Dimensions.get('window');
 import Header from '../Navigation/Header';
+import moment from 'moment';
+import Dialog, { SlideAnimation } from "react-native-popup-dialog";
 var myHeaders = new Headers();
 myHeaders.set('Accept', 'application/json');
 //myHeaders.set('Content-Type', 'application/json');
@@ -26,12 +27,14 @@ class JobList extends Component{
             shiftList:{},
             permList:{},
             isRefreshingPerm:false,
-            isRefreshingShift:false
+            isRefreshingShift:false,
+            ActionModalShow:false
         }
         this.viewabilityConfig = {
             waitForInteraction: true,
             viewAreaCoveragePercentThreshold: 95
         }
+        
         this.fetchLocumShifts = this._fetchLocumShifts.bind(this);
         this.fetchPermShifts = this._fetchPermShifts.bind(this);
     }
@@ -55,6 +58,7 @@ class JobList extends Component{
         })
         .then(res=>res.json())
         .then(response=>{
+            console.log(response);
             if(response.status == 200){
                 this.setState({shiftList:response.result});
             }
@@ -108,6 +112,92 @@ class JobList extends Component{
             return strTime;
         }
     }
+    cancelShift = ()=>{
+        this.setState({loading:true});
+        console.log(this.state.currentJobId);
+        var fd = new FormData();
+        fd.append("job_id",this.state.currentJobId);
+        var cancelUrl = (this.state.currentJobType == 'perm')?'cancel_permanent':'cancel_locumshift';
+        fetch(SERVER_URL+cancelUrl,{
+            method:'POST',
+            headers:myHeaders,
+            body:fd
+            // JSON.stringify({
+            //     job_id:this.state.currentJobId
+            // })
+        })
+        .then(res=>{console.log(res);return res.json()})
+        .then(response=>{
+            console.log(response);
+            Toast.show(response.message,Toast.SHORT);
+            this.setState({ActionModalShow:false,});
+            this._fetchLocumShifts();
+            this._fetchPermShifts();
+        })
+        .catch(err=>{
+            this.setState({loading:false});
+            console.log(err);
+        })
+    }
+    showOptions = ()=>{
+        if(Platform.OS == 'ios'){
+            var travelList = ['close','Cancel Shift','Edit Shift','View Shift'];
+            if(this.state.currentJobType == 'perm'){
+                travelList = ['close','Edit Shift','View Shift'];
+                ActionSheetIOS.showActionSheetWithOptions(
+                    {
+                    options: travelList,
+                    destructiveButtonIndex: 1,
+                    cancelButtonIndex: 0,
+                    },
+                    (buttonIndex) => {
+                    if (buttonIndex === 1) {
+                        /* destructive action */
+                        if(this.state.currentJobType =='perm'){
+                            this.props.navigation.navigate('NPSForm',{job_id:this.state.currentJobId});
+                        }
+                        else{
+                            this.props.navigation.navigate('NLSForm',{job_id:this.state.currentJobId});
+                        }
+                    }
+                    else if(buttonIndex == 3){
+                        this.props.navigation.navigate('LocumList',{job_type:this.state.currentJobType,job_id:this.state.currentJobId,isEnd:this.state.isEnd});
+                    }
+                    },
+                );
+            }
+            else{
+                ActionSheetIOS.showActionSheetWithOptions(
+                    {
+                    options: travelList,
+                    destructiveButtonIndex: 1,
+                    cancelButtonIndex: 0,
+                    },
+                    (buttonIndex) => {
+                    if (buttonIndex === 1) {
+                        /* destructive action */
+                        this.cancelShift();
+                    }
+                    else if (buttonIndex === 2) {
+                        /* destructive action */
+                        if(this.state.currentJobType =='perm'){
+                            this.props.navigation.navigate('NPSForm',{job_id:this.state.currentJobId});
+                        }
+                        else{
+                            this.props.navigation.navigate('NLSForm',{job_id:this.state.currentJobId});
+                        }
+                    }
+                    else if(buttonIndex == 3){
+                        this.props.navigation.navigate('LocumList',{job_type:this.state.currentJobType,job_id:this.state.currentJobId,isEnd:this.state.isEnd});
+                    }
+                    },
+                );
+            }
+        }
+        else{
+            this.setState({ActionModalShow:true});
+        }
+    }
     render(){
         const RemoveHiehgt = height - 88;
         return(
@@ -130,19 +220,27 @@ class JobList extends Component{
                             <FlatList data={this.state.shiftList} 
                                 renderItem={({item}) => (
                                     <TouchableOpacity style={MainStyles.JLELoopItem} onPress={()=>{
-                                        this.props.navigation.navigate('LocumList',{job_type:'shift',job_id:item.id,isEnd:item.is_end});
+                                        this.setState({currentJobId:item.id,currentJobType:'shift',isEnd:item.is_end,isCancelled:item.is_cancelled});
+                                        this.showOptions();
+                                        //this.props.navigation.navigate('LocumList',{job_type:'shift',job_id:item.id,isEnd:item.is_end});
                                     }}>
                                         <View style={{flexWrap:'wrap'}}>
                                             <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                            <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.created_on)}</Text>
+                                            <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM((item.created_on).replace(' ', 'T'))}</Text>
                                         </View>
                                         <View style={{flexDirection:'row',alignItems:'center'}}>
                                             <Text style={MainStyles.JLELoopItemCount}>{item.applier}</Text>
                                             <Icon name="eye" style={MainStyles.JLELoopItemIcon}/>
                                             {
-                                                item.is_end == 0 &&
+                                                item.is_end == 1 &&
                                                 <View style={{width:15,height:15,backgroundColor:'#61bf6f',borderRadius:50,marginLeft:5}}></View>
                                                 // <Text style={{marginLeft:5,color:'#61bf6f',fontFamily:'AvenirLTStd-Light',fontSize:10}}>Completed</Text>
+                                            }
+                                            {
+                                            item.is_cancelled == 1 && 
+                                            <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Cancelled</Text>
+                                            </View>
                                             }
                                         </View>
                                     </TouchableOpacity>
@@ -170,15 +268,27 @@ class JobList extends Component{
                             <FlatList data={this.state.permList} 
                                 renderItem={({item}) => (
                                     <TouchableOpacity style={MainStyles.JLELoopItem} onPress={()=>{
-                                        this.props.navigation.navigate('LocumList',{job_type:'perm',job_id:item.id,isEnd:item.is_end});
+                                        var stateItem = {currentJobId:item.id,currentJobType:'perm',isEnd:0,isCancelled:item.is_cancelled};
+                                        console.log(stateItem);
+                                        this.setState(stateItem);
+                                        this.showOptions();
+                                        //this.props.navigation.navigate('LocumList',{job_type:'perm',job_id:item.id,isEnd:item.is_end});
                                     }}>
                                         <View style={{flexWrap:'wrap'}}>
                                             <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                            <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.created_on)}</Text>
+                                            <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM((item.created_on).replace(' ', 'T'))}</Text>
                                         </View>
-                                        <View style={{flexDirection:'row',alignItems:'center'}}>
-                                            <Text style={MainStyles.JLELoopItemCount}>{item.applier}</Text>
-                                            <Icon name="eye" style={MainStyles.JLELoopItemIcon}/>
+                                        <View style={{flexDirection:'row',alignItems:'center'}}>    
+                                            <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                <Text style={MainStyles.JLELoopItemCount}>{item.applier}</Text>
+                                                <Icon name="eye" style={MainStyles.JLELoopItemIcon}/>
+                                            </View>
+                                            {
+                                                item.is_cancelled == 1 && 
+                                                <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                    <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Cancelled</Text>
+                                                </View>
+                                            }
                                         </View>
                                     </TouchableOpacity>
                                     )}
@@ -197,8 +307,103 @@ class JobList extends Component{
                     </View>
                 }
                 {/* Shift Tab Content Ends */}
+                {
+                    Platform.OS == 'android' && 
+                    <Dialog
+                    dialogStyle={{ width: "95%", padding: 0, maxHeight: "95%",flex:1,backgroundColor:'transparent',justifyContent:'center',alignItems:'center'}}
+                    dialogAnimation={new SlideAnimation()}
+                    visible={this.state.ActionModalShow}
+                    containerStyle={{
+                        zIndex: 10,
+                        flex: 1,
+                        justifyContent:'center',
+                        alignItems:'center',
+                        backgroundColor:'transparent',
+                    }}
+                    onTouchOutside={()=>{this.setState({ActionModalShow:false})}}
+                    rounded={false}
+                    >
+                        <View style={{paddingHorizontal: 10,paddingBottom:40,borderRadius:15,backgroundColor:'#FFFFFF',width:200,alignItems:'center',justifyContent:'center'}}>
+                            <View style={{
+                                paddingVertical:20,
+                            }}><Text style={{fontSize:20}}>Choose Actions</Text></View>
+                            <TouchableOpacity style={styles.ModalActionsButtons} onPress={()=>{
+                                this.setState({ActionModalShow:false});
+                                this.props.navigation.navigate('LocumList',{job_type:this.state.currentJobType,job_id:this.state.currentJobId,isEnd:this.state.isEnd});
+                                
+                            }}>
+                                <Text style={styles.ModalActionsButtonsText}>View Shift</Text>
+                            </TouchableOpacity>
+                            {
+                                (this.state.isCancelled == 0 && this.state.isEnd == 0) && 
+                                <TouchableOpacity style={styles.ModalActionsButtons} onPress={()=>{
+                                    this.setState({ActionModalShow:false});
+                                    if(this.state.currentJobType =='perm'){
+                                        this.props.navigation.navigate('NPSForm',{job_id:this.state.currentJobId});
+                                    }
+                                    else{
+                                        this.props.navigation.navigate('NLSForm',{job_id:this.state.currentJobId});
+                                    }
+                                }}>
+                                    <Text style={styles.ModalActionsButtonsText}>Edit Shift</Text>
+                                </TouchableOpacity>
+                            }
+                            {
+                                (this.state.isCancelled == 0 && this.state.isEnd == 0) && 
+                                <TouchableOpacity style={styles.ModalActionsButtons} onPress={()=>{
+                                    this.cancelShift();
+                                }}>
+                                    <Text style={styles.ModalActionsButtonsText}>Cancel Shift</Text>
+                                </TouchableOpacity>
+                            }
+                            <TouchableOpacity style={[styles.ModalActionsButtons,{width:70,marginTop:10}]} onPress={()=>{
+                                this.setState({ActionModalShow:false});
+                            }}>
+                                <Text style={styles.ModalActionsButtonsText}>Close</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </Dialog>
+                }
+                <TouchableOpacity style={{
+                    position:'absolute',
+                    right:10,
+                    bottom:20,
+                    width:50,
+                    height:50,
+                    backgroundColor:'#1d7bc3',
+                    borderRadius:35,
+                    zIndex:98562,
+                    justifyContent:'center',
+                    alignItems:'center',
+                    elevation:3,
+                    shadowColor:'#1e1e1e',
+                    shadowOffset:3,
+                    shadowOpacity:0.7,
+                    shadowRadius:3
+                }} onPress={()=>{
+                    this.setState({isRefreshingPerm:true,isRefreshingShift:true});
+                    this.fetchLocumShifts();
+                    this.fetchPermShifts();
+                }}>
+                    <Icon name="refresh" style={{color:'#FFFFFF',fontSize:20,}}/>
+                </TouchableOpacity>
             </SafeAreaView>
         )
     }
 }
 export default JobList;
+const styles = StyleSheet.create({
+    ModalActionsButtons:{
+        padding:10,
+        backgroundColor:'#147dbf',
+        marginVertical:5,
+        alignItems:'center',
+        justifyContent:'center',
+        width:150,
+        borderRadius:15
+    },
+    ModalActionsButtonsText:{
+        fontSize:17,
+        color:'#FFFFFF'
+    }
+});

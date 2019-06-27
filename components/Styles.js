@@ -36,6 +36,21 @@ const MainStyles = StyleSheet.create({
         borderWidth: 1,
         borderStyle:"dashed"
     },
+    TAInput:{
+        flex:1,
+        //textAlign:'left',
+        paddingLeft: 10,
+        paddingVertical:2,
+        fontSize:14,
+        borderRadius:20,
+        alignItems:'flex-start',
+        justifyContent:'flex-start',
+        fontFamily:'AvenirLTStd-Medium',
+        borderColor:'#a1a1a1',
+        borderWidth: 1,
+        borderStyle:"dashed",
+        textAlign:'left'
+    },
     selectFilesBtn:{
         backgroundColor:'#959595',
         alignItems: 'center',
@@ -141,7 +156,7 @@ const MainStyles = StyleSheet.create({
     eDBWI:{
         justifyContent:'center',
         alignItems:'center',
-        backgroundColor:'#f0f0f0',
+        //backgroundColor:'#f0f0f0',
         paddingHorizontal:30,
         paddingVertical:15
     },

@@ -26,8 +26,11 @@ class LocumDetails extends Component{
             isRefreshing:false,
             job_id:this.props.navigation.getParam("job_id"),
             job_type:this.props.navigation.getParam("job_type"),
+            is_end:this.props.navigation.getParam("is_end"),
+            is_cancelled:this.props.navigation.getParam("is_cancelled"),
         }
         this.fetchLocumDetails = this._fetchLocumDetails.bind(this);
+        console.log(this.state);
     }
     async setUserData(){
         let userDataStringfy = await AsyncStorage.getItem('userData');
@@ -49,7 +52,7 @@ class LocumDetails extends Component{
         })
         .then(res=>res.json())
         .then(response=>{
-            
+            console.log(response);
             if(response.status == 200){
                 this.setState({jobData:response.result});
             }
@@ -94,7 +97,7 @@ class LocumDetails extends Component{
         });
     }
     render(){
-        const RemoveHiehgt = height - 50;
+        const RemoveHiehgt = height - 95;
         applied = this.props.navigation.getParam('applied');
         return(
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
@@ -102,7 +105,7 @@ class LocumDetails extends Component{
                 <Header pageName="Jobs Description" />
                 {
                     this.state.job_type == 'shift' && 
-                    <ScrollView style={{paddingHorizontal:15,height:RemoveHiehgt,flex:1,backgroundColor:'#FFFFFF'}} keyboardShouldPersistTaps="always">
+                    <ScrollView style={{paddingHorizontal:15,minHeight:RemoveHiehgt,flex:1,backgroundColor:'#FFFFFF'}} keyboardShouldPersistTaps="always">
                         <View style={MainStyles.locumProfileItemWrapper}>
                             <Text style={MainStyles.LPIHeading}>Job Title</Text>
                             <Text style={MainStyles.LPISubHeading}>{this.state.jobData.name}</Text>
@@ -144,7 +147,25 @@ class LocumDetails extends Component{
                         </View>
                         {/* Languga */}
                         {
-                            !applied && 
+                            (this.state.is_end == 1  && this.state.is_cancelled == 0) && 
+                            <View style={{justifyContent:'center',alignItems:'center',marginTop:10,backgroundColor:'#bf9161',paddingVertical:20,borderRadius:15}}>
+                                <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Medium',fontSize:20}}>END</Text>
+                            </View>
+                        }
+                        {
+                            this.state.is_cancelled == 1 && 
+                            <View style={{justifyContent:'center',alignItems:'center',marginTop:10}}>
+                                <Text style={{color:'#bf6161',fontFamily:'AvenirLTStd-Medium',fontSize:20}}>CANCELLED</Text>
+                            </View>
+                        }
+                        {
+                            applied &&
+                            <View style={{justifyContent:'center',alignItems:'center',marginTop:10}}>
+                                <Text style={{color:'#61bf6f',fontFamily:'AvenirLTStd-Medium',fontSize:20}}>APPLIED</Text>
+                            </View>
+                        }
+                        {
+                            !applied && this.state.is_end == 0 && this.state.is_cancelled == 0 && 
                             <View style={{justifyContent:'center',alignItems:'center',marginTop: 10,marginBottom:15}}>
                                 <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{
                                     this.applyForJob();
@@ -153,12 +174,11 @@ class LocumDetails extends Component{
                                 </TouchableOpacity>
                             </View>
                         }
-                        
                     </ScrollView>
                 }
                 {
                     this.state.job_type == 'perm' && 
-                    <ScrollView style={{paddingHorizontal:15,height:RemoveHiehgt,flex:1,backgroundColor:'#FFFFFF'}} keyboardShouldPersistTaps="always">
+                    <ScrollView style={{paddingHorizontal:15,minHeight:RemoveHiehgt,flex:1,backgroundColor:'#FFFFFF'}} keyboardShouldPersistTaps="always">
                         <View style={MainStyles.locumProfileItemWrapper}>
                             <Text style={MainStyles.LPIHeading}>Pharmacy Name</Text>
                             <Text style={MainStyles.LPISubHeading}>{this.state.jobData.pharmacy_name}</Text>
@@ -239,6 +259,12 @@ class LocumDetails extends Component{
                             <Text style={MainStyles.LPISubHeading}>{this.state.jobData.listing_role}</Text>
                         </View>
                         {/* Languga */}
+                        {
+                            applied &&
+                            <View style={{justifyContent:'center',alignItems:'center',marginTop:10}}>
+                                <Text style={{color:'#61bf6f',fontFamily:'AvenirLTStd-Medium',fontSize:20}}>APPLIED</Text>
+                            </View>
+                        }
                         {
                             !applied && 
                             <View style={{justifyContent:'center',alignItems:'center',marginTop: 10,marginBottom:15}}>

@@ -18,6 +18,9 @@ export default class Login extends Component{
             serverOtp:'',
             otpField:false,
             userId:0,
+            mobileCode:'+61',
+            emailAddress:'',
+            password:''
         }
         this.signIn = this._signIn.bind(this);
     }
@@ -25,22 +28,20 @@ export default class Login extends Component{
         await AsyncStorage.setItem(key,value);
     }
     _signIn = () =>{
-        if(this.state.otpField){
-            this.checkOtp();
+        if(this.state.emailAddress == ''){
+            Toast.show('Email address should not be blank',Toast.SHORT)
+            return false;
         }
-        else{
-            if(this.state.emailAddress == ''){
-                Toast.show('Email address should not be blank',Toast.SHORT);
-                return false;
-            }
-            //this.sendDataToServer();
-            this.setState({loading:true});
-            this.getToken(this.sendDataToServer.bind(this));
+        if(this.state.password == ''){
+            Toast.show('Password should not be blank',Toast.SHORT)
+            return false;
         }
-        
+        //this.sendDataToServer();
+        this.setState({loading:true});
+        this.getToken(this.sendDataToServer.bind(this));
     }
     checkOtp =()=>{
-        if(this.state.otp == ''){
+        /*if(this.state.otp == ''){
             Toast.show('OTP should not be blank',Toast.SHORT);
             return false;
         }
@@ -48,7 +49,7 @@ export default class Login extends Component{
             Toast.show('OTP not matched',Toast.SHORT);
             return false;
         }
-        this.setState({loading:true});
+        this.setState({loading:true});*/
         fetch(SERVER_URL+'userdata',{
             method:'POST',
             headers: {
@@ -59,16 +60,15 @@ export default class Login extends Component{
                 user_id: this.state.userId
             })
         })
-        .then((res)=>{console.log(res._bodyInit);return res.json()})
+        .then((res)=>{return res.json()})
         .then((response)=>{
-            console.log(response);
             if(response.status == 200){
                 Toast.show(response.message,Toast.SHORT);
                 this.saveDetails('isUserLoggedIn',"true");
                 this.saveDetails('userData',JSON.stringify(response.result));
                 //if(response.result.user_type == 'employer'){
                     this.props.navigation.navigate('Home');
-                    this.setState({otpField:false,serverOtp:'',userId:'',otp:'',mobileNumber:''});
+                    this.setState({otpField:false,serverOtp:'',userId:'',otp:'',emailAddress:'',password:''});
                 //}
             }
             else{
@@ -84,16 +84,12 @@ export default class Login extends Component{
     }
     sendDataToServer(token){
         var tokenGenerated = (typeof(token) != "undefined")?token.token:'';
-        var fd = new FormData();
-        fd.append('phone',this.state.mobileNumber);
-        fd.append('device_type',Platform.OS);
-        fd.append('device_key',tokenGenerated);
         var jsonArray = {
-            phone: this.state.mobileNumber,
+            email: this.state.emailAddress,
+            password: this.state.password,
             device_type:Platform.OS,
             device_key:tokenGenerated
         };
-        console.log(jsonArray);
         fetch(SERVER_URL+'user_login',{
             method:'POST',
             headers: {
@@ -102,15 +98,15 @@ export default class Login extends Component{
             },
             body: JSON.stringify(jsonArray)
         })
-        .then((res)=>{console.log(res._bodyInit);return res.json()})
+        .then((res)=>{return res.json()})
         .then((response)=>{
-            console.log(response);
             if(response.status == 200){
-                //Toast.show(''+response.result.otp,Toast.SHORT);
-                this.setState({otpField:true,serverOtp:response.result.otp,userId:response.result.id});
+                //Toast.show(''+response.result.otp,Toast.SHORT);otpField:true,serverOtp:response.result.otp,
+                this.setState({userId:response.result.id});
+                this.checkOtp();
             }
             else{
-                Toast.show(response.message,Toast.SHORT);
+                setTimeout(()=>{Toast.show(response.message,Toast.SHORT);},300);
             }
             this.setState({loading:false});
         })
@@ -128,7 +124,6 @@ export default class Login extends Component{
             PushNotification.configure({
                 onRegister: onToken,
                 onNotification: function(notification) {
-                    console.log('NOTIFICATION:', notification );
                 },
                 senderID: SENDER_ID,
                 permissions: {
@@ -174,74 +169,81 @@ export default class Login extends Component{
             <ImageBackground source={require('../../assets/splash-bg.png')} style={{flex:1,backgroundColor:'#FFFFFF',justifyContent:'center',alignItems:'center'}}>
                 <Loader loading={this.state.loading} />
                 <KeyboardAvoidingView enabled style={{flex:1,justifyContent:'center',alignItems:'center',width:'100%',height:'100%'}} behavior={behavior}>
-                    <ScrollView contentContainerStyle={{flex:1,justifyContent:'center',alignItems:'center'}}>
+                    <ScrollView contentContainerStyle={{flex:1,justifyContent:'center',alignItems:'center',width:'100%',height:'100%'}} keyboardShouldPersistTaps="always">
                         <Image source={require('../../assets/web-logo.png')} style={{width:280,height:48}} />
                         <View style={{marginTop: 60,width:'100%',maxWidth:'70%'}}>
-                            {
-                                !this.state.otpField && 
-                                <View 
-                                    style={{borderRadius: 35,borderStyle:"dashed",borderWidth: 3,borderColor: '#147dbf',
-                                    width:'100%',
-                                    paddingHorizontal: 12,
-                                    paddingVertical: 6,
-                                    flexDirection: 'row',
-                                    marginBottom: 22.5,
-                                    justifyContent:'center',
-                                    alignItems: 'center',
-                                    marginTop:10
-                                    }}
-                                >
-                                    <PhoneInput
-                                    ref={(ref) => { this.mobileNumber = ref; }}
-                                    style={{
-                                        flex:1,
-                                        textAlign:'left',
-                                        paddingLeft: 10,
-                                        height:40,
-                                        fontSize:17,
-                                        fontFamily:'AvenirLTStd-Medium'
-                                    }} 
-                                    initialCountry={"au"}
-                                    onChangePhoneNumber={(number)=>this.setState({mobileNumber:number})}
-                                    value={this.state.mobileNumber}
-                                    />
-                                    
-                                </View>
-                            }
-                            {
-                                this.state.otpField && 
-                                <View style={{borderRadius: 35,borderStyle:"dashed",borderWidth: 3,
-                                    borderColor: '#bebebe',
-                                    width:'100%',
-                                    paddingHorizontal: 12,
-                                    paddingVertical: 6,
-                                    flexDirection: 'row',
-                                    justifyContent:'center',
-                                    alignItems: 'center',
-                                    }}
-                                >
-                                    <Image source={require('../../assets/lock-disable.png')} width={18} height={24} style={{width:18,height:24}}/>
-                                    <TextInput 
-                                        style={{
-                                            flex:1,
-                                            textAlign:'left',
-                                            paddingLeft: 10,
-                                            height:40,
-                                            fontSize:17,
-                                            fontFamily:'AvenirLTStd-Medium',
-                                        }} 
-                                        placeholder="OTP *" 
-                                        returnKeyType={"go"} 
-                                        keyboardType="number-pad"
-                                        ref={(input) => { this.otp = input; }} 
-                                        blurOnSubmit={false}
-                                        onChangeText={(text)=>this.setState({otp:text})} 
-                                        placeholderTextColor="#bebebe" 
-                                        underlineColorAndroid="transparent" 
-                                        value={this.state.otp}
-                                    />
-                                </View>
-                            }
+                        <View 
+                        style={{
+                        borderRadius: 35,
+                        borderStyle:"dashed",
+                        borderWidth: 3,
+                        borderColor: '#147dbf',
+                        width:'100%',
+                        paddingHorizontal: 12,
+                        paddingVertical: 6,
+                        flexDirection: 'row',
+                        marginBottom: 22.5,
+                        justifyContent:'center',
+                        alignItems: 'center',
+                        }}
+                    >
+                        <Image source={require('../../assets/envelope.png')} width={18} height={14} style={{width:18,height:14}}/>
+                        <TextInput 
+                        style={{
+                            flex:1,
+                            textAlign:'left',
+                            paddingLeft: 10,
+                            height:40,
+                            fontSize:17,
+                            fontFamily:'AvenirLTStd-Medium'
+                        }} 
+                        placeholder="Email *" 
+                        returnKeyType={"next"} 
+                        ref={(input) => { this.emailAddress = input; }} 
+                        onSubmitEditing={() => { this.password.focus(); }} 
+                        blurOnSubmit={false}
+                        onChangeText={(text)=>this.setState({emailAddress:text})} 
+                        keyboardType="email-address" 
+                        autoCapitalize='none' 
+                        placeholderTextColor="#147dbf" 
+                        underlineColorAndroid="transparent" 
+                        value={this.state.emailAddress}
+                        />
+                    </View>
+                    <View style={{
+                        borderRadius: 35,
+                        borderStyle:"dashed",
+                        borderWidth: 3,
+                        borderColor: '#bebebe',
+                        width:'100%',
+                        paddingHorizontal: 12,
+                        paddingVertical: 6,
+                        flexDirection: 'row',
+                        justifyContent:'center',
+                        alignItems: 'center',
+                        }}
+                    >
+                        <Image source={require('../../assets/lock-disable.png')} width={18} height={24} style={{width:18,height:24}}/>
+                        <TextInput 
+                            style={{
+                                flex:1,
+                                textAlign:'left',
+                                paddingLeft: 10,
+                                height:40,
+                                fontSize:17,
+                                fontFamily:'AvenirLTStd-Medium',
+                            }} 
+                            placeholder="Password *" 
+                            returnKeyType={"go"} 
+                            secureTextEntry={true} 
+                            ref={(input) => { this.password = input; }} 
+                            blurOnSubmit={false}
+                            onChangeText={(text)=>this.setState({password:text})} 
+                            placeholderTextColor="#bebebe" 
+                            underlineColorAndroid="transparent" 
+                            value={this.state.password}
+                        />
+                    </View>
                             <View style={{justifyContent:'center',alignItems:'center',marginTop:26}}>
                                 <TouchableOpacity style={MainStyles.psosBtn} onPress={()=>{this.signIn()}}>
                                     <Text style={MainStyles.psosBtnText}>Login</Text>
@@ -255,7 +257,14 @@ export default class Login extends Component{
                                     </TouchableOpacity>
                                 }
                             </View>
-                            <View style={{flexDirection:'row',alignItems: 'center',width:'100%',justifyContent:'center',marginTop:35}}>
+                            <View style={{flexDirection:'row',alignItems: 'center',width:'100%',justifyContent:'flex-end',marginTop:15}}>
+                                <TouchableOpacity style={{marginLeft:5}}
+                                onPress={()=>{this.props.navigation.navigate('ForgotPassword')}}
+                                >
+                                    <Text style={{color:'#147dbf',fontFamily:'AvenirLTStd-Roman'}}>Forgot Password?</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{flexDirection:'row',alignItems: 'center',width:'100%',justifyContent:'center',marginTop:25}}>
                                 <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Roman'}}>Don’t have an Account ?</Text>
                                 <TouchableOpacity style={{marginLeft:5}}
                                 onPress={()=>{this.props.navigation.navigate('Registration')}}

@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
-    Picker,Dimensions,AsyncStorage,Keyboard,BackHandler,
+    Picker,Dimensions,AsyncStorage,Keyboard,BackHandler,Alert,
     ActionSheetIOS,Platform } from 'react-native';
 import Loader from '../Loader';
 import MainStyles from '../Styles';
@@ -10,6 +10,8 @@ import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import PhoneInput from 'react-native-phone-input'
 const { height, width } = Dimensions.get('window');
+var myHeaders = new Headers();
+myHeaders.set('Content-Type', 'application/json');
 class EmployerScreen extends Component{
     constructor(props) {
         super(props);
@@ -27,14 +29,17 @@ class EmployerScreen extends Component{
             firsName:'',
             lastName:'',
             phoneNo:'4',
+            phoneCode:'+61',
             emailAddress:'',
+            password:'',
             city:'',
             spr:'VIC',
             pz:'',
             country:'Australia',
             otpVisible:false,
             otp:'',
-            serverOtp:''
+            serverOtp:'',
+            page_text:''
         }
         this.singup = this._signup.bind(this);
     }
@@ -47,6 +52,18 @@ class EmployerScreen extends Component{
                 BackHandler.exitApp();
             }
         });
+        fetch(SERVER_URL+'app_page_text?page_name=terms',{
+            method:'GET',
+            headers:myHeaders
+          })
+          .then(res=>res.json())
+          .then(response=>{
+            this.setState({page_text:response.page_text});
+            console.log(response);
+          })
+          .catch(err=>{
+            console.log(err);
+          });
     }
     _signup = () => {
         
@@ -66,8 +83,12 @@ class EmployerScreen extends Component{
             Toast.show('Email ID should not be blank',Toast.SHORT)
             return false;
         }
+        if(this.state.password == ''){
+            Toast.show('Password should not be blank',Toast.SHORT)
+            return false;
+        }
         if(this.state.streetAddress == ''){
-            Toast.show('Email ID should not be blank',Toast.SHORT)
+            Toast.show('Street address should not be blank',Toast.SHORT)
             return false;
         }
         if(this.state.city == ''){
@@ -86,46 +107,62 @@ class EmployerScreen extends Component{
             Toast.show('Country should not be blank',Toast.SHORT)
             return false;
         }
-        this.setState({loading:true});
+        Alert.alert(
+            'Please check you email and mobile number',
+            'Email: '+this.state.emailAddress+' \n Mobile Number: '+this.state.phoneCode+''+this.state.phoneNo,
+            [
+              {
+                text: 'Change',
+                onPress: () => {
+                    this.setState({showTerms:false});
+                },
+                style: 'cancel',
+              },
+              {text: 'Correct', onPress: () => {
+                this.setState({loading:true});
+                var formdata = new FormData();
+                formdata.append('fname',this.state.firsName);
+                formdata.append('lname',this.state.lastName);
+                formdata.append('phone',this.state.phoneCode+''+this.state.phoneNo);
+                formdata.append('email',this.state.emailAddress);
+                formdata.append('password',this.state.password);
+                formdata.append('address',this.state.streetAddress);
+                formdata.append('city',this.state.city);
+                formdata.append('state',this.state.spr);
+                formdata.append('postal',this.state.pz);
+                formdata.append('country',this.state.country);
+                formdata.append('device_type',Platform.OS);
+                formdata.append('device_key','');
+                fetch(SERVER_URL+'emp_reg',{
+                    method:'POST',
+                    headers: {
+                        Accept: 'application/json',
+                    },
+                    body: formdata
+                })
+                .then((res)=>{return res.json()})
+                .then((response)=>{
+                    if(response.status == 200){
+                        Toast.show(response.message,Toast.SHORT);
+                        //this.saveDetails('isUserLoggedIn',"true");
+                        //this.saveDetails('userData',JSON.stringify(response.result));
+                        this.setState({showTerms:false,otpVisible:true,serverOtp:response.result.otp,userId:response.result.id});
+                        //this.props.navigation.navigate('Login',{user_id:response.id,otp:response.otp});
+                    }
+                    else{
+                        Toast.show(response.message,Toast.SHORT);
+                    }
+                    this.setState({loading:false});
+                })
+                .catch((err)=>{
+                    console.log(err);
+                    this.setState({loading:false});
+                });
+              }},
+            ],
+            {cancelable: false},
+        );
         
-        var formdata = new FormData();
-        formdata.append('fname',this.state.firsName);
-        formdata.append('lname',this.state.lastName);
-        formdata.append('phone',this.state.phoneNo);
-        formdata.append('email',this.state.emailAddress);
-        formdata.append('address',this.state.streetAddress);
-        formdata.append('city',this.state.city);
-        formdata.append('state',this.state.spr);
-        formdata.append('postal',this.state.pz);
-        formdata.append('country',this.state.country);
-        formdata.append('device_type',Platform.OS);
-        formdata.append('device_key','');
-        fetch(SERVER_URL+'emp_reg',{
-            method:'POST',
-            headers: {
-                Accept: 'application/json',
-            },
-            body: formdata
-        })
-        .then((res)=>{console.log(res);return res.json()})
-        .then((response)=>{
-            console.log(response);
-            if(response.status == 200){
-                Toast.show(response.message,Toast.SHORT);
-                //this.saveDetails('isUserLoggedIn',"true");
-                //this.saveDetails('userData',JSON.stringify(response.result));
-                this.setState({showTerms:false,otpVisible:true,serverOtp:response.result.otp,userId:response.result.id});
-                //this.props.navigation.navigate('Login',{user_id:response.id,otp:response.otp});
-            }
-            else{
-                Toast.show(response.message,Toast.SHORT);
-            }
-            this.setState({loading:false});
-        })
-        .catch((err)=>{
-            console.log(err);
-            this.setState({loading:false});
-        });
     }
     pickerIos = () => {
         ActionSheetIOS.showActionSheetWithOptions({
@@ -150,7 +187,6 @@ class EmployerScreen extends Component{
           });
     }
     checkOtp =()=>{
-        console.log(this.state.otp, this.state.serverOtp);
         if(this.state.otp == ''){
             Toast.show('OTP should not be blank',Toast.SHORT);
             return false;
@@ -170,9 +206,8 @@ class EmployerScreen extends Component{
                 user_id: this.state.userId
             })
         })
-        .then((res)=>{console.log(res._bodyInit);return res.json()})
+        .then((res)=>{return res.json()})
         .then((response)=>{
-            console.log(response);
             if(response.status == 200){
                 Toast.show(response.message,Toast.SHORT);
                 this.saveDetails('isUserLoggedIn',"true");
@@ -287,22 +322,38 @@ class EmployerScreen extends Component{
                                 fontFamily:'AvenirLTStd-Medium',
                                 borderColor:'#a1a1a1',
                                 borderWidth: 1,
-                                borderStyle:"dashed"
+                                borderStyle:"dashed",
+                                flexDirection:'row'
                             }}
                         >
                             <PhoneInput
-                            ref={(ref) => { this.phoneNo = ref; }}
+                            ref={(ref) => { this.phoneCode = ref; }}
                             style={{
-                                flex:1,
                                 textAlign:'left',
                                 paddingLeft: 10,
-                                height:30,
+                                height:25,
                                 fontSize:14,
-                                fontFamily:'AvenirLTStd-Medium'
+                                fontFamily:'AvenirLTStd-Medium',
+                                width:75
                             }} 
                             initialCountry={"au"}
-                            onChangePhoneNumber={(number)=>this.setState({phoneNo:number})}
-                            value={this.state.phoneNo}
+                            onChangePhoneNumber={(number)=>this.setState({phoneCode:number})}
+                            value={this.state.phoneCode}
+                            />
+                            <TextInput 
+                                style={[MainStyles.TInput,{
+                                    borderWidth:0,
+                                    height:26,
+                                }]}
+                                maxLength={10}
+                                placeholder="Mobile Number *" 
+                                keyboardType="number-pad"
+                                ref={(input) => { this.phoneNo = input; }} 
+                                blurOnSubmit={false}
+                                onChangeText={(text)=>this.setState({phoneNo:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.phoneNo}
                             />
                         </View>
                         {/* Phone Ends */}
@@ -325,6 +376,26 @@ class EmployerScreen extends Component{
                             value={this.state.emailAddress}
                         />
                         {/* Email Ends */}
+                        <View style={{marginTop:15}}></View>
+                        <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
+                            Password
+                            <Text style={{color:'#ee1b24'}}>*</Text>
+                        </Text>
+                        <View style={{marginTop:10}}></View>
+                        <TextInput 
+                            style={MainStyles.TInput} 
+                            placeholder="Password *" 
+                            returnKeyType={"go"} 
+                            ref={(input) => { this.password = input; }} 
+                            blurOnSubmit={false}
+                            secureTextEntry={true}
+                            keyboardType="default"
+                            onChangeText={(text)=>this.setState({password:text})} 
+                            placeholderTextColor="#bebebe" 
+                            underlineColorAndroid="transparent" 
+                            value={this.state.password}
+                        />
+                        {/* Password Ends */}
                         <View style={{marginTop:15}}></View>
                         <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                             Address
@@ -451,7 +522,7 @@ class EmployerScreen extends Component{
                 </KeyboardAvoidingView>
                 <Dialog
                     visible={this.state.showTerms}
-                    dialogStyle={{ width: "95%", padding: 0, maxHeight: "95%",marginTop:30 ,flex:1,backgroundColor:'transparent'}}
+                    dialogStyle={{ width: "95%", padding: 0, maxHeight: "90%",marginTop:43 ,flex:1,backgroundColor:'transparent'}}
                     dialogAnimation={new SlideAnimation()}
                     containerStyle={{
                         zIndex: 10,
@@ -462,7 +533,7 @@ class EmployerScreen extends Component{
                     onTouchOutside={()=>{this.setState({showTerms:false})}}
                     rounded={false}
                     >
-                    <SafeAreaView style={{flex:1,width:'100%',height:'95%',padding:0,borderWidth: 0,overflow:'visible'}}>
+                    <SafeAreaView style={{flex:1,width:'100%',height:'90%',padding:0,borderWidth: 0,overflow:'visible',backgroundColor:'#FFFFFF',margin:0}}>
                         <View style={MainStyles.modalHeader} >
                             <Text style={MainStyles.modalHeaderHeading}>Terms and Conditions</Text>
                             <TouchableOpacity onPress={() =>{this.setState({showTerms:false})}}>
@@ -474,33 +545,7 @@ class EmployerScreen extends Component{
                                 Our Terms and Conditions
                             </Text>
                             <View style={MainStyles.tacItems}>
-                                <Text style={MainStyles.tacItemsH}>1. Lorem Ipsum has been</Text>
-                                <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                                <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
-                            </View>
-                            <View style={MainStyles.tacItems}>
-                                <Text style={MainStyles.tacItemsH}>2. Lorem Ipsum has been</Text>
-                                <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                                <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
-                            </View>
-                            <View style={MainStyles.tacItems}>
-                                <Text style={MainStyles.tacItemsH}>3. Lorem Ipsum has been</Text>
-                                <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                                <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
-                            </View>
-                            <View style={MainStyles.tacItems}>
-                                <Text style={MainStyles.tacItemsH}>4. Lorem Ipsum has been</Text>
-                                <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                                <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
-                            </View>
-                            <View style={MainStyles.tacItems}>
-                                <Text style={MainStyles.tacItemsH}>5. Lorem Ipsum has been</Text>
-                                <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                                <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
-                            </View>
-                            <View style={MainStyles.tacItems}>
-                                <Text style={MainStyles.tacItemsH}>6. Lorem Ipsum has been</Text>
-                                <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
+                                <Text style={MainStyles.tacItemsH}>{this.state.page_text}</Text>
                                 <Image source={require('../../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
                             </View>
                         </ScrollView>

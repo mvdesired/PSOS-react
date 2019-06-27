@@ -67,6 +67,7 @@ class Pharmacy extends Component{
         });
     }
     formatAMPM = (date) => {
+        console.log(date);
         var date = new Date(date);
         var hours = date.getHours();
         var minutes = date.getMinutes();
@@ -108,7 +109,7 @@ class Pharmacy extends Component{
                             <TouchableOpacity style={MainStyles.JLELoopItem} onPress={()=>{this.props.navigation.navigate('AddPharmacy',{pharm_id:item.pharm_id})}}>
                                 <View style={{flexWrap:'wrap'}}>
                                     <Text style={MainStyles.JLELoopItemName}>{item.business_name}</Text>
-                                    <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.created_on)}</Text>
+                                    <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM((item.created_on).replace(' ', 'T'))}</Text>
                                 </View>
                             </TouchableOpacity>
                             )}

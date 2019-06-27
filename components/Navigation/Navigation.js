@@ -41,7 +41,7 @@ import LocumAvail from '../Locum/LocumAvail';
 /**Locum Screens ends */
 import Registration from '../Registration';
 import Login from '../SignScreens/Login';
-
+import ForgotPasswordScreen from '../SignScreens/Forgot';
 /*Static Screen */
 import TnCScreen from '../Termscondition';
 import PrivacyScreen from '../Privacy';
@@ -209,6 +209,9 @@ const Navigation = createStackNavigator({
     /*Locum Navigations Ends */
     Login:{
         screen:Login
+    },
+    ForgotPassword:{
+        screen:ForgotPasswordScreen
     },
     /**Static Screens */
     TnC:{

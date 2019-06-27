@@ -24,7 +24,7 @@ class Notifications extends Component{
         super(props);
         this.state={
             loading:true,
-            isRefreshing:false,
+            isRefreshingNoti:false,
             notiList:{},
         };
     }
@@ -48,19 +48,19 @@ class Notifications extends Component{
             method:'GET',
             headers:myHeaders
         })
-        .then(res=>res.json())
+        .then(res=>{return res.json()})
         .then(response=>{
+            console.log(response.result);
             if (this._isMounted) {
-                console.log(response);
                 if(response.status == 200){
-                    this.setState({notiList:response.result});
+                    this.setState({notiList:response.result.noti_list});
                 }
-                this.setState({loading:false});
+                this.setState({loading:false,isRefreshingNoti:false});
             }
         })
         .catch(err=>{
             console.log(err);
-            this.setState({loading:false});
+            this.setState({loading:false,isRefreshingNoti:false});
         });
     }
     componentWillUnmount(){
@@ -75,7 +75,6 @@ class Notifications extends Component{
         })
         .then(res=>res.json())
         .then(response=>{
-            console.log(response);
             if(response.status == 200){
                 this.setState({notiList:{}});
             }
@@ -105,7 +104,7 @@ class Notifications extends Component{
                     this.state.notiList.length > 0 && 
                     <FlatList data={this.state.notiList} 
                         renderItem={({item}) => (
-                            <View style={{
+                            <TouchableOpacity style={{
                                 backgroundColor:'#FFFFFF',
                                 paddingHorizontal:10,
                                 paddingVertical:15,
@@ -115,25 +114,75 @@ class Notifications extends Component{
                                 borderBottomColor: '#f0f0f0',
                                 borderBottomWidth: 1,
                                 flex:1
+                            }} onPress={()=>{
+                                fetch(SERVER_URL+'read_notification?user_id='+this.state.userData.id+'&noti_id='+item.id,{
+                                    method:'GET',
+                                    headers:myHeaders
+                                })
+                                .then(res=>res.json())
+                                .then(response=>{
+                                    console.log(response);
+                                })
+                                .catch(err=>{
+                                    console.log(err);
+                                });
+                                if(this.state.userData.user_type == 'employer'){
+                                    if(item.job_type == 'locum_shift'){
+                                        this.props.navigation.navigate('LocumDetails',{job_id:item.job_id,job_type:'shift',locum_id:item.user_id2,isEnd:item.is_end,is_filled:item.is_filled,applied:item.applied});
+                                    }
+                                    else{
+                                        this.props.navigation.navigate('LocumDetails',{job_id:item.job_id,job_type:'perm',locum_id:item.user_id2,isEnd:item.is_end,is_filled:item.is_filled,applied:item.applied});
+                                    }
+                                }
+                                else{
+                                    if(item.job_type == 'locum_shift'){
+                                        this.props.navigation.navigate('JobDetails',{job_type:'shift',job_id:item.job_id,is_cancelled:item.is_cancelled,isEnd:item.is_end,applied:item.applied,is_filled:item.is_filled});
+                                    }
+                                    else{
+                                        this.props.navigation.navigate('JobDetails',{job_type:'perm',job_id:item.job_id,is_cancelled:item.is_cancelled,applied:item.applied,is_filled:item.is_filled});
+                                    }
+                                }
                             }}>
                                 <ImageBackground  source={require('../../assets/default-noti.png')} style={{overflow:'hidden',width:50,height:50,borderRadius: 100}}></ImageBackground>
                                 <View style={{flexWrap:'wrap',flex:1}}>
                                     <Text style={[MainStyles.JLELoopItemName,{marginLeft:10,flexWrap:'wrap',fontSize:13,lineHeight:15}]}>{item.message}</Text>
                                 </View>
-                            </View>
+                            </TouchableOpacity>
                             )}
                         keyExtractor={(item) => 'key-'+item.id}
                         viewabilityConfig={this.viewabilityConfig}
                         refreshControl={
                             <RefreshControl
-                                refreshing={this.state.isRefreshingShift}
-                                onRefresh={()=>{this.setState({isRefreshingShift:true}),this._fetchNotifications()}}
+                                refreshing={this.state.isRefreshingNoti}
+                                onRefresh={()=>{this.setState({isRefreshingNoti:true}),this._fetchNotifications()}}
                                 title="Pull to refresh"
                                 colors={["#1d7bc3","red", "green", "blue"]}
                             />
                         }
                     />
                 }
+                <TouchableOpacity style={{
+                    position:'absolute',
+                    right:10,
+                    bottom:20,
+                    width:50,
+                    height:50,
+                    backgroundColor:'#1d7bc3',
+                    borderRadius:35,
+                    zIndex:98562,
+                    justifyContent:'center',
+                    alignItems:'center',
+                    elevation:3,
+                    shadowColor:'#1e1e1e',
+                    shadowOffset:3,
+                    shadowOpacity:0.7,
+                    shadowRadius:3
+                }} onPress={()=>{
+                    this.setState({isRefreshingNoti:true});
+                    this._fetchNotifications();
+                }}>
+                    <Icon name="refresh" style={{color:'#FFFFFF',fontSize:20,}}/>
+                </TouchableOpacity>
             </SafeAreaView>
         );
     }

@@ -156,113 +156,96 @@ class Reviews extends Component{
                 </View>
                 {
                     this.state.currentTab == 'my' && 
-                    <View style={{height:RemoveHiehgt}}>
-                        {
-                            this.state.myList.length > 0 && 
-                            <FlatList data={this.state.myList} 
-                                renderItem={({item}) => {
-                                    var output = [];
-                                    var remaining = 5 -item.review
-                                    for(var i=0;i<item.review;i++){
-                                        output.push(<Icon name="star" style={{color:"#fac917",fontSize:18,marginRight:3}}/>);
-                                    }
-                                    for(var i=0;i<remaining;i++){
-                                        output.push(<Icon name="star-o" style={{color:"#cccccc",fontSize:18}}/>);
-                                    }
-                                    return (
-                                    <View style={{
-                                        backgroundColor:'#FFFFFF',
-                                        paddingHorizontal:10,
-                                        paddingVertical:15,
-                                        flexDirection:'row',
-                                        justifyContent:'space-between',
-                                        alignItems:'center',
-                                        borderBottomColor: '#f0f0f0',
-                                        borderBottomWidth: 1,
-                                    }}>
-                                        <View style={{flexDirection:'row',alignItems:'center'}}>
-                                            <ImageBackground  source={require('../../assets/review-image.png')} style={{overflow:'hidden',width:50,height:50,borderRadius: 100}}></ImageBackground>
-                                            <View style={{justifyContent:'center'}}>
-                                                <Text style={[MainStyles.JLELoopItemName,{marginLeft:10,flexWrap:'wrap'}]}>{item.name} {item.lname}</Text>
-                                                <Text style={{fontFamily:'AvenirLTStd-Book',fontSize:13,marginLeft:10,flexWrap:'wrap',color:'#676767'}}>{item.job_title}</Text>
-                                            </View>
-                                        </View>
-                                        <View style={{alignItems:'center'}}>
-                                            <Text style={{fontFamily:'AvenirLTStd-Book',color:'#bebebe',fontSize:10}}>{this.formatAMPM(item.review_date)}</Text>
-                                            <View style={{marginTop:5,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                                                {output}
-                                            </View>
-                                        </View>
+                    this.state.myList.length > 0 && 
+                    <FlatList data={this.state.myList}  style={{height:RemoveHiehgt,paddingBottom:10}}
+                        renderItem={({item}) => {
+                            var output = [];
+                            var remaining = 5 -item.review
+                            for(var i=0;i<item.review;i++){
+                                output.push(<Icon name="star" style={{color:"#fac917",fontSize:18,marginRight:3}}/>);
+                            }
+                            for(var i=0;i<remaining;i++){
+                                output.push(<Icon name="star-o" style={{color:"#cccccc",fontSize:18}}/>);
+                            }
+                            return (
+                            <View style={{backgroundColor:'#FFFFFF',paddingHorizontal:10,paddingVertical:15,flexDirection:'row',justifyContent:'space-between',alignItems:'center',borderBottomColor: '#f0f0f0',borderBottomWidth: 1}}>
+                                <View style={{flexDirection:'row',alignItems:'center'}}>
+                                    <ImageBackground  source={require('../../assets/review-image.png')} style={{overflow:'hidden',width:50,height:50,borderRadius: 100}}></ImageBackground>
+                                    <View style={{justifyContent:'center'}}>
+                                        <Text style={[MainStyles.JLELoopItemName,{marginLeft:10,flexWrap:'wrap'}]}>{item.name} {item.lname}</Text>
+                                        <Text style={{fontFamily:'AvenirLTStd-Book',fontSize:13,marginLeft:10,flexWrap:'wrap',color:'#676767'}}>{item.job_title}</Text>
                                     </View>
-                                    )}}
-                                keyExtractor={(item) => 'key-my-'+item.review_id}
-                                viewabilityConfig={this.viewabilityConfig}
-                                refreshControl={
-                                    <RefreshControl
-                                        refreshing={this.state.isRefreshingMy}
-                                        onRefresh={()=>{this.setState({isRefreshingMy:true}),this.getMyReviews()}}
-                                        title="Pull to refresh"
-                                        colors={["#1d7bc3"]}
-                                    />
-                                }
+                                </View>
+                                <View style={{alignItems:'center'}}>
+                                    <Text style={{fontFamily:'AvenirLTStd-Book',color:'#bebebe',fontSize:10}}>{this.formatAMPM((item.review_date).replace(' ', 'T'))}</Text>
+                                    <View style={{marginTop:5,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                                        {output}
+                                    </View>
+                                </View>
+                            </View>
+                            )}}
+                        keyExtractor={(item) => 'key-my-'+item.review_id}
+                        viewabilityConfig={this.viewabilityConfig}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={this.state.isRefreshingMy}
+                                onRefresh={()=>{this.setState({isRefreshingMy:true}),this.getMyReviews()}}
+                                title="Pull to refresh"
+                                colors={["#1d7bc3"]}
                             />
                         }
-                    </View>
+                    />
                 }
                 {
                     this.state.currentTab == 'locum' && 
-                    <View style={{height:RemoveHiehgt}}>
-                        {
-                            this.state.locumList.length > 0 && 
-                            <FlatList data={this.state.locumList} 
-                                renderItem={({item}) => {
-                                    var output = [];
-                                    var remaining = 5 -item.review
-                                    for(var i=0;i<item.review;i++){
-                                        output.push(<Icon name="star" style={{color:"#fac917",fontSize:18,marginRight:3}}/>);
-                                    }
-                                    for(var i=0;i<remaining;i++){
-                                        output.push(<Icon name="star-o" style={{color:"#cccccc",fontSize:18}}/>);
-                                    }
-                                    return (
-                                    <View style={{
-                                        backgroundColor:'#FFFFFF',
-                                        paddingHorizontal:10,
-                                        paddingVertical:15,
-                                        flexDirection:'row',
-                                        justifyContent:'space-between',
-                                        alignItems:'center',
-                                        borderBottomColor: '#f0f0f0',
-                                        borderBottomWidth: 1,
-                                    }}>
-                                        <View style={{flexDirection:'row',alignItems:'center'}}>
-                                            <ImageBackground  source={require('../../assets/review-image.png')} style={{overflow:'hidden',width:50,height:50,borderRadius: 100}}></ImageBackground>
-                                            <View style={{justifyContent:'center'}}>
-                                                <Text style={[MainStyles.JLELoopItemName,{marginLeft:10,flexWrap:'wrap'}]}>{item.name} {item.lname}</Text>
-                                                <Text style={{fontFamily:'AvenirLTStd-Book',fontSize:13,marginLeft:10,flexWrap:'wrap',color:'#676767'}}>{item.job_title}</Text>
-                                            </View>
-                                        </View>
-                                        <View style={{alignItems:'center'}}>
-                                            <Text style={{fontFamily:'AvenirLTStd-Book',color:'#bebebe',fontSize:10}}>{this.formatAMPM(item.review_date)}</Text>
-                                            <View style={{marginTop:5,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                                                {output}
-                                            </View>
-                                        </View>
+                    this.state.locumList.length > 0 && 
+                    <FlatList data={this.state.locumList}  style={{height:RemoveHiehgt,paddingBottom:10}}
+                        renderItem={({item}) => {
+                            var output = [];
+                            var remaining = 5 -item.review
+                            for(var i=0;i<item.review;i++){
+                                output.push(<Icon name="star" style={{color:"#fac917",fontSize:18,marginRight:3}}/>);
+                            }
+                            for(var i=0;i<remaining;i++){
+                                output.push(<Icon name="star-o" style={{color:"#cccccc",fontSize:18}}/>);
+                            }
+                            return (
+                            <View style={{
+                                backgroundColor:'#FFFFFF',
+                                paddingHorizontal:10,
+                                paddingVertical:15,
+                                flexDirection:'row',
+                                justifyContent:'space-between',
+                                alignItems:'center',
+                                borderBottomColor: '#f0f0f0',
+                                borderBottomWidth: 1,
+                            }}>
+                                <View style={{flexDirection:'row',alignItems:'center'}}>
+                                    <ImageBackground  source={require('../../assets/review-image.png')} style={{overflow:'hidden',width:50,height:50,borderRadius: 100}}></ImageBackground>
+                                    <View style={{justifyContent:'center'}}>
+                                        <Text style={[MainStyles.JLELoopItemName,{marginLeft:10,flexWrap:'wrap'}]}>{item.name} {item.lname}</Text>
+                                        <Text style={{fontFamily:'AvenirLTStd-Book',fontSize:13,marginLeft:10,flexWrap:'wrap',color:'#676767'}}>{item.job_title}</Text>
                                     </View>
-                                    )}}
-                                keyExtractor={(item) => 'key-o-'+item.review_id}
-                                viewabilityConfig={this.viewabilityConfig}
-                                refreshControl={
-                                    <RefreshControl
-                                        refreshing={this.state.isRefreshingLocum}
-                                        onRefresh={()=>{this.setState({isRefreshingLocum:true}),this.getLocumReviews()}}
-                                        title="Pull to refresh"
-                                        colors={["#1d7bc3"]}
-                                    />
-                                }
+                                </View>
+                                <View style={{alignItems:'center'}}>
+                                    <Text style={{fontFamily:'AvenirLTStd-Book',color:'#bebebe',fontSize:10}}>{this.formatAMPM((item.review_date).replace(' ', 'T'))}</Text>
+                                    <View style={{marginTop:5,flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                                        {output}
+                                    </View>
+                                </View>
+                            </View>
+                            )}}
+                        keyExtractor={(item) => 'key-o-'+item.review_id}
+                        viewabilityConfig={this.viewabilityConfig}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={this.state.isRefreshingLocum}
+                                onRefresh={()=>{this.setState({isRefreshingLocum:true}),this.getLocumReviews()}}
+                                title="Pull to refresh"
+                                colors={["#1d7bc3"]}
                             />
                         }
-                    </View>
+                    />
                 }
             </SafeAreaView>
         )

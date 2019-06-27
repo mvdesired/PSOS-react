@@ -5,16 +5,15 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.decoder.SimpleProgressiveJpegConfig;
 import com.facebook.react.ReactApplication;
-import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
-import com.reactnativecommunity.webview.RNCWebViewPackage;
 import cl.json.RNSharePackage;
-import com.imagepicker.ImagePickerPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
-import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.rssignaturecapture.RSSignatureCapturePackage;
+import com.merryjs.PhotoViewer.MerryPhotoViewPackage;
 import com.rnfs.RNFSPackage;
 import com.reactnativedocumentpicker.ReactNativeDocumentPicker;
-import com.merryjs.PhotoViewer.MerryPhotoViewPackage;
-import com.reactnativecommunity.webview.RNCWebViewPackage;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.imagepicker.ImagePickerPackage;
+import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -35,16 +34,15 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new ReactNativePushNotificationPackage(),
-            new RNCWebViewPackage(),
             new RNSharePackage(),
-            new ImagePickerPackage(),
-            new VectorIconsPackage(),
-            new RNGestureHandlerPackage(),
+            new RSSignatureCapturePackage(),
+            new MerryPhotoViewPackage(),
             new RNFSPackage(),
             new ReactNativeDocumentPicker(),
-            new MerryPhotoViewPackage(),
-            new RNCWebViewPackage()
+            new ReactNativePushNotificationPackage(),
+            new VectorIconsPackage(),
+            new ImagePickerPackage(),
+            new RNGestureHandlerPackage()
       );
     }
 

@@ -33,6 +33,7 @@ class LocumList extends Component{
             viewAreaCoveragePercentThreshold: 95
         }
         this.fetchLocumList = this._fetchLocumList.bind(this);
+        console.log(this.state);
     }
     async setUserData(){
         let userDataStringfy = await AsyncStorage.getItem('userData');
@@ -40,8 +41,14 @@ class LocumList extends Component{
         this.setState({userData});
     }
     componentDidMount(){
-        this.shiftDetails();
-        this.fetchLocumList();
+        this.props.navigation.addListener('didFocus',this.onFocus);
+    }
+    onFocus = ()=>{
+        this.setUserData();
+        setTimeout(()=>{
+            this.shiftDetails();
+            this.fetchLocumList();
+        },150);
     }
     shiftDetails(){
         var fetchFrom = (this.state.job_type == 'perm')?'permanent_details':'locumshift_details';
@@ -61,7 +68,8 @@ class LocumList extends Component{
                 detail:r.detail,
                 dispense:r.dispense,
                 travel:r.travel,
-                offer:r.offer
+                offer:r.offer,
+                is_filled:r.is_filled
             });
         })
         .catch(err=>{
@@ -87,15 +95,16 @@ class LocumList extends Component{
         })
         .then(res=>res.json())
         .then(response=>{
+            console.log(response);
             if(response.status == 200){
                 this.setState({locumList:response.result});
             }
-            this.setState({loading:false,isRefreshing:false});
+            this.setState({loading:false,isRefreshingShift:false});
         })
         .catch(err=>{
             console.log(err);
             Toast.show('Please check ou internet connection',Toast.SHORT);
-            this.setState({loading:false,isRefreshing:false});
+            this.setState({loading:false,isRefreshingShift:false});
         })
     }
     formatAMPM = (date) => {
@@ -129,9 +138,7 @@ class LocumList extends Component{
                 <Loader loading={this.state.loading} />
                 <Header pageName="Shift Details" />
                 <View style={{height:RemoveHiehgt}}>
-                <View style={{
-                    backgroundColor:"#f7f7f7",
-                    padding:10,}}>
+                <View style={{backgroundColor:"#f7f7f7",padding:10,}}>
                       <View style={{flexWrap:'wrap'}}>
                       <Text style={{color:'#212121',fontFamily:'AvenirLTStd-Light',fontSize:14}}>Shift Name: {this.state.name}</Text>
                       <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>First Date of Shift: {this.state.FirstDate}</Text>
@@ -150,16 +157,28 @@ class LocumList extends Component{
                 </View>
                     {
                         this.state.locumList.length > 0 && 
-                        <FlatList data={this.state.locumList} 
-                            renderItem={({item}) => { 
+                        <FlatList data={this.state.locumList} style={{minHeight:RemoveHiehgt,paddingBottom:10}}
+                            renderItem={({item}) => {
+                                console.log(item);
+                                var ratingStar = [];
+                                var dotRating = (''+item.rating).split('.');
+                                for(var i=0;i<dotRating[0];i++){
+                                    ratingStar.push(
+                                        <Icon key={i} name="star" style={{fontSize:16,color:'#fc8c15'}} />
+                                    );
+                                }
+                                if(typeof(dotRating[1]) !='undefined' && dotRating[1] != 0){
+                                    ratingStar.push(<Icon key={i+1} name="star-half" style={{fontSize:16,color:'#fc8c15'}} />);
+                                }
                                 return(
                                 <View>
                                     <TouchableOpacity style={[MainStyles.JLELoopItem,(item.state == 1)?{backgroundColor:'#e6e6e6'}:'']} onPress={()=>{
-                                        this.props.navigation.navigate('LocumDetails',{job_id:this.state.job_id,job_type:this.state.job_type,locum_id:item.locum_id,applied:item.status,isEnd:this.state.is_end});
+                                        this.props.navigation.navigate('LocumDetails',{job_id:this.state.job_id,job_type:this.state.job_type,locum_id:item.locum_id,applied:item.status,isEnd:this.state.is_end,is_filled:this.state.is_filled});
                                     }}>
                                         <View style={{flexWrap:'wrap'}}>
-                                            <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                            <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.applied_date)}</Text>
+                                            <Text style={MainStyles.JLELoopItemName}>{item.name} {ratingStar}
+                                            </Text>
+                                            <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM((item.applied_date).replace(' ', 'T'))}</Text>
                                         </View>
                                         {
                                             item.status == 1 && 
@@ -189,36 +208,28 @@ class LocumList extends Component{
                             />
                     }
                 </View>
-                {
-                    this.state.is_end == 0 && 
-                    <TouchableOpacity style={{
-                        position:'absolute',
-                        right:10,
-                        bottom:20,
-                        width:40,
-                        height:40,
-                        backgroundColor:'#1d7bc3',
-                        borderRadius:35,
-                        zIndex:98562,
-                        justifyContent:'center',
-                        alignItems:'center',
-                        elevation:3,
-                        shadowColor:'#1e1e1e',
-                        shadowOffset:3,
-                        shadowOpacity:0.7,
-                        shadowRadius:3
-                    }} onPress={()=>{
-                        if(this.state.job_type =='perm'){
-                            this.props.navigation.navigate('NPSForm',{job_id:this.state.job_id});
-                        }
-                        else{
-                            this.props.navigation.navigate('NLSForm',{job_id:this.state.job_id});
-                        }
-                    }}>
-                        <Icon name="pencil" style={{color:'#FFFFFF',fontSize:17,}}/>
-                    </TouchableOpacity>
-                }
-                
+                <TouchableOpacity style={{
+                    position:'absolute',
+                    right:10,
+                    bottom:20,
+                    width:50,
+                    height:50,
+                    backgroundColor:'#1d7bc3',
+                    borderRadius:35,
+                    zIndex:98562,
+                    justifyContent:'center',
+                    alignItems:'center',
+                    elevation:3,
+                    shadowColor:'#1e1e1e',
+                    shadowOffset:3,
+                    shadowOpacity:0.7,
+                    shadowRadius:3
+                }} onPress={()=>{
+                    this.setState({isRefreshingShift:true});
+                    this.fetchLocumList();
+                }}>
+                    <Icon name="refresh" style={{color:'#FFFFFF',fontSize:20,}}/>
+                </TouchableOpacity>
             </SafeAreaView>
         );
     }

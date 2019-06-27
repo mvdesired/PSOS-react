@@ -46,11 +46,12 @@ class NLSFormScreen extends Component{
             endHour:'02',
             endMinute:'02',
             shiftDetails:'',
-            travelAcom:'Travel and accommodation offered',
+            travelAcom:'Travel and accommodation NOT offered',
             disSystem:'WiniFRED',
-            pOffers:'',
+            pOffers:'Yes',
             shiftName:'',
-            successApplied:false
+            successApplied:false,
+            disSystemOther:''
         }
     }
     async setUserData(){
@@ -85,6 +86,11 @@ class NLSFormScreen extends Component{
         this.setState({currentDate,startDay,startMonth,startYear,startHour,startMinute});
     }
     componentDidMount(){
+        this.props.navigation.addListener('willFocus',payload=>{
+            if((payload.context).search('Navigation/BACK_Root') != -1){
+                this.props.navigation.navigate('JobListE');
+            }
+        });
         if(this.state.job_id){
             fetch(SERVER_URL+'locumshift_details?id='+this.state.job_id,{
                 method:'GET',
@@ -201,6 +207,7 @@ class NLSFormScreen extends Component{
         formdata.append('end_time',this.state.endHour+':'+this.state.endMinute);
         formdata.append('detail',this.state.shiftDetails);
         formdata.append('dispense',this.state.disSystem);
+        formdata.append('dispense_other',this.state.disSystemOther);
         formdata.append('offer',this.state.pOffers);
         formdata.append('travel',this.state.travelAcom);
         var actionTYpe = 'add_locumshift';
@@ -228,12 +235,11 @@ class NLSFormScreen extends Component{
             this.setState({successApplied:true});
             setTimeout(()=>{
                 this.setState({successApplied:false});
-            },5000)
-            if(this.state.job_id){
                 setTimeout(()=>{
                     this.props.navigation.navigate('JobListE');
-                },5000)
-            }
+                },100);
+            },5000);
+                
         })
         .catch(err=>{
             this.setState({loading:false});
@@ -349,7 +355,7 @@ class NLSFormScreen extends Component{
                     <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}} style={{position:'absolute',left:8,top:8,paddingLeft:5,paddingRight:15,paddingVertical:15}}>
                         <Image source={require('../../assets/blue-back-icon.png')} style={{width:10,height:19}}/>
                     </TouchableOpacity>
-                    <Image source={require('../../assets/web-logo.png')} style={{width:200,height:34}}/>
+                    <Image source={require('../../assets/web-logo.png')} style={{width:205,height:35}}/>
                     <Image source={require('../../assets/header-b.png')} style={{width:'100%',marginTop:15}}/>
                 </View>
                 <KeyboardAvoidingView style={{flex:1,}} enabled behavior={behavior}>
@@ -467,13 +473,13 @@ class NLSFormScreen extends Component{
                             <TextInput 
                                 style={[MainStyles.TInput]} 
                                 returnKeyType={"next"} 
-                                ref={(input) => { this.startDay = input; }} 
+                                ref={(input) => { this.endDay = input; }} 
                                 blurOnSubmit={false}
                                 keyboardType={"number-pad"}
                                 onChangeText={(text)=>this.setState({endDay:text})} 
                                 placeholderTextColor="#bebebe" 
                                 underlineColorAndroid="transparent" 
-                                value={this.state.startDay}
+                                value={this.state.endDay}
                                 maxLength={2}
                                 editable={false}
                             />
@@ -481,13 +487,13 @@ class NLSFormScreen extends Component{
                             <TextInput 
                                 style={[MainStyles.TInput]} 
                                 returnKeyType={"next"} 
-                                ref={(input) => { this.startMonth = input; }} 
+                                ref={(input) => { this.endMonth = input; }} 
                                 blurOnSubmit={false}
                                 keyboardType={"number-pad"}
                                 onChangeText={(text)=>this.setState({endMonth:text})} 
                                 placeholderTextColor="#bebebe" 
                                 underlineColorAndroid="transparent" 
-                                value={this.state.startMonth}
+                                value={this.state.endMonth}
                                 maxLength={2}
                                 editable={false}
                             />
@@ -495,13 +501,13 @@ class NLSFormScreen extends Component{
                             <TextInput 
                                 style={[MainStyles.TInput]} 
                                 returnKeyType={"next"} 
-                                ref={(input) => { this.startYear = input; }} 
+                                ref={(input) => { this.endYear = input; }} 
                                 blurOnSubmit={false}
                                 keyboardType={"number-pad"}
                                 onChangeText={(text)=>this.setState({endYear:text})} 
                                 placeholderTextColor="#bebebe" 
                                 underlineColorAndroid="transparent" 
-                                value={this.state.startYear}
+                                value={this.state.endYear}
                                 maxLength={4}
                                 editable={false}
                             />
@@ -682,6 +688,23 @@ class NLSFormScreen extends Component{
                                 <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.disSystem}</Text>
                             </TouchableOpacity>
                             
+                        }
+                        {
+                            this.state.disSystem == 'Other' && 
+                            <View>
+                                <View style={{marginTop:15}}></View>
+                                <TextInput 
+                                    style={[MainStyles.TInput]} 
+                                    returnKeyType={"go"} 
+                                    ref={(input) => { this.disSystemOther = input; }} 
+                                    blurOnSubmit={false}
+                                    onChangeText={(text)=>this.setState({disSystemOther:text})} 
+                                    placeholder="Dispensing System Other"
+                                    placeholderTextColor="#bebebe" 
+                                    underlineColorAndroid="transparent" 
+                                    value={this.state.disSystemOther}
+                                />
+                            </View>
                         }
                         {/* Dispensing System Ends */}
                         <View style={{marginTop:15}}></View>

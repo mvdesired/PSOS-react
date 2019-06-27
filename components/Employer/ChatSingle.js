@@ -21,6 +21,7 @@ myHeaders.set('Expires', '0');
 class ChatScreen extends Component{
     _isMounted = false;
     clearTime = '';
+    clearTimeR = '';
     constructor(props){
         super(props);
         this.state={
@@ -38,6 +39,7 @@ class ChatScreen extends Component{
             currentImageIndex: 0,
             images:{}
         };
+        this.readMsgs = this._readMsgs.bind(this);
         this.fetchChatting = this._fetchChatting.bind(this);
     }
     async setUserData(){
@@ -49,6 +51,10 @@ class ChatScreen extends Component{
         this._isMounted = true;
         this.setUserData();
         setTimeout(()=>{
+            this.readMsgs();
+            this.clearTimeR = setInterval(()=>{
+                this.readMsgs();
+            },2000)
             this.update();
         },1500);
     }
@@ -183,6 +189,7 @@ class ChatScreen extends Component{
     componentWillUnmount(){
         this._isMounted = false;
         clearTimeout(this.clearTime);
+        clearInterval(this.clearTimeR);
     }
     pickFile = ()=>{
         const options = {
@@ -228,7 +235,16 @@ class ChatScreen extends Component{
     openModal(index) {
         console.log(index);
         this.setState({isModalOpened: true, currentImageIndex: index })
-     }
+    }
+    _readMsgs = async ()=>{
+        fetch(SERVER_URL+'/read_msg?chat_id='+this.state.chat_id+'&userId='+this.state.userID)
+        .then(response=>{
+        })
+        .catch(err=>{
+            console.log(err);
+        });
+        
+    }
     render(){
         const enableBtn = this.state.disableBtn?{color:'rgba(126, 126, 126, 0.1)'}:{color:'#7e7e7e'};
         const RemoveHiehgt = height - 50;

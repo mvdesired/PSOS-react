@@ -53,6 +53,7 @@ class EChatList extends Component{
             })
             .then(res=>res.json())
             .then(response=>{
+                console.log(response);
                 if(response.status == 200){
                     this.setState({chatList:response.result});
                 }
@@ -131,6 +132,7 @@ class EChatList extends Component{
                                                 }}></View>
                                         </View>
                                         <Text style={[MainStyles.JLELoopItemName,{marginLeft:10,flexWrap:'wrap'}]}>{item.full_name}</Text>
+                                            <Text style={[MainStyles.JLELoopItemName,{fontSize:13,marginLeft:10,flexWrap:'wrap'}]}>{item.msg}</Text>
                                     </View>
                                     <View style={{alignItems:'center'}}>
                                         {

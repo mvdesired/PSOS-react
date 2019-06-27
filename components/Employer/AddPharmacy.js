@@ -10,6 +10,7 @@ import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import { FlatList } from 'react-native-gesture-handler';
 import Header from '../Navigation/Header';
+import PhoneInput from 'react-native-phone-input'
 const { height, width } = Dimensions.get('window');
 var myHeaders = new Headers();
 myHeaders.set('Accept', 'application/json');
@@ -23,7 +24,15 @@ class AddPharmacy extends Component{
         this.state={
             loading:true,
             pharm_id:this.props.navigation.getParam("pharm_id"),
-            pageTitle:'Add Pharmacy'
+            redirect:this.props.navigation.getParam("redirect"),
+            pageTitle:'Add Pharmacy',
+            bPhone:'4',
+            abn:'',
+            bname:'',
+            fname:'',
+            lname:'',
+            bEmail:'',
+            bPhoneCode:'+61'
         };
     }
     async setUserData(){
@@ -60,6 +69,10 @@ class AddPharmacy extends Component{
             Toast.show('ABN should not be blank',Toast.SHORT);
             return false;
         }
+        if((this.state.abn).length < 11){
+            Toast.show('ABN should 11 digit long',Toast.SHORT);
+            return false;
+        }
         if(this.state.fname == ''){
             Toast.show('First name should not be blank',Toast.SHORT);
             return false;
@@ -74,6 +87,10 @@ class AddPharmacy extends Component{
         }
         if(this.state.bPhone == ''){
             Toast.show('Business Phone should not be blank',Toast.SHORT);
+            return false;
+        }
+        if((this.state.bPhone).length > 12){
+            Toast.show('Business Phone should be 12 digit long',Toast.SHORT);
             return false;
         }
         this.setState({loading:true});
@@ -102,7 +119,12 @@ class AddPharmacy extends Component{
             this.setState({loading:false,currentTab:'list'});
             Toast.show(response.message,Toast.SHORT);
             this.setState({bname:'',abn:'',fname:'',lname:'',bEmail:'',bPhone:'',bFax:'',mNumber:''});
-            this.props.navigation.navigate('Pharmacy');
+            if(this.state.redirect){
+                this.props.navigation.navigate(this.state.redirect);
+            }
+            else{
+                this.props.navigation.navigate('Pharmacy');
+            }
         })
         .catch(err=>{
             this.setState({loading:false});
@@ -112,162 +134,218 @@ class AddPharmacy extends Component{
     }
     render(){
         const RemoveHiehgt = height - 88;
+        var behavior = (Platform.OS == 'ios')?'padding':'';
         return (
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
                 <Loader loading={this.state.loading} />
                 <Header pageName={this.state.pageTitle} />
-                <ScrollView style={{height:RemoveHiehgt,flex:1}} keyboardShouldPersistTaps="always">
-                    <View style={{backgroundColor:'#FFFFFF',flex:1,marginTop:10,paddingHorizontal:10,paddingVertical:15}}>
-                        <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
-                            Business Name
-                            <Text style={{color:'#ee1b24'}}>*</Text>
-                        </Text>
-                        <View style={{marginTop:10}}></View>
-                        <TextInput 
-                            style={[MainStyles.TInput]} 
-                            returnKeyType={"next"} 
-                            ref={(input) => { this.bname = input; }} 
-                            blurOnSubmit={false}
-                            onChangeText={(text)=>this.setState({bname:text})} 
-                            placeholderTextColor="#bebebe" 
-                            underlineColorAndroid="transparent" 
-                            value={this.state.bname}
-                        />
-                        {/* Business Name ends */}
-                        <View style={{marginTop:15}}></View>
-                        <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
-                            ABN
-                            <Text style={{color:'#ee1b24'}}>*</Text>
-                        </Text>
-                        <View style={{marginTop:10}}></View>
-                        <TextInput 
-                            style={[MainStyles.TInput]} 
-                            returnKeyType={"next"} 
-                            ref={(input) => { this.abn = input; }} 
-                            blurOnSubmit={false}
-                            keyboardType={"number-pad"}
-                            onChangeText={(text)=>this.setState({abn:text})} 
-                            placeholderTextColor="#bebebe" 
-                            underlineColorAndroid="transparent" 
-                            value={this.state.abn}
-                            maxLength={10}
-                        />
-                        {/* ABN ends */}
-                        <View style={{marginTop:15}}></View>
-                        <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
-                            Contact Name
-                            <Text style={{color:'#ee1b24'}}>*</Text>
-                        </Text>
-                        <View style={{marginTop:10}}></View>
-                        <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center',marginTop:10}}>
+                <KeyboardAvoidingView style={{flex:1}} enabled behavior={behavior}>
+                    <ScrollView style={{height:RemoveHiehgt,flex:1}} keyboardShouldPersistTaps="always">
+                        <View style={{backgroundColor:'#FFFFFF',flex:1,marginTop:10,paddingHorizontal:10,paddingVertical:15}}>
+                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
+                                Business Name
+                                <Text style={{color:'#ee1b24'}}>*</Text>
+                            </Text>
+                            <View style={{marginTop:10}}></View>
                             <TextInput 
                                 style={[MainStyles.TInput]} 
-                                placeholder="First Name"
                                 returnKeyType={"next"} 
-                                ref={(input) => { this.fname = input; }} 
+                                ref={(input) => { this.bname = input; }} 
                                 blurOnSubmit={false}
-                                onChangeText={(text)=>this.setState({fname:text})} 
+                                onChangeText={(text)=>this.setState({bname:text})} 
                                 placeholderTextColor="#bebebe" 
                                 underlineColorAndroid="transparent" 
-                                value={this.state.fname}
+                                value={this.state.bname}
                             />
-                            <View style={{paddingLeft:10}}></View>
+                            {/* Business Name ends */}
+                            <View style={{marginTop:15}}></View>
+                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
+                                ABN
+                                <Text style={{color:'#ee1b24'}}>*</Text>
+                            </Text>
+                            <View style={{marginTop:10}}></View>
                             <TextInput 
                                 style={[MainStyles.TInput]} 
-                                placeholder="Last Name"
                                 returnKeyType={"next"} 
-                                ref={(input) => { this.lname = input; }} 
+                                ref={(input) => { this.abn = input; }} 
                                 blurOnSubmit={false}
-                                onChangeText={(text)=>this.setState({lname:text})} 
+                                keyboardType={"number-pad"}
+                                onChangeText={(text)=>this.setState({abn:text})} 
                                 placeholderTextColor="#bebebe" 
                                 underlineColorAndroid="transparent" 
-                                value={this.state.lname}
+                                value={this.state.abn}
+                                maxLength={11}
                             />
+                            {/* ABN ends */}
+                            <View style={{marginTop:15}}></View>
+                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
+                                Contact Name
+                                <Text style={{color:'#ee1b24'}}>*</Text>
+                            </Text>
+                            <View style={{marginTop:10}}></View>
+                            <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center',marginTop:10}}>
+                                <TextInput 
+                                    style={[MainStyles.TInput]} 
+                                    placeholder="First Name"
+                                    returnKeyType={"next"} 
+                                    ref={(input) => { this.fname = input; }} 
+                                    blurOnSubmit={false}
+                                    onChangeText={(text)=>this.setState({fname:text})} 
+                                    placeholderTextColor="#bebebe" 
+                                    underlineColorAndroid="transparent" 
+                                    value={this.state.fname}
+                                />
+                                <View style={{paddingLeft:10}}></View>
+                                <TextInput 
+                                    style={[MainStyles.TInput]} 
+                                    placeholder="Last Name"
+                                    returnKeyType={"next"} 
+                                    ref={(input) => { this.lname = input; }} 
+                                    blurOnSubmit={false}
+                                    onChangeText={(text)=>this.setState({lname:text})} 
+                                    placeholderTextColor="#bebebe" 
+                                    underlineColorAndroid="transparent" 
+                                    value={this.state.lname}
+                                />
+                            </View>
+                            {/* F & L Name ends */}
+                            <View style={{marginTop:15}}></View>
+                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
+                                Business E-mail
+                                <Text style={{color:'#ee1b24'}}>*</Text>
+                            </Text>
+                            <View style={{marginTop:10}}></View>
+                            <TextInput 
+                                style={[MainStyles.TInput]} 
+                                placeholder="E-mail"
+                                keyboardType={"email-address"}
+                                returnKeyType={"next"} 
+                                ref={(input) => { this.bEmail = input; }} 
+                                blurOnSubmit={false}
+                                onChangeText={(text)=>this.setState({bEmail:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.bEmail}
+                            />
+                            {/* B Email ends */}
+                            <View style={{marginTop:15}}></View>
+                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
+                                Business Phone
+                                <Text style={{color:'#ee1b24'}}>*</Text>
+                            </Text>
+                            <View style={{marginTop:10}}></View>
+                            {/* <TextInput 
+                                style={[MainStyles.TInput]} 
+                                placeholder="Phone"
+                                keyboardType={"phone-pad"}
+                                returnKeyType={"next"} 
+                                ref={(input) => { this.bPhone = input; }} 
+                                blurOnSubmit={false}
+                                onChangeText={(text)=>this.setState({bPhone:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.bPhone}
+                            /> */}
+                            <View 
+                                style={{paddingLeft: 10,
+                                    paddingVertical:2,
+                                    height:30,
+                                    fontSize:14,
+                                    borderRadius:20,
+                                    fontFamily:'AvenirLTStd-Medium',
+                                    borderColor:'#a1a1a1',
+                                    borderWidth: 1,
+                                    borderStyle:"dashed",
+                                    flexDirection:'row'
+                                }}
+                            >
+                                <PhoneInput
+                                ref={(ref) => { this.bPhoneCode = ref; }}
+                                style={{
+                                    textAlign:'left',
+                                    paddingLeft: 10,
+                                    height:25,
+                                    fontSize:14,
+                                    fontFamily:'AvenirLTStd-Medium',
+                                    width:75
+                                }}  
+                                initialCountry={"au"}
+                                onChangePhoneNumber={(number)=>this.setState({bPhoneCode:number})}
+                                value={this.state.bPhoneCode}
+                                />
+                                <TextInput 
+                                    style={{
+                                        flex:1,
+                                        textAlign:'left',
+                                        paddingLeft: 3,
+                                        height:25,
+                                        fontSize:14,
+                                        paddingTop:1,
+                                        alignItems:'center',
+                                        fontFamily:'AvenirLTStd-Medium',
+                                        borderTopLeftRadius:0,
+                                        borderBottomLeftRadius:0,
+                                    }} 
+                                    maxLength={10}
+                                    keyboardType="number-pad"
+                                    ref={(input) => { this.bPhone = input; }} 
+                                    blurOnSubmit={false}
+                                    onChangeText={(text)=>this.setState({bPhone:text})} 
+                                    placeholderTextColor="#bebebe" 
+                                    underlineColorAndroid="transparent" 
+                                    value={this.state.bPhone}
+                                />
+                            </View>
+                            
+                            {/* B Phone ends */}
+                            <View style={{marginTop:15}}></View>
+                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
+                                Business Fax
+                            </Text>
+                            <View style={{marginTop:10}}></View>
+                            <TextInput 
+                                style={[MainStyles.TInput]} 
+                                placeholder="Fax"
+                                returnKeyType={"next"} 
+                                keyboardType={"phone-pad"}
+                                ref={(input) => { this.bFax = input; }} 
+                                blurOnSubmit={false}
+                                onChangeText={(text)=>this.setState({bFax:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.bFax}
+                            />
+                            {/* B Fax ends */}
+                            <View style={{marginTop:15}}></View>
+                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
+                                Mobile Number
+                                {/* <Text style={{color:'#ee1b24'}}>*</Text> */}
+                            </Text>
+                            <View style={{marginTop:10}}></View>
+                            <TextInput 
+                                style={[MainStyles.TInput]} 
+                                maxLength={12}
+                                placeholder="Mobile Number"
+                                returnKeyType={"next"} 
+                                keyboardType={"phone-pad"}
+                                ref={(input) => { this.mNumber = input; }} 
+                                blurOnSubmit={false}
+                                onChangeText={(text)=>this.setState({mNumber:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.mNumber}
+                            />
+                            {/* B Fax ends */}
+                            <View style={{justifyContent:'center',alignItems:'center',marginTop:26}}>
+                                <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.submitPharmacy()}}>
+                                    <Text style={MainStyles.psosBtnText}>Submit</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{marginTop:20}}></View>
                         </View>
-                        {/* F & L Name ends */}
-                        <View style={{marginTop:15}}></View>
-                        <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
-                            Business E-mail
-                            <Text style={{color:'#ee1b24'}}>*</Text>
-                        </Text>
-                        <View style={{marginTop:10}}></View>
-                        <TextInput 
-                            style={[MainStyles.TInput]} 
-                            placeholder="E-mail"
-                            keyboardType={"email-address"}
-                            returnKeyType={"next"} 
-                            ref={(input) => { this.bEmail = input; }} 
-                            blurOnSubmit={false}
-                            onChangeText={(text)=>this.setState({bEmail:text})} 
-                            placeholderTextColor="#bebebe" 
-                            underlineColorAndroid="transparent" 
-                            value={this.state.bEmail}
-                        />
-                        {/* B Email ends */}
-                        <View style={{marginTop:15}}></View>
-                        <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
-                            Business Phone
-                            <Text style={{color:'#ee1b24'}}>*</Text>
-                        </Text>
-                        <View style={{marginTop:10}}></View>
-                        <TextInput 
-                            style={[MainStyles.TInput]} 
-                            placeholder="Phone"
-                            keyboardType={"phone-pad"}
-                            returnKeyType={"next"} 
-                            ref={(input) => { this.bPhone = input; }} 
-                            blurOnSubmit={false}
-                            onChangeText={(text)=>this.setState({bPhone:text})} 
-                            placeholderTextColor="#bebebe" 
-                            underlineColorAndroid="transparent" 
-                            value={this.state.bPhone}
-                        />
-                        {/* B Phone ends */}
-                        <View style={{marginTop:15}}></View>
-                        <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
-                            Business Fax
-                        </Text>
-                        <View style={{marginTop:10}}></View>
-                        <TextInput 
-                            style={[MainStyles.TInput]} 
-                            placeholder="Fax"
-                            returnKeyType={"next"} 
-                            keyboardType={"phone-pad"}
-                            ref={(input) => { this.bFax = input; }} 
-                            blurOnSubmit={false}
-                            onChangeText={(text)=>this.setState({bFax:text})} 
-                            placeholderTextColor="#bebebe" 
-                            underlineColorAndroid="transparent" 
-                            value={this.state.bFax}
-                        />
-                        {/* B Fax ends */}
-                        <View style={{marginTop:15}}></View>
-                        <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
-                            Mobile Number
-                            {/* <Text style={{color:'#ee1b24'}}>*</Text> */}
-                        </Text>
-                        <View style={{marginTop:10}}></View>
-                        <TextInput 
-                            style={[MainStyles.TInput]} 
-                            placeholder="Number"
-                            returnKeyType={"next"} 
-                            keyboardType={"phone-pad"}
-                            ref={(input) => { this.mNumber = input; }} 
-                            blurOnSubmit={false}
-                            onChangeText={(text)=>this.setState({mNumber:text})} 
-                            placeholderTextColor="#bebebe" 
-                            underlineColorAndroid="transparent" 
-                            value={this.state.mNumber}
-                        />
-                        {/* B Fax ends */}
-                        <View style={{justifyContent:'center',alignItems:'center',marginTop:26}}>
-                            <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.submitPharmacy()}}>
-                                <Text style={MainStyles.psosBtnText}>Submit</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{marginTop:20}}></View>
-                    </View>
-                </ScrollView>
+                    </ScrollView>
+                </KeyboardAvoidingView>
+                
             </SafeAreaView>
         );
     }

@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
-    Picker,Dimensions,AsyncStorage,
+    Picker,Dimensions,AsyncStorage,Keyboard,Alert,
     ActionSheetIOS,Platform } from 'react-native';
     import Icon from 'react-native-vector-icons/FontAwesome';
 import Loader from './Loader';
@@ -35,7 +35,9 @@ class LocumReg1Screen extends Component{
             firsName:"",
             lastName:"",
             phoneNo:"4",
+            phoneCode:'+61',
             emailAddress:"",
+            password:'',
             streetAddress:"",
             city:"",
             pz:"",
@@ -52,7 +54,8 @@ class LocumReg1Screen extends Component{
             isDatePickerVisible:false,
             otpVisible:false,
             otp:'',
-            serverOtp:''
+            serverOtp:'',
+            page_text:''
         }
     }
     componentDidMount(){
@@ -61,6 +64,18 @@ class LocumReg1Screen extends Component{
                 BackHandler.exitApp();
             }
         });
+        fetch(SERVER_URL+'app_page_text?page_name=terms',{
+            method:'GET',
+            headers:myHeaders
+          })
+          .then(res=>res.json())
+          .then(response=>{
+            this.setState({page_text:response.page_text});
+            console.log(response);
+          })
+          .catch(err=>{
+            console.log(err);
+          });
     }
     componentWillMount(){
         var currentDate = new Date();
@@ -108,8 +123,12 @@ class LocumReg1Screen extends Component{
             Toast.show('Email ID should not be blank',Toast.SHORT)
             return false;
         }
+        if(this.state.password == ''){
+            Toast.show('password should not be blank',Toast.SHORT)
+            return false;
+        }
         if(this.state.streetAddress == ''){
-            Toast.show('Email ID should not be blank',Toast.SHORT)
+            Toast.show('Street address should not be blank',Toast.SHORT)
             return false;
         }
         if(this.state.city == ''){
@@ -137,10 +156,10 @@ class LocumReg1Screen extends Component{
               skipBackup: false,
               path: 'images',
             },
-            maxWidth:400,
-            maxHeight:400,
+            maxWidth:800,
+            maxHeight:800,
             mediaType:'photo',
-            quality:0.7,
+            quality:1,
             allowsEditing:true,
           };
           
@@ -149,14 +168,10 @@ class LocumReg1Screen extends Component{
            * The second arg is the callback which sends object: response (more info in the API Reference)
            */
           ImagePicker.showImagePicker(options, (response) => {
-            console.log('Response = ', response);
           
             if (response.didCancel) {
-              console.log('User cancelled image picker');
             } else if (response.error) {
-              console.log('ImagePicker Error: ', response.error);
             } else if (response.customButton) {
-              console.log('User tapped custom button: ', response.customButton);
             } else {
               const source = { uri: response.uri };
               // You can also display the image using data:
@@ -174,46 +189,71 @@ class LocumReg1Screen extends Component{
         DocumentPicker.show({
             filetype: [DocumentPickerUtil.allFiles()],
           },(error,res) => {
-            var fileExtArra = res.fileName.split('.');
-            var fileExt = fileExtArra[fileExtArra.length-1];
-            if(fileExt != "pdf" && fileExt != "docx" && fileExt != "doc"){
-                Toast.show('Please upload only document or pdf file',Toast.SHORT);
+              if(res){
+                var fileExtArra = res.fileName.split('.');
+                var fileExt = fileExtArra[fileExtArra.length-1];
+                if(fileExt != "pdf" && fileExt != "docx" && fileExt != "doc"){
+                    Toast.show('Please upload only document or pdf file',Toast.SHORT);
+                    this.setState({loading:false});
+                    return false;
+                }
+                this.setState({resumFileName:res.fileName});
+                RNFS.readFile(res.uri, 'base64')
+                .then(result => {this.setState({resumFile:{data:result,filename:res.fileName}});this.setState({loading:false});})
+                .catch(error => {this.setState({loading:false});});
+              }
+              else{
                 this.setState({loading:false});
-                return false;
-            }
-            this.setState({resumFileName:res.fileName});
-            RNFS.readFile(res.uri, 'base64')
-			.then(result => {this.setState({resumFile:{data:result,filename:res.fileName}});this.setState({loading:false});})
-			.catch(error => console.log('FS-error', error));
+              }
           });
     }
     registerLocum = ()=>{
+        Alert.alert(
+            'Please check you email and mobile number',
+            'Email: '+this.state.emailAddress+' \n Mobile Number: '+this.state.phoneCode+''+this.state.phoneNo,
+            [
+              {
+                text: 'Change',
+                onPress: () => {
+                    this.setState({showTerms:false,form2:false});
+                },
+                style: 'cancel',
+              },
+              {text: 'Correct', onPress: () => {this.setState({loading:true});
+              this.getToken(this.sendDataToServer.bind(this));}},
+            ],
+            {cancelable: false},
+          );
         
-        this.setState({loading:true});
-        this.getToken(this.sendDataToServer.bind(this));
     }
     getToken = (onToken)=>{
-        PushNotification.configure({
-            onRegister: onToken,
-            onNotification: function(notification) {
-                console.log('NOTIFICATION:', notification );
-            },
-            senderID: SENDER_ID,
-            permissions: {
-                alert: true,
-                badge: true,
-                sound: true
-            },
-            popInitialNotification: true,
-            requestPermissions: true,
-        });
+        if(Platform.OS == 'android'){
+            PushNotification.configure({
+                onRegister: onToken,
+                onNotification: function(notification) {
+                },
+                senderID: SENDER_ID,
+                permissions: {
+                    alert: true,
+                    badge: true,
+                    sound: true
+                },
+                popInitialNotification: true,
+                requestPermissions: true,
+            });
+        }
+        else{
+            onToken();
+        }
     }
     sendDataToServer = (token)=>{
+        var tokenGenerated = (typeof(token) != "undefined")?token.token:'';
         var jsonArray = {
             fname:this.state.firsName,
             lname:this.state.lastName,
-            phone:this.state.phoneNo,
+            phone:this.state.phoneCode+''+this.state.phoneNo,
             email:this.state.emailAddress,
+            password:this.state.password,
             address:this.state.streetAddress,
             city:this.state.city,
             state:this.state.spr,
@@ -230,7 +270,10 @@ class LocumReg1Screen extends Component{
             js_comfort:this.state.js_comfort,
             js_medi_review:this.state.js_medi_review,
             device_type:Platform.OS,
-            device_key:token.token,
+            device_key:tokenGenerated,
+            js_pharma:'',
+            js_accredit:'',
+            js_vaccin:'',
             des_restrict:this.state.des_restrict
         }
         fetch(SERVER_URL+'locum_reg',{
@@ -240,7 +283,7 @@ class LocumReg1Screen extends Component{
             headers:myHeaders,
             body:JSON.stringify(jsonArray)
         })
-        .then(res=>{console.log(res);return res.json();})
+        .then(res=>{return res.json();})
         .then((response) => {
             if(response.status == 200){
                 // this.saveDetails('isUserLoggedIn',"true");
@@ -261,7 +304,6 @@ class LocumReg1Screen extends Component{
         if(this.state.js_software.indexOf(value) === -1){
             var selected = this.state.js_software;
             selected.push(value);
-            console.log(selected);
             this.setState({js_software:selected});
         }
         else{
@@ -286,11 +328,9 @@ class LocumReg1Screen extends Component{
         this.setState({
             dd,mm,yy
         });
-        console.log("A date has been picked: ", dd,mm,yy);
         this.hideDatePicker();
     };
     checkOtp =()=>{
-        console.log(this.state.otp,this.state.serverOtp);
         if(this.state.otp == ''){
             Toast.show('OTP should not be blank',Toast.SHORT);
             return false;
@@ -310,9 +350,8 @@ class LocumReg1Screen extends Component{
                 user_id: this.state.userId
             })
         })
-        .then((res)=>{console.log(res._bodyInit);return res.json()})
+        .then((res)=>{return res.json()})
         .then((response)=>{
-            console.log(response);
             if(response.status == 200){
                 Toast.show(response.message,Toast.SHORT);
                 this.saveDetails('isUserLoggedIn',"true");
@@ -419,25 +458,54 @@ class LocumReg1Screen extends Component{
                                     fontFamily:'AvenirLTStd-Medium',
                                     borderColor:'#a1a1a1',
                                     borderWidth: 1,
-                                    borderStyle:"dashed"
+                                    borderStyle:"dashed",
+                                    flexDirection:'row'
                                 }}
                             >
-                                <PhoneInput
+                                {/* <PhoneInput
                                 ref={(ref) => { this.mobileNumber = ref; }}
                                 style={{
-                                    flex:1,
                                     textAlign:'left',
                                     paddingLeft: 10,
-                                    height:30,
+                                    height:25,
                                     fontSize:14,
                                     fontFamily:'AvenirLTStd-Medium'
                                 }} 
                                 initialCountry={"au"}
+                                maxLength={9}
                                 onChangePhoneNumber={(number)=>this.setState({phoneNo:number})}
                                 value={this.state.phoneNo}
+                                /> */}
+                                <PhoneInput
+                                ref={(ref) => { this.phoneCode = ref; }}
+                                style={{
+                                    textAlign:'left',
+                                    paddingLeft: 10,
+                                    height:25,
+                                    fontSize:14,
+                                    fontFamily:'AvenirLTStd-Medium',
+                                    width:75
+                                }} 
+                                initialCountry={"au"}
+                                onChangePhoneNumber={(number)=>this.setState({phoneCode:number})}
+                                value={this.state.phoneCode}
+                                />
+                                <TextInput 
+                                    style={[MainStyles.TInput,{
+                                        borderWidth:0,
+                                        height:26,
+                                    }]}
+                                    maxLength={10}
+                                    placeholder="Mobile Number *" 
+                                    keyboardType="number-pad"
+                                    ref={(input) => { this.phoneNo = input; }} 
+                                    blurOnSubmit={false}
+                                    onChangeText={(text)=>this.setState({phoneNo:text})} 
+                                    placeholderTextColor="#bebebe" 
+                                    underlineColorAndroid="transparent" 
+                                    value={this.state.phoneNo}
                                 />
                             </View>
-                            
                                 {/* <TextInput 
                                     style={MainStyles.TInput} 
                                     placeholder="Phone Number" 
@@ -472,6 +540,26 @@ class LocumReg1Screen extends Component{
                                 value={this.state.emailAddress}
                             />
                             {/* Email Ends */}
+                            <View style={{marginTop:15}}></View>
+                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
+                                Password
+                                <Text style={{color:'#ee1b24'}}>*</Text>
+                            </Text>
+                            <View style={{marginTop:10}}></View>
+                            <TextInput 
+                                style={MainStyles.TInput} 
+                                placeholder="Password *" 
+                                returnKeyType={"go"} 
+                                ref={(input) => { this.password = input; }} 
+                                blurOnSubmit={false}
+                                secureTextEntry={true}
+                                keyboardType="default"
+                                onChangeText={(text)=>this.setState({password:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.password}
+                            />
+                            {/* Password Ends */}
                             <View style={{marginTop:15}}></View>
                             <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                                 Address
@@ -729,6 +817,7 @@ class LocumReg1Screen extends Component{
                                     ref={(input) => { this.ahprano = input; }} 
                                     onSubmitEditing={() => { this.js_reg.focus(); }}
                                     blurOnSubmit={false}
+                                    maxLength={10}
                                     onChangeText={(text)=>this.setState({ahprano:text})} 
                                     placeholderTextColor="#bebebe" 
                                     underlineColorAndroid="transparent" 
@@ -929,23 +1018,27 @@ class LocumReg1Screen extends Component{
                             {/* Accredited Ends */}
                             <View style={{justifyContent:'center',alignItems:'center',marginTop:26}}>
                                 <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{
-                                    if(this.state.resumFile == ''){
+                                    if(typeof(this.state.resumFile) == 'undefined'){
                                         Toast.show('Please select your resume',Toast.SHORT);
                                         return false;
                                     }
-                                    if(this.state.fileData == ''){
+                                    if(typeof(this.state.fileData) == 'undefined'){
                                         Toast.show('Please select your profile picture',Toast.SHORT);
                                         return false;
                                     }
-                                    if(this.state.dd == '' || this.state.mm == '' || this.state.yy == ''){
+                                    if((typeof(this.state.dd) == 'undefined' || typeof(this.state.mm) == 'undefined' || typeof(this.state.yy) == 'undefined') ||(this.state.dd == '' || this.state.mm == '' || this.state.yy == '')){
                                         Toast.show('Please select your birth date',Toast.SHORT);
                                         return false;
                                     }
-                                    if(this.state.ahprano == ''){
+                                    if(typeof(this.state.ahprano) == 'undefined' || this.state.ahprano == ''){
                                         Toast.show('Please enter your AHPRA number',Toast.SHORT);
                                         return false;
                                     }
-                                    if(this.state.js_reg == ''){
+                                    if(typeof(this.state.ahprano) == 'undefined' || this.state.ahprano.length < 10){
+                                        Toast.show('AHPRA number should be 10 digits long',Toast.SHORT);
+                                        return false;
+                                    }
+                                    if(typeof(this.state.js_reg) == 'undefined' || this.state.js_reg == ''){
                                         Toast.show('Please enter your intial registration',Toast.SHORT);
                                         return false;
                                     }
@@ -955,23 +1048,23 @@ class LocumReg1Screen extends Component{
                                     <Text style={MainStyles.psosBtnText}>Submit</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={{marginTop:5}} onPress={()=>{
-                                    if(this.state.resumFile == ''){
+                                    if(typeof(this.state.resumFile) == 'undefined'){
                                         Toast.show('Please select your resume',Toast.SHORT);
                                         return false;
                                     }
-                                    if(this.state.fileData == ''){
+                                    if(typeof(this.state.fileData) == 'undefined'){
                                         Toast.show('Please select your profile picture',Toast.SHORT);
                                         return false;
                                     }
-                                    if(this.state.dd == '' || this.state.mm == '' || this.state.yy == ''){
+                                    if((typeof(this.state.dd) == 'undefined' || typeof(this.state.mm) == 'undefined' || typeof(this.state.yy) == 'undefined') ||(this.state.dd == '' || this.state.mm == '' || this.state.yy == '')){
                                         Toast.show('Please select your birth date',Toast.SHORT);
                                         return false;
                                     }
-                                    if(this.state.ahprano == ''){
+                                    if(typeof(this.state.ahprano) == 'undefined' || this.state.ahprano == ''){
                                         Toast.show('Please enter your AHPRA number',Toast.SHORT);
                                         return false;
                                     }
-                                    if(this.state.js_reg == ''){
+                                    if(typeof(this.state.js_reg) == 'undefined' || this.state.js_reg == ''){
                                         Toast.show('Please enter your intial registration',Toast.SHORT);
                                         return false;
                                     }
@@ -986,17 +1079,17 @@ class LocumReg1Screen extends Component{
                 }
                 <Dialog
                     visible={this.state.showTerms}
-                    dialogStyle={{ width: "95%", padding: 0, maxHeight: "95%",marginTop:30 ,flex:1,backgroundColor:'transparent'}}
+                    dialogStyle={{ width: "95%", padding: 0, maxHeight: "90%",marginTop:43 ,flex:1,backgroundColor:'transparent'}}
                     dialogAnimation={new SlideAnimation()}
                     containerStyle={{
-                        zIndex: 10,
+                        zIndex: 100000,
                         flex: 1,
                         justifyContent: "space-between",
                         backgroundColor:'transparent',
                     }}
                     rounded={false}
                     >
-                        <SafeAreaView style={{flex:1,width:'100%',height:'95%',padding:0,borderWidth: 0,overflow:'visible'}}>
+                        <SafeAreaView style={{flex:1,width:'100%',height:'90%',padding:0,borderWidth: 0,overflow:'visible',backgroundColor:'#FFFFFF',margin:0}}>
                             <View style={MainStyles.modalHeader}>
                                 <Text style={MainStyles.modalHeaderHeading}>Terms and Conditions</Text>
                                 <TouchableOpacity onPress={() =>{this.setState({showTerms:false})}}>
@@ -1008,33 +1101,7 @@ class LocumReg1Screen extends Component{
                                     Our Terms and Conditions
                                 </Text>
                                 <View style={MainStyles.tacItems}>
-                                    <Text style={MainStyles.tacItemsH}>1. Lorem Ipsum has been</Text>
-                                    <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                                    <Image source={require('../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
-                                </View>
-                                <View style={MainStyles.tacItems}>
-                                    <Text style={MainStyles.tacItemsH}>2. Lorem Ipsum has been</Text>
-                                    <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                                    <Image source={require('../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
-                                </View>
-                                <View style={MainStyles.tacItems}>
-                                    <Text style={MainStyles.tacItemsH}>3. Lorem Ipsum has been</Text>
-                                    <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                                    <Image source={require('../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
-                                </View>
-                                <View style={MainStyles.tacItems}>
-                                    <Text style={MainStyles.tacItemsH}>4. Lorem Ipsum has been</Text>
-                                    <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                                    <Image source={require('../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
-                                </View>
-                                <View style={MainStyles.tacItems}>
-                                    <Text style={MainStyles.tacItemsH}>5. Lorem Ipsum has been</Text>
-                                    <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-                                    <Image source={require('../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
-                                </View>
-                                <View style={MainStyles.tacItems}>
-                                    <Text style={MainStyles.tacItemsH}>6. Lorem Ipsum has been</Text>
-                                    <Text style={MainStyles.tacItemsSH}> Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
+                                    <Text style={MainStyles.tacItemsH}>{this.state.page_text}</Text>
                                     <Image source={require('../assets/bd-tc.png')} width={'100%'} style={MainStyles.tacItemsImage}/>
                                 </View>
                             </ScrollView>

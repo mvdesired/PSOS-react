@@ -79,7 +79,7 @@ class NewPermShift extends Component{
                     <TouchableOpacity onPress={()=>{this.props.navigation.goBack();}} style={{position:'absolute',left:8,top:8,paddingLeft:5,paddingRight:15,paddingVertical:15}}>
                         <Image source={require('../../assets/blue-back-icon.png')} style={{width:10,height:19}}/>
                     </TouchableOpacity>
-                    <Image source={require('../../assets/web-logo.png')} style={{width:200,height:34}}/>
+                    <Image source={require('../../assets/web-logo.png')} style={{width:205,height:35}}/>
                     <Image source={require('../../assets/header-b.png')} style={{width:'100%',marginTop:15}}/>
                 </View>
                 <KeyboardAvoidingView style={{flex:1,}} enabled behavior={behavior}>
@@ -169,7 +169,7 @@ class NewPermShift extends Component{
                     shadowOffset:3,
                     shadowOpacity:0.7,
                     shadowRadius:3
-                }} onPress={()=>{this.props.navigation.navigate('AddPharmacy');}}>
+                }} onPress={()=>{this.props.navigation.navigate('AddPharmacy',{redirect:'NewPermShift'});}}>
                     <Icon name="plus" style={{color:'#FFFFFF',fontSize:25,}}/>
                 </TouchableOpacity>
             </SafeAreaView>
