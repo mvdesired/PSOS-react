@@ -237,7 +237,7 @@ class ChatScreen extends Component{
         this.setState({isModalOpened: true, currentImageIndex: index })
     }
     _readMsgs = async ()=>{
-        fetch(SERVER_URL+'/read_msg?chat_id='+this.state.chat_id+'&userId='+this.state.userID)
+        fetch(SERVER_URL+'/read_msg?chat_id='+this.state.chat_id+'&userId='+this.state.userData.id)
         .then(response=>{
         })
         .catch(err=>{

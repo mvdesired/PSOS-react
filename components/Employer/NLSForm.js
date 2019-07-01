@@ -74,16 +74,18 @@ class NLSFormScreen extends Component{
     componentWillMount =()=>{
         this.setUserData();
         var currentDate = new Date();
+        var newDate = new Date();
+        newDate.setHours(newDate.getHours() + 2);
         var startDay = ''+currentDate.getDate();
         var startMonth = ''+(currentDate.getMonth()+1);
         var startYear = ''+currentDate.getFullYear();
-        var startHour = ''+currentDate.getHours();
-        var startMinute = ''+currentDate.getMinutes();
+        var startHour = '09';
+        var startMinute = '00';
+        var endHour = '18'
+        var endMinute = '00'
         if(startDay < 10){startDay = '0'+startDay;}
         if(startMonth < 10){startMonth = '0'+startMonth;}
-        if(startHour < 10){startHour = '0'+startHour;}
-        if(startMinute < 10){startMinute = '0'+startMinute;}
-        this.setState({currentDate,startDay,startMonth,startYear,startHour,startMinute});
+        this.setState({currentDate,startDay,startMonth,startYear,startHour,startMinute,endHour,endMinute});
     }
     componentDidMount(){
         this.props.navigation.addListener('willFocus',payload=>{
@@ -421,7 +423,6 @@ class NLSFormScreen extends Component{
                                 underlineColorAndroid="transparent" 
                                 value={this.state.startDay}
                                 maxLength={2}
-                                editable={false}
                             />
                             <View style={{paddingHorizontal:5}}></View>
                             <TextInput 
@@ -435,7 +436,6 @@ class NLSFormScreen extends Component{
                                 underlineColorAndroid="transparent" 
                                 value={this.state.startMonth}
                                 maxLength={2}
-                                editable={false}
                             />
                             <View style={{paddingHorizontal:5}}></View>
                             <TextInput 
@@ -449,7 +449,6 @@ class NLSFormScreen extends Component{
                                 underlineColorAndroid="transparent" 
                                 value={this.state.startYear}
                                 maxLength={4}
-                                editable={false}
                             />
                             {/* End Date Year End*/}
                             <View style={{paddingHorizontal:5}}></View>
@@ -481,7 +480,6 @@ class NLSFormScreen extends Component{
                                 underlineColorAndroid="transparent" 
                                 value={this.state.endDay}
                                 maxLength={2}
-                                editable={false}
                             />
                             <View style={{paddingHorizontal:5}}></View>
                             <TextInput 
@@ -495,7 +493,6 @@ class NLSFormScreen extends Component{
                                 underlineColorAndroid="transparent" 
                                 value={this.state.endMonth}
                                 maxLength={2}
-                                editable={false}
                             />
                             <View style={{paddingHorizontal:5}}></View>
                             <TextInput 
@@ -509,7 +506,6 @@ class NLSFormScreen extends Component{
                                 underlineColorAndroid="transparent" 
                                 value={this.state.endYear}
                                 maxLength={4}
-                                editable={false}
                             />
                             {/* End Date Year End*/}
                             <View style={{paddingHorizontal:5}}></View>
@@ -543,7 +539,6 @@ class NLSFormScreen extends Component{
                                         underlineColorAndroid="transparent" 
                                         value={this.state.startHour}
                                         maxLength={2}
-                                        editable={false}
                                         placeholder="HH"
                                     />
                                     <View style={{paddingHorizontal:2}}>
@@ -560,7 +555,6 @@ class NLSFormScreen extends Component{
                                         underlineColorAndroid="transparent" 
                                         value={this.state.startMinute}
                                         maxLength={2}
-                                        editable={false}
                                         placeholder="MM"
                                     />
                                     <View style={{paddingHorizontal:2}}>
@@ -596,7 +590,6 @@ class NLSFormScreen extends Component{
                                         underlineColorAndroid="transparent" 
                                         value={this.state.endHour}
                                         maxLength={2}
-                                        editable={false}
                                         placeholder="HH"
                                     />
                                     <View style={{paddingHorizontal:2}}>
@@ -613,7 +606,6 @@ class NLSFormScreen extends Component{
                                         underlineColorAndroid="transparent" 
                                         value={this.state.endMinute}
                                         maxLength={2}
-                                        editable={false}
                                         placeholder="MM"
                                     />
                                     <View style={{paddingHorizontal:2}}>

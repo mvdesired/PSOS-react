@@ -89,7 +89,7 @@ class LocumDetails extends Component{
             headers:myHeaders,
             body:fd
         })
-        .then(res=>res.json())
+        .then(res=>{console.log(res);return res.json()})
         .then(response=>{
             Toast.show(response.message,Toast.SHORT);
             if(response.status == 200){
@@ -201,7 +201,7 @@ class LocumDetails extends Component{
                         </View>
                     </View>
                     <View style={MainStyles.locumProfileItemWrapper}>
-                        <Text style={MainStyles.LPIHeading}>Customer Service ({this.state.locumData.custom_service  != '0.0'?this.state.locumData.custom_service:'Note yet Rated'})</Text>
+                        <Text style={MainStyles.LPIHeading}>Customer Service ({this.state.locumData.custom_service  != '0.0'?this.state.locumData.custom_service:'No Feedback yet'})</Text>
                         <View style={{flexDirection:'row',marginTop:10}}>
                             {this.SetRating(this.state.locumData.custom_service)}
                         </View>

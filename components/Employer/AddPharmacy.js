@@ -274,18 +274,10 @@ class AddPharmacy extends Component{
                                 value={this.state.bPhoneCode}
                                 />
                                 <TextInput 
-                                    style={{
-                                        flex:1,
-                                        textAlign:'left',
-                                        paddingLeft: 3,
-                                        height:25,
-                                        fontSize:14,
-                                        paddingTop:1,
-                                        alignItems:'center',
-                                        fontFamily:'AvenirLTStd-Medium',
-                                        borderTopLeftRadius:0,
-                                        borderBottomLeftRadius:0,
-                                    }} 
+                                    style={[MainStyles.TInput,{
+                                        borderWidth:0,
+                                        height:26,
+                                    }]}
                                     maxLength={10}
                                     keyboardType="number-pad"
                                     ref={(input) => { this.bPhone = input; }} 

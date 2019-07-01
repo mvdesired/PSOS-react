@@ -23,7 +23,8 @@ class Profile extends Component{
             stateList:['VIC','NSW','QLD','ACT','TAS','NT','WA','SA','North Island','South Island'],
             userData:{
                 user_img:''
-            }
+            },
+            about:''
         }
     }
     async saveDetails(key,value){
@@ -207,10 +208,13 @@ class Profile extends Component{
                                 <Text style={MainStyles.LPIHeading}>Address</Text>
                                 <Text style={MainStyles.LPISubHeading}>{this.state.address} {this.state.city} {this.state.state}, {this.state.country} {this.state.postal} </Text>
                             </View>
-                            <View style={MainStyles.locumProfileItemWrapper}>
-                                <Text style={MainStyles.LPIHeading}>About</Text>
-                                <Text style={MainStyles.LPISubHeading}>{this.state.about}</Text>
-                            </View>
+                            {
+                                this.state.userData.user_type == 'locum' && 
+                                <View style={MainStyles.locumProfileItemWrapper}>
+                                    <Text style={MainStyles.LPIHeading}>About</Text>
+                                    <Text style={MainStyles.LPISubHeading}>{this.state.about}</Text>
+                                </View>
+                            }
                         </View>
                         } 
                         {
@@ -381,26 +385,30 @@ class Profile extends Component{
                                     }
                                 </View>
                                 {/* Address Ends */}
-                                <View style={{marginTop:15}}></View>
-                                <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
-                                    About Me
-                                    <Text style={{color:'#ee1b24'}}>*</Text>
-                                </Text>
-                                <View style={{marginTop:10}}></View>
-                                <TextInput 
-                                    style={[MainStyles.TAInput]} 
-                                    placeholder="About Me" 
-                                    multiline={true}
-                                    returnKeyType={"go"} 
-                                    ref={(input) => { this.about = input; }} 
-                                    blurOnSubmit={false}
-                                    onChangeText={(text)=>this.setState({about:text})} 
-                                    placeholderTextColor="#bebebe" 
-                                    underlineColorAndroid="transparent" 
-                                    value={this.state.about}
-                                    numberOfLines={5}
-                                />
-                                {/* About Me Field */}
+                                {
+                                    this.state.userData.user_type == 'locum' && 
+                                    <View>
+                                        <View style={{marginTop:15}}></View>
+                                        <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
+                                            About Me
+                                        </Text>
+                                        <View style={{marginTop:10}}></View>
+                                        <TextInput 
+                                            style={[MainStyles.TAInput]} 
+                                            placeholder="About Me" 
+                                            multiline={true}
+                                            returnKeyType={"go"} 
+                                            ref={(input) => { this.about = input; }} 
+                                            blurOnSubmit={false}
+                                            onChangeText={(text)=>this.setState({about:text})} 
+                                            placeholderTextColor="#bebebe" 
+                                            underlineColorAndroid="transparent" 
+                                            value={this.state.about}
+                                            numberOfLines={5}
+                                        />
+                                        {/* About Me Field */}
+                                    </View>
+                                }
                                 <View style={{marginTop:15}}></View>
                                 <View style={{justifyContent:'center',alignItems:'center',marginTop: 10,marginBottom:15}}>
                                     <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.updateProfile()}}>

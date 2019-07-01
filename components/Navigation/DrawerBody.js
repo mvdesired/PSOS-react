@@ -33,9 +33,6 @@ class DrawerBody extends Component{
         if(this.isMount == true){
             this.setUserData();
         }
-        else{
-
-        }
     }
     componentWillUnmount(){
         this.setBlankUserData();
@@ -77,7 +74,7 @@ class DrawerBody extends Component{
                         this.state.userData.user_type == 'employer' && 
                         <TouchableOpacity style={styles.DIS} onPress={()=>this.navigateToScreen('Pharmacy')}>
                             <Image source={require('../../assets/phar-d-icon.png')} style={{width:15,height:13}} />
-                            <Text style={styles.DITS}>Pharmacy</Text>
+                            <Text style={styles.DITS}>Pharmacies</Text>
                         </TouchableOpacity>
                     }
                     {

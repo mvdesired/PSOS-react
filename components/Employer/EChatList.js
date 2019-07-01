@@ -51,7 +51,7 @@ class EChatList extends Component{
                 method:'GET',
                 headers:myHeaders,
             })
-            .then(res=>res.json())
+            .then(res=>{console.log(res);return res.json()})
             .then(response=>{
                 console.log(response);
                 if(response.status == 200){

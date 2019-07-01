@@ -14,9 +14,14 @@ import RNFS from 'react-native-fs';
 import { SERVER_URL,SENDER_ID } from '../Constants';
 import PushNotification from 'react-native-push-notification';
 import DateTimePicker from "react-native-modal-datetime-picker";
+import SmsListener from 'react-native-android-sms-listener';
+import Permissions from 'react-native-permissions';
 const { height, width } = Dimensions.get('window');
 var myHeaders = new Headers();
 myHeaders.set('Content-Type', 'application/json');
+myHeaders.set('Cache-Control', 'no-cache');
+myHeaders.set('Pragma', 'no-cache');
+myHeaders.set('Expires', '0');
 class LocumReg1Screen extends Component{
     constructor(props) {
         super(props);
@@ -58,12 +63,28 @@ class LocumReg1Screen extends Component{
             page_text:''
         }
     }
+    subscription = SmsListener.addListener(message => {
+        let verificationCodeRegex = /Your OTP for registration is: ([\d]{4})/;
+        console.log(message.body);
+        if (verificationCodeRegex.test(message.body)) {
+            let verificationCode = message.body.match(verificationCodeRegex)[1];
+            this.setState({otp:verificationCode});
+        }
+    });
     componentDidMount(){
         this.props.navigation.addListener('willFocus',payload=>{
             if((payload.context).search('Navigation/BACK_Root') != -1){
                 BackHandler.exitApp();
             }
         });
+        Permissions.request('readSms').then(response => {
+            // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
+            this.setState({ photoPermission: response })
+        });
+        Permissions.request('receiveSms').then(response => {
+            // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
+            this.setState({ photoPermission: response })
+        })
         fetch(SERVER_URL+'app_page_text?page_name=terms',{
             method:'GET',
             headers:myHeaders
@@ -77,9 +98,10 @@ class LocumReg1Screen extends Component{
             console.log(err);
           });
     }
-    componentWillMount(){
+    componentWillUnmount(){
         var currentDate = new Date();
         this.setState({currentDate});
+        this.subscription.remove();
     }
     async saveDetails(key,value){
         await AsyncStorage.setItem(key,value);
@@ -117,6 +139,10 @@ class LocumReg1Screen extends Component{
         }
         if(this.state.phoneNo == ''){
             Toast.show('Phone number should not be blank',Toast.SHORT)
+            return false;
+        }
+        if(this.state.phoneNo < 9){
+            Toast.show('Phone number should not be less than 9 digits',Toast.SHORT)
             return false;
         }
         if(this.state.emailAddress == ''){
@@ -209,8 +235,8 @@ class LocumReg1Screen extends Component{
     }
     registerLocum = ()=>{
         Alert.alert(
-            'Please check you email and mobile number',
-            'Email: '+this.state.emailAddress+' \n Mobile Number: '+this.state.phoneCode+''+this.state.phoneNo,
+            'Please check your email and mobile number',
+            'Email: '+this.state.emailAddress+'\nMobile Number: '+this.state.phoneCode+''+this.state.phoneNo,
             [
               {
                 text: 'Change',
@@ -495,7 +521,7 @@ class LocumReg1Screen extends Component{
                                         borderWidth:0,
                                         height:26,
                                     }]}
-                                    maxLength={10}
+                                    maxLength={9}
                                     placeholder="Mobile Number *" 
                                     keyboardType="number-pad"
                                     ref={(input) => { this.phoneNo = input; }} 
@@ -717,10 +743,13 @@ class LocumReg1Screen extends Component{
                             {/* BreadCrumbs Ends */}
                             <View style={{marginTop:15}}></View>
                             <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop:10}}>
-                                <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:13}}>
-                                    Please upload your resume 
-                                    <Text style={{color:'#ee1b24'}}>*</Text>
-                                </Text>
+                                <View>
+                                    <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:13}}>
+                                        Please upload your resume 
+                                        <Text style={{color:'#ee1b24'}}>*</Text>
+                                    </Text>
+                                    <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Light',fontSize:11,marginTop:4}}>Supported Files: .pdf, .docx, .doc</Text>
+                                </View>
                                 <View style={{paddingHorizontal:10}}></View>
                                 <TouchableOpacity style={[MainStyles.selectFilesBtn,{flexWrap:'wrap'}]} onPress={()=>{this.chooseDoc()}}>
                                     <Text style={{flex:1,color:'#FFFFFF',flexWrap: 'wrap'}}>{(this.state.resumFileName != '')?this.state.resumFileName:'Select Files'}</Text>
@@ -1048,26 +1077,26 @@ class LocumReg1Screen extends Component{
                                     <Text style={MainStyles.psosBtnText}>Submit</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={{marginTop:5}} onPress={()=>{
-                                    if(typeof(this.state.resumFile) == 'undefined'){
-                                        Toast.show('Please select your resume',Toast.SHORT);
-                                        return false;
-                                    }
-                                    if(typeof(this.state.fileData) == 'undefined'){
-                                        Toast.show('Please select your profile picture',Toast.SHORT);
-                                        return false;
-                                    }
-                                    if((typeof(this.state.dd) == 'undefined' || typeof(this.state.mm) == 'undefined' || typeof(this.state.yy) == 'undefined') ||(this.state.dd == '' || this.state.mm == '' || this.state.yy == '')){
-                                        Toast.show('Please select your birth date',Toast.SHORT);
-                                        return false;
-                                    }
-                                    if(typeof(this.state.ahprano) == 'undefined' || this.state.ahprano == ''){
-                                        Toast.show('Please enter your AHPRA number',Toast.SHORT);
-                                        return false;
-                                    }
-                                    if(typeof(this.state.js_reg) == 'undefined' || this.state.js_reg == ''){
-                                        Toast.show('Please enter your intial registration',Toast.SHORT);
-                                        return false;
-                                    }
+                                    // if(typeof(this.state.resumFile) == 'undefined'){
+                                    //     Toast.show('Please select your resume',Toast.SHORT);
+                                    //     return false;
+                                    // }
+                                    // if(typeof(this.state.fileData) == 'undefined'){
+                                    //     Toast.show('Please select your profile picture',Toast.SHORT);
+                                    //     return false;
+                                    // }
+                                    // if((typeof(this.state.dd) == 'undefined' || typeof(this.state.mm) == 'undefined' || typeof(this.state.yy) == 'undefined') ||(this.state.dd == '' || this.state.mm == '' || this.state.yy == '')){
+                                    //     Toast.show('Please select your birth date',Toast.SHORT);
+                                    //     return false;
+                                    // }
+                                    // if(typeof(this.state.ahprano) == 'undefined' || this.state.ahprano == ''){
+                                    //     Toast.show('Please enter your AHPRA number',Toast.SHORT);
+                                    //     return false;
+                                    // }
+                                    // if(typeof(this.state.js_reg) == 'undefined' || this.state.js_reg == ''){
+                                    //     Toast.show('Please enter your intial registration',Toast.SHORT);
+                                    //     return false;
+                                    // }
                                     this.setState({form2:false});
                                 }}>
                                     <Text style={{color:'#1476c0',textDecorationLine:'underline',textDecorationColor:'#1476c0',textDecorationStyle:'solid'}}>Previous</Text>

@@ -140,6 +140,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-android-sms-listener')
     implementation project(':react-native-share')
     implementation project(':react-native-signature-capture')
     implementation project(':@merryjs_photo-viewer')

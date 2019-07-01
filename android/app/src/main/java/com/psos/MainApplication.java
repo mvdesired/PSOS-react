@@ -5,6 +5,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.decoder.SimpleProgressiveJpegConfig;
 import com.facebook.react.ReactApplication;
+import com.centaurwarchief.smslistener.SmsListenerPackage;
 import cl.json.RNSharePackage;
 import com.rssignaturecapture.RSSignatureCapturePackage;
 import com.merryjs.PhotoViewer.MerryPhotoViewPackage;
@@ -34,6 +35,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new SmsListenerPackage(),
             new RNSharePackage(),
             new RSSignatureCapturePackage(),
             new MerryPhotoViewPackage(),

@@ -8,10 +8,15 @@ import MainStyles from '../Styles';
 import Dialog, { SlideAnimation } from "react-native-popup-dialog";
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
-import PhoneInput from 'react-native-phone-input'
+import PhoneInput from 'react-native-phone-input';
+import SmsListener from 'react-native-android-sms-listener';
+import Permissions from 'react-native-permissions';
 const { height, width } = Dimensions.get('window');
 var myHeaders = new Headers();
 myHeaders.set('Content-Type', 'application/json');
+myHeaders.set('Cache-Control', 'no-cache');
+myHeaders.set('Pragma', 'no-cache');
+myHeaders.set('Expires', '0');
 class EmployerScreen extends Component{
     constructor(props) {
         super(props);
@@ -43,6 +48,14 @@ class EmployerScreen extends Component{
         }
         this.singup = this._signup.bind(this);
     }
+    subscription = SmsListener.addListener(message => {
+        let verificationCodeRegex = /Your OTP for registration is: ([\d]{4})/;
+        console.log(message.body);
+        if (verificationCodeRegex.test(message.body)) {
+            let verificationCode = message.body.match(verificationCodeRegex)[1];
+            this.setState({otp:verificationCode});
+        }
+    });
     async saveDetails(key,value){
         await AsyncStorage.setItem(key,value);
     }
@@ -51,6 +64,14 @@ class EmployerScreen extends Component{
             if((payload.context).search('Navigation/BACK_Root') != -1){
                 BackHandler.exitApp();
             }
+        });
+        Permissions.request('readSms').then(response => {
+            // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
+            this.setState({ photoPermission: response })
+        });
+        Permissions.request('receiveSms').then(response => {
+            // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
+            this.setState({ photoPermission: response })
         });
         fetch(SERVER_URL+'app_page_text?page_name=terms',{
             method:'GET',
@@ -65,6 +86,9 @@ class EmployerScreen extends Component{
             console.log(err);
           });
     }
+    componentWillUnmount(){
+        this.subscription.remove();
+    }
     _signup = () => {
         
         if(this.state.firsName == ''){
@@ -77,6 +101,10 @@ class EmployerScreen extends Component{
         }
         if(this.state.phoneNo == ''){
             Toast.show('Phone number should not be blank',Toast.SHORT)
+            return false;
+        }
+        if(this.state.phoneNo.length < 9){
+            Toast.show('Phone number should not be less than 9 digits',Toast.SHORT)
             return false;
         }
         if(this.state.emailAddress == ''){
@@ -108,8 +136,8 @@ class EmployerScreen extends Component{
             return false;
         }
         Alert.alert(
-            'Please check you email and mobile number',
-            'Email: '+this.state.emailAddress+' \n Mobile Number: '+this.state.phoneCode+''+this.state.phoneNo,
+            'Please check your email and mobile number',
+            'Email: '+this.state.emailAddress+'\nMobile Number: '+this.state.phoneCode+''+this.state.phoneNo,
             [
               {
                 text: 'Change',
@@ -345,7 +373,7 @@ class EmployerScreen extends Component{
                                     borderWidth:0,
                                     height:26,
                                 }]}
-                                maxLength={10}
+                                maxLength={9}
                                 placeholder="Mobile Number *" 
                                 keyboardType="number-pad"
                                 ref={(input) => { this.phoneNo = input; }} 

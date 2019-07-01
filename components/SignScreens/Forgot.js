@@ -6,7 +6,9 @@ import Loader from '../Loader';
 import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL,SENDER_ID } from '../../Constants';
-import PhoneInput from 'react-native-phone-input'
+import PhoneInput from 'react-native-phone-input';
+import SmsListener from 'react-native-android-sms-listener';
+import Permissions from 'react-native-permissions';
 export default class Login extends Component{
     constructor(props){
         super(props);
@@ -24,6 +26,13 @@ export default class Login extends Component{
         }
         this.signIn = this._signIn.bind(this);
     }
+    subscription = SmsListener.addListener(message => {
+        let verificationCodeRegex = /Your OTP for reset password: ([\d]{4})/;
+        if (verificationCodeRegex.test(message.body)) {
+            let verificationCode = message.body.match(verificationCodeRegex)[1];
+            this.setState({otp:verificationCode});
+        }
+    });
     async saveDetails(key,value){
         await AsyncStorage.setItem(key,value);
     }
@@ -135,6 +144,17 @@ export default class Login extends Component{
             }
         });
         this.checkNetInfo();
+        Permissions.request('readSms').then(response => {
+            // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
+            this.setState({ photoPermission: response })
+        });
+        Permissions.request('receiveSms').then(response => {
+            // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
+            this.setState({ photoPermission: response })
+        });
+    }
+    componentWillUnmount(){
+        this.subscription.remove();
     }
     checkNetInfo = ()=>{
         if (Platform.OS === "android") {
@@ -204,7 +224,6 @@ export default class Login extends Component{
                                     initialCountry={"au"}
                                     onChangePhoneNumber={(number)=>this.setState({mobileCode:number})}
                                     value={this.state.mobileCode}
-                                    
                                     />
                                     <TextInput 
                                         style={{
@@ -214,11 +233,8 @@ export default class Login extends Component{
                                             height:40,
                                             fontSize:14,
                                             justifyContent:'center',
-                                            paddingTop:1,
                                             alignItems:'center',
                                             fontFamily:'AvenirLTStd-Medium',
-                                            borderTopLeftRadius:0,
-                                            borderBottomLeftRadius:0,
                                         }} 
                                         maxLength={10}
                                         placeholder="Mobile Number *" 
