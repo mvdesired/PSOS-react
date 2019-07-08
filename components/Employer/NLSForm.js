@@ -35,12 +35,12 @@ class NLSFormScreen extends Component{
             travelList,
             dispensingList,
             pageTitle:'New Locum Shift',
-            startDay:'01',
-            startMonth:'01',
-            startYear:'2019',
-            endDay:'02',
-            endMonth:'02',
-            endYear:'2019',
+            startDay:'',
+            startMonth:'',
+            startYear:'',
+            endDay:'',
+            endMonth:'',
+            endYear:'',
             startHour:'01',
             startMinute:'01',
             endHour:'02',
@@ -76,16 +76,17 @@ class NLSFormScreen extends Component{
         var currentDate = new Date();
         var newDate = new Date();
         newDate.setHours(newDate.getHours() + 2);
-        var startDay = ''+currentDate.getDate();
-        var startMonth = ''+(currentDate.getMonth()+1);
-        var startYear = ''+currentDate.getFullYear();
+        //var startDay = ''+currentDate.getDate();
+        //var startMonth = ''+(currentDate.getMonth()+1);
+        //var startYear = ''+currentDate.getFullYear();
         var startHour = '09';
         var startMinute = '00';
         var endHour = '18'
         var endMinute = '00'
-        if(startDay < 10){startDay = '0'+startDay;}
-        if(startMonth < 10){startMonth = '0'+startMonth;}
-        this.setState({currentDate,startDay,startMonth,startYear,startHour,startMinute,endHour,endMinute});
+        //if(startDay < 10){startDay = '0'+startDay;}
+        //if(startMonth < 10){startMonth = '0'+startMonth;}
+        //startDay,startMonth,startYear,
+        this.setState({currentDate,startHour,startMinute,endHour,endMinute});
     }
     componentDidMount(){
         this.props.navigation.addListener('willFocus',payload=>{
@@ -227,7 +228,7 @@ class NLSFormScreen extends Component{
             },
             body:formdata
         })
-        .then(res=>res.json())
+        .then(res=>{console.log(res);return res.json()})
         .then(response=>{
             this.setState({loading:false,shiftName:''});
             if(!this.state.job_id){
@@ -364,7 +365,7 @@ class NLSFormScreen extends Component{
                     <ScrollView style={{paddingHorizontal:15,height:RemoveHiehgt}} keyboardShouldPersistTaps="always">
                         <View style={{paddingVertical:20,}}>
                             <Text style={{fontFamily:'AvenirLTStd-Heavy',color:'#151515',fontSize:16}}>{this.state.pageTitle}</Text>
-                            <Text style={{
+                            {/* <Text style={{
                                 marginTop:5,
                                 fontFamily:'AvenirLTStd-Medium',
                                 color:'#676767',
@@ -372,7 +373,7 @@ class NLSFormScreen extends Component{
                                 marginBottom:5,
                             }}>
                                For quick, easy and efficient New Locum Shift, please use this form
-                            </Text>
+                            </Text> */}
                         </View>
                         {/* Locum Registration Heading Ends */}
                         <Image source={require('../../assets/dashed-border.png')} width={'100%'} height={2} />

@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
-    Picker,Dimensions,RefreshControl,ImageBackground,AsyncStorage,
+    Picker,Dimensions,RefreshControl,ImageBackground,AsyncStorage,FlatList,
     ActionSheetIOS,Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { DrawerActions,NavigationActions } from 'react-navigation';
@@ -8,7 +8,7 @@ import Loader from '../Loader';
 import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
-import { FlatList } from 'react-native-gesture-handler';
+//import { FlatList } from 'react-native-gesture-handler';
 import Header from '../Navigation/Header';
 var myHeaders = new Headers();
 myHeaders.set('Accept', 'application/json');
@@ -35,6 +35,9 @@ class Notifications extends Component{
     }
     componentDidMount =()=>{
         this._isMounted = true;
+        this.listener = this.props.navigation.addListener("didFocus", this.onFocus);
+    }
+    onFocus = ()=>{
         this.setUserData();
         setTimeout(()=>{
             this._fetchNotifications();
@@ -50,7 +53,6 @@ class Notifications extends Component{
         })
         .then(res=>{return res.json()})
         .then(response=>{
-            console.log(response.result);
             if (this._isMounted) {
                 if(response.status == 200){
                     this.setState({notiList:response.result.noti_list});
@@ -113,7 +115,8 @@ class Notifications extends Component{
                                 alignItems:'center',
                                 borderBottomColor: '#f0f0f0',
                                 borderBottomWidth: 1,
-                                flex:1
+                                flex:1,
+                                opacity:(item.is_read == 1)?0.5:1
                             }} onPress={()=>{
                                 fetch(SERVER_URL+'read_notification?user_id='+this.state.userData.id+'&noti_id='+item.id,{
                                     method:'GET',
@@ -121,7 +124,6 @@ class Notifications extends Component{
                                 })
                                 .then(res=>res.json())
                                 .then(response=>{
-                                    console.log(response);
                                 })
                                 .catch(err=>{
                                     console.log(err);

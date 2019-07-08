@@ -94,8 +94,8 @@ class AppliedJob extends Component{
         var date = new Date(date);
         var hours = date.getHours();
         var minutes = date.getMinutes();
-        var dateToday = (new Date()).getDate();
-        var messageDate = date.getDate();
+        var dateToday = (new Date()).getTime();
+        var messageDate = date.getTime();
         if(dateToday > messageDate){
             var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
             var ampm = hours >= 12 ? 'PM' : 'AM';
@@ -126,10 +126,10 @@ class AppliedJob extends Component{
                 <Header pageName="Applied Jobs" />
                 <View style={{backgroundColor:'#FFFFFF',flexDirection:'row',borderBottomColor: '#bebebe',borderBottomWidth: 1}}>
                     <TouchableOpacity style={[MainStyles.jobListETabsItem,(this.state.currentTab == 'shift')?MainStyles.activeJLEItem:'']} onPress={()=>{this.setState({currentTab:'shift'})}}>
-                        <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'shift')?MainStyles.activeJLEItemText:'']}>LOCUM SHIFT</Text>
+                        <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'shift')?MainStyles.activeJLEItemText:'']}>LOCUM SHIFTS</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[MainStyles.jobListETabsItem,(this.state.currentTab == 'perm')?MainStyles.activeJLEItem:'']} onPress={()=>{this.setState({currentTab:'perm'})}}>
-                        <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'perm')?MainStyles.activeJLEItemText:'']}>PARMANENT POSITION</Text>
+                        <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'perm')?MainStyles.activeJLEItemText:'']}>PERMANENT POSITIONS</Text>
                     </TouchableOpacity>
                 </View>
                 {
@@ -144,7 +144,7 @@ class AppliedJob extends Component{
                                     }}>
                                         <View style={{flexWrap:'wrap'}}>
                                             <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                            <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.applied_date)}</Text>
+                                            <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM((item.applied_date).replace(' ', 'T'))}</Text>
                                         </View>
                                         <View style={{flexDirection:'row',alignItems:'center'}}>
                                             <Text style={MainStyles.JLELoopItemCount}>{item.applier}</Text>
@@ -152,7 +152,7 @@ class AppliedJob extends Component{
                                         </View>
                                     </TouchableOpacity>
                                     )}
-                                keyExtractor={(item) => 'key-'+item.id}
+                                keyExtractor={(item) => 'key-locum-'+item.job_id}
                                 viewabilityConfig={this.viewabilityConfig}
                                 refreshControl={
                                     <RefreshControl
@@ -180,7 +180,7 @@ class AppliedJob extends Component{
                                     }}>
                                         <View style={{flexWrap:'wrap'}}>
                                             <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
-                                            <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM(item.applied_date)}</Text>
+                                            <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM((item.applied_date).replace(' ', 'T'))}</Text>
                                         </View>
                                         <View style={{flexDirection:'row',alignItems:'center'}}>
                                             <Text style={MainStyles.JLELoopItemCount}>{item.applier}</Text>
@@ -188,7 +188,7 @@ class AppliedJob extends Component{
                                         </View>
                                     </TouchableOpacity>
                                     )}
-                                keyExtractor={(item) => 'key-'+item.id}
+                                keyExtractor={(item) => 'key-perm-'+item.job_id}
                                 viewabilityConfig={this.viewabilityConfig}
                                 refreshControl={
                                     <RefreshControl
@@ -203,6 +203,29 @@ class AppliedJob extends Component{
                     </View>
                 }
                 {/* Shift Tab Content Ends */}
+                <TouchableOpacity style={{
+                    position:'absolute',
+                    right:10,
+                    bottom:20,
+                    width:50,
+                    height:50,
+                    backgroundColor:'#1d7bc3',
+                    borderRadius:35,
+                    zIndex:98562,
+                    justifyContent:'center',
+                    alignItems:'center',
+                    elevation:3,
+                    shadowColor:'#1e1e1e',
+                    shadowOffset:3,
+                    shadowOpacity:0.7,
+                    shadowRadius:3
+                }} onPress={()=>{
+                    this.setState({isRefreshingPerm:true,isRefreshingShift:true});
+                    this.fetchLocumShifts();
+                    this.fetchPermShifts();
+                }}>
+                    <Icon name="refresh" style={{color:'#FFFFFF',fontSize:20,}}/>
+                </TouchableOpacity>
             </SafeAreaView>
         )
     }

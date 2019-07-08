@@ -111,8 +111,8 @@ class LocumList extends Component{
         var date = new Date(date);
         var hours = date.getHours();
         var minutes = date.getMinutes();
-        var dateToday = (new Date()).getDate();
-        var messageDate = date.getDate();
+        var dateToday = (new Date()).getTime();
+        var messageDate = date.getTime();
         if(dateToday > messageDate){
             var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
             var ampm = hours >= 12 ? 'PM' : 'AM';

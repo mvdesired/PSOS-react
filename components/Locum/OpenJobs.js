@@ -58,7 +58,7 @@ class JobList extends Component{
             method:'GET',
             headers:myHeaders
         })
-        .then(res=>res.json())
+        .then(res=>{console.log(res);return res.json()})
         .then(response=>{
             console.log(response);
             if(response.status == 200){
@@ -94,8 +94,8 @@ class JobList extends Component{
         var date = new Date(date);
         var hours = date.getHours();
         var minutes = date.getMinutes();
-        var dateToday = (new Date()).getDate();
-        var messageDate = date.getDate();
+        var dateToday = (new Date()).getTime();
+        var messageDate = date.getTime();
         if(dateToday > messageDate){
             var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
             var ampm = hours >= 12 ? 'PM' : 'AM';
@@ -147,10 +147,10 @@ class JobList extends Component{
                 <Header pageName="Open Jobs" />
                 <View style={{backgroundColor:'#FFFFFF',flexDirection:'row',borderBottomColor: '#bebebe',borderBottomWidth: 1}}>
                     <TouchableOpacity style={[MainStyles.jobListETabsItem,(this.state.currentTab == 'shift')?MainStyles.activeJLEItem:'']} onPress={()=>{this.setState({currentTab:'shift'})}}>
-                        <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'shift')?MainStyles.activeJLEItemText:'']}>LOCUM SHIFT</Text>
+                        <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'shift')?MainStyles.activeJLEItemText:'']}>LOCUM SHIFTS</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[MainStyles.jobListETabsItem,(this.state.currentTab == 'perm')?MainStyles.activeJLEItem:'']} onPress={()=>{this.setState({currentTab:'perm'})}}>
-                        <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'perm')?MainStyles.activeJLEItemText:'']}>PERMANENT POSITION</Text>
+                        <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'perm')?MainStyles.activeJLEItemText:'']}>PERMANENT POSITIONS</Text>
                     </TouchableOpacity>
                 </View>
                 {
@@ -170,10 +170,10 @@ class JobList extends Component{
                                                 </View>
                                                 <View style={{flexDirection:'row',alignItems:'center'}}>
                                                     {
-                                                        item.is_cancelled == 1 && 
-                                                        <View style={{flexDirection:'row',alignItems:'center'}}>
-                                                            <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Cancelled</Text>
-                                                        </View>
+                                                        // item.is_cancelled == 1 && 
+                                                        // <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                        //     <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Cancelled</Text>
+                                                        // </View>
                                                     }
                                                     {
                                                         item.is_end == 1 && 
@@ -200,10 +200,10 @@ class JobList extends Component{
                                                         <View style={{width:15,height:15,backgroundColor:'#61bf6f',borderRadius:50,marginLeft:5,marginRight:5}}></View>
                                                     }
                                                     {
-                                                        item.is_cancelled == 1 && 
-                                                        <View style={{flexDirection:'row',alignItems:'center'}}>
-                                                            <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Cancelled</Text>
-                                                        </View>
+                                                        // item.is_cancelled == 1 && 
+                                                        // <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                        //     <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Cancelled</Text>
+                                                        // </View>
                                                     }
                                                     {
                                                         item.is_end == 1 && item.is_review == 0 && 
@@ -248,10 +248,10 @@ class JobList extends Component{
                                                 <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM((item.created_on).replace(' ', 'T'))}</Text>
                                             </View>
                                             {
-                                                item.is_cancelled == 1 && 
-                                                <View style={{flexDirection:'row',alignItems:'center'}}>
-                                                    <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Cancelled</Text>
-                                                </View>
+                                                // item.is_cancelled == 1 && 
+                                                // <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                //     <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Cancelled</Text>
+                                                // </View>
                                             }
                                             <View style={{flexDirection:'row',alignItems:'center'}}>
                                                 <Image source={require('../../assets/list-fd-icon.png')} style={{width:8,height:15}}/>
@@ -268,16 +268,15 @@ class JobList extends Component{
                                             <View style={{flexDirection:'row',alignItems:'center'}}>
                                                 <Text style={{transform: [{ rotate: "45deg" }],color:'#61bf6f',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Applied</Text>
                                                 {
-                                                    item.is_cancelled == 1 && 
-                                                    <View style={{flexDirection:'row',alignItems:'center'}}>
-                                                        <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Cancelled</Text>
-                                                    </View>
+                                                    // item.is_cancelled == 1 && 
+                                                    // <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                    //     <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Cancelled</Text>
+                                                    // </View>
                                                 }
                                             </View>
                                         </View>
                                     }
                                 </View>
-                                
                                 )}
                             keyExtractor={(item) => 'key-'+item.id}
                             viewabilityConfig={this.viewabilityConfig}

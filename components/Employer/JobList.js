@@ -92,8 +92,8 @@ class JobList extends Component{
         var date = new Date(date);
         var hours = date.getHours();
         var minutes = date.getMinutes();
-        var dateToday = (new Date()).getDate();
-        var messageDate = date.getDate();
+        var dateToday = (new Date()).getTime();
+        var messageDate = date.getTime();
         if(dateToday > messageDate){
             var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
             var ampm = hours >= 12 ? 'PM' : 'AM';
@@ -206,10 +206,10 @@ class JobList extends Component{
                 <Header pageName="Job List" />
                 <View style={{backgroundColor:'#FFFFFF',flexDirection:'row',borderBottomColor: '#bebebe',borderBottomWidth: 1}}>
                     <TouchableOpacity style={[MainStyles.jobListETabsItem,(this.state.currentTab == 'shift')?MainStyles.activeJLEItem:'']} onPress={()=>{this.setState({currentTab:'shift'})}}>
-                        <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'shift')?MainStyles.activeJLEItemText:'']}>LOCUM SHIFT</Text>
+                        <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'shift')?MainStyles.activeJLEItemText:'']}>LOCUM SHIFTS</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[MainStyles.jobListETabsItem,(this.state.currentTab == 'perm')?MainStyles.activeJLEItem:'']} onPress={()=>{this.setState({currentTab:'perm'})}}>
-                        <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'perm')?MainStyles.activeJLEItemText:'']}>PERMANENT POSITION</Text>
+                        <Text style={[MainStyles.jobListETabsItemText,(this.state.currentTab == 'perm')?MainStyles.activeJLEItemText:'']}>PERMANENT POSITIONS</Text>
                     </TouchableOpacity>
                 </View>
                 {
@@ -367,6 +367,32 @@ class JobList extends Component{
                 <TouchableOpacity style={{
                     position:'absolute',
                     right:10,
+                    bottom:20,
+                    width:50,
+                    height:50,
+                    backgroundColor:'#1d7bc3',
+                    borderRadius:35,
+                    zIndex:98562,
+                    justifyContent:'center',
+                    alignItems:'center',
+                    elevation:3,
+                    shadowColor:'#1e1e1e',
+                    shadowOffset:3,
+                    shadowOpacity:0.7,
+                    shadowRadius:3
+                }} onPress={()=>{
+                    if(this.state.currentTab == 'shift'){
+                        this.props.navigation.navigate('NewLocumShift');
+                    }
+                    else {
+                        this.props.navigation.navigate('NewPermShift');
+                    }
+                }}>
+                    <Icon name="plus" style={{color:'#FFFFFF',fontSize:20,}}/>
+                </TouchableOpacity>
+                <TouchableOpacity style={{
+                    position:'absolute',
+                    right:65,
                     bottom:20,
                     width:50,
                     height:50,

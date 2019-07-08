@@ -7,12 +7,18 @@ import Loader from '../Loader';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL } from '../../Constants';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import ImagePicker from 'react-native-image-picker';
 import Header from '../Navigation/Header';
+import DateTimePicker from "react-native-modal-datetime-picker";
+import { DocumentPicker, DocumentPickerUtil } from 'react-native-document-picker';
+import ImagePicker from 'react-native-image-picker';
+import RNFS from 'react-native-fs';
 const { height, width } = Dimensions.get('window');
 var myHeaders = new Headers();
 myHeaders.set('Accept', 'application/json');
 myHeaders.set('Content-Type', 'application/json');
+myHeaders.set('Cache-Control', 'no-cache');
+myHeaders.set('Pragma', 'no-cache');
+myHeaders.set('Expires', '0');
 class Profile extends Component{
     constructor(props) {
         super(props);
@@ -24,7 +30,16 @@ class Profile extends Component{
             userData:{
                 user_img:''
             },
-            about:''
+            about:'',
+            js_restrict:'No',
+            js_software:['Simple'],
+            js_admin_vaccin:'No',
+            js_comfort:'No',
+            js_medi_review:'No',
+            des_restrict:'',
+            resumFileName:'',
+            isDatePickerVisible:false,
+            resumFile:''
         }
     }
     async saveDetails(key,value){
@@ -33,6 +48,8 @@ class Profile extends Component{
     async setUserData(){
         let userDataStringfy = await AsyncStorage.getItem('userData');
         let userData = JSON.parse(userDataStringfy);
+        console.log(userData);
+        var dob = (userData.js_dob).split('-');
         this.setState({
             userData,
             fname:userData.fname,
@@ -46,8 +63,41 @@ class Profile extends Component{
             country:userData.country,
             postal:userData.postal,
             about:userData.about,
-            user_type:userData.user_type
+            js_ahpra:userData.js_ahpra,
+            dd:dob[0],
+            mm:dob[1],
+            yy:dob[2],
+            js_reg:userData.js_reg,
+            user_type:userData.user_type,
+            js_restrict:userData.js_restrict,
+            js_software:userData.js_software.split(','),
+            js_admin_vaccin:userData.js_admin_vaccin,
+            js_comfort:userData.js_medi_review,
+            js_medi_review:userData.js_medi_review,
+            des_restrict:userData.des_restrict
         });
+    }
+    pickerIos = ()=>{
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: this.state.cOptions,
+            cancelButtonIndex: 0,
+          },
+          (buttonIndex) => {
+            if(buttonIndex != 0){
+              this.setState({country: this.state.cOptions[buttonIndex]})
+            }
+          });
+    }
+    pickerState = ()=>{
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: this.state.sOptions,
+            cancelButtonIndex: 0,
+          },
+          (buttonIndex) => {
+            if(buttonIndex != 0){
+              this.setState({spr: this.state.sOptions[buttonIndex]})
+            }
+          });
     }
     pickFile = ()=>{
         const options = {
@@ -118,7 +168,18 @@ class Profile extends Component{
             country:this.state.country,
             user_img:this.state.fileData,
             email:this.state.email,
-            about:this.state.about
+            about:this.state.about,
+            js_dob:this.state.dd+'-'+this.state.mm+'-'+this.state.yy,
+            js_ahpra:this.state.js_ahpra,
+            js_reg:this.state.js_reg,
+            user_type:this.state.user_type,
+            js_restrict:this.state.js_restrict,
+            js_software:this.state.js_software,
+            js_admin_vaccin:this.state.js_admin_vaccin,
+            js_comfort:this.state.js_medi_review,
+            js_medi_review:this.state.js_medi_review,
+            des_restrict:this.state.des_restrict,
+            js_resume:this.state.resumFile,
         }
         fetch(SERVER_URL+'update_emp_profile',{
             method:'POST',
@@ -143,6 +204,59 @@ class Profile extends Component{
             this.setState({loading:false});
         });
     }
+    chooseDoc = ()=>{
+        this.setState({loading:true});
+        DocumentPicker.show({
+            filetype: [DocumentPickerUtil.allFiles()],
+          },(error,res) => {
+              if(res){
+                var fileExtArra = res.fileName.split('.');
+                var fileExt = fileExtArra[fileExtArra.length-1];
+                if(fileExt != "pdf" && fileExt != "docx" && fileExt != "doc"){
+                    Toast.show('Please upload only document or pdf file',Toast.SHORT);
+                    this.setState({loading:false});
+                    return false;
+                }
+                this.setState({resumFileName:res.fileName});
+                RNFS.readFile(res.uri, 'base64')
+                .then(result => {this.setState({resumFile:{data:result,filename:res.fileName}});this.setState({loading:false});})
+                .catch(error => {this.setState({loading:false});});
+              }
+              else{
+                this.setState({loading:false});
+              }
+          });
+    }
+    checkSoftware = (value)=>{
+        if(this.state.js_software.indexOf(value) === -1){
+            var selected = this.state.js_software;
+            selected.push(value);
+            this.setState({js_software:selected});
+        }
+        else{
+            var selected = this.state.js_software;
+            selected.splice(this.state.js_software.indexOf(value),1);
+            this.setState({js_software:selected});
+        }
+    }
+    showDatePicker = () => {
+        this.setState({ isDatePickerVisible: true });
+    };
+    hideDatePicker = () => {
+        this.setState({ isDatePickerVisible: false });
+    };
+    handleDatePicked = date => {
+        var changeDate = new Date(date);
+        var dd = ''+changeDate.getDate();
+        var mm = ''+(changeDate.getMonth()+1);
+        var yy = ''+changeDate.getFullYear();
+        if(dd < 10){dd = '0'+dd;}
+        if(mm < 10){mm = '0'+mm;}
+        this.setState({
+            dd,mm,yy
+        });
+        this.hideDatePicker();
+    };
     render(){
         const RemoveHiehgt = height - 50;
         var behavior = (Platform.OS == 'ios')?'padding':'';
@@ -210,9 +324,43 @@ class Profile extends Component{
                             </View>
                             {
                                 this.state.userData.user_type == 'locum' && 
-                                <View style={MainStyles.locumProfileItemWrapper}>
-                                    <Text style={MainStyles.LPIHeading}>About</Text>
-                                    <Text style={MainStyles.LPISubHeading}>{this.state.about}</Text>
+                                <View>
+                                    <View style={MainStyles.locumProfileItemWrapper}>
+                                        <Text style={MainStyles.LPIHeading}>About</Text>
+                                        <Text style={MainStyles.LPISubHeading}>{this.state.about}</Text>
+                                    </View>
+                                    <View style={MainStyles.locumProfileItemWrapper}>
+                                        <Text style={MainStyles.LPIHeading}>DOB</Text>
+                                        <Text style={MainStyles.LPISubHeading}>{this.state.dd+'-'+this.state.mm+'-'+this.state.yy}</Text>
+                                    </View>
+                                    <View style={MainStyles.locumProfileItemWrapper}>
+                                        <Text style={MainStyles.LPIHeading}>AHPRA Registration Number</Text>
+                                        <Text style={MainStyles.LPISubHeading}>{this.state.js_ahpra}</Text>
+                                    </View>
+                                    <View style={MainStyles.locumProfileItemWrapper}>
+                                        <Text style={MainStyles.LPIHeading}>Initial year of registration</Text>
+                                        <Text style={MainStyles.LPISubHeading}>{this.state.js_reg}</Text>
+                                    </View>
+                                    <View style={MainStyles.locumProfileItemWrapper}>
+                                        <Text style={MainStyles.LPIHeading}>Restriction imposed</Text>
+                                        <Text style={MainStyles.LPISubHeading}>{this.state.js_restrict}</Text>
+                                    </View>
+                                    <View style={MainStyles.locumProfileItemWrapper}>
+                                        <Text style={MainStyles.LPIHeading}>Dispensing Software</Text>
+                                        <Text style={MainStyles.LPISubHeading}>{this.state.js_software.join(',')}</Text>
+                                    </View>
+                                    <View style={MainStyles.locumProfileItemWrapper}>
+                                        <Text style={MainStyles.LPIHeading}>Admin Vaccinations</Text>
+                                        <Text style={MainStyles.LPISubHeading}>{this.state.js_admin_vaccin}</Text>
+                                    </View>
+                                    <View style={MainStyles.locumProfileItemWrapper}>
+                                        <Text style={MainStyles.LPIHeading}>Administer Vaccinations</Text>
+                                        <Text style={MainStyles.LPISubHeading}>{this.state.js_comfort}</Text>
+                                    </View>
+                                    <View style={MainStyles.locumProfileItemWrapper}>
+                                        <Text style={MainStyles.LPIHeading}>Medication Review</Text>
+                                        <Text style={MainStyles.LPISubHeading}>{this.state.js_medi_review}</Text>
+                                    </View>
                                 </View>
                             }
                         </View>
@@ -407,6 +555,297 @@ class Profile extends Component{
                                             numberOfLines={5}
                                         />
                                         {/* About Me Field */}
+                                        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop:10}}>
+                                            <View>
+                                                <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:13}}>
+                                                    Please upload your resume 
+                                                    <Text style={{color:'#ee1b24'}}>*</Text>
+                                                </Text>
+                                                <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Light',fontSize:11,marginTop:4}}>Supported Files: .pdf, .docx, .doc</Text>
+                                            </View>
+                                            <View style={{paddingHorizontal:10}}></View>
+                                            <TouchableOpacity style={[MainStyles.selectFilesBtn,{flexWrap:'wrap'}]} onPress={()=>{this.chooseDoc()}}>
+                                                <Text style={{flex:1,color:'#FFFFFF',flexWrap: 'wrap'}}>{(this.state.resumFileName != '')?this.state.resumFileName:'Select File'}</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        {/* Resume Field Ends */}
+                                        <View style={{marginTop:15}}></View>
+                                        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop:10}}>
+                                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:13,width:'40%'}}>
+                                                Date of Birth
+                                                <Text style={{color:'#ee1b24'}}>*</Text>
+                                            </Text>
+                                            <View style={{flexDirection:'row',justifyContent:'space-around',width:'60%'}}>
+                                                <TextInput 
+                                                    style={MainStyles.TInput} 
+                                                    placeholder="DD" 
+                                                    returnKeyType={"next"} 
+                                                    ref={(input) => { this.dd = input; }} 
+                                                    onSubmitEditing={() => { this.mm.focus(); }}
+                                                    blurOnSubmit={false}
+                                                    onChangeText={(text)=>this.setState({dd:text})} 
+                                                    placeholderTextColor="#bebebe" 
+                                                    underlineColorAndroid="transparent" 
+                                                    value={this.state.dd}
+                                                    maxLength={2}
+                                                    keyboardType="number-pad"
+                                                />
+                                                <View style={{paddingHorizontal:4}}></View>
+                                                <TextInput 
+                                                    style={MainStyles.TInput} 
+                                                    placeholder="MM" 
+                                                    returnKeyType={"next"} 
+                                                    ref={(input) => { this.mm = input; }} 
+                                                    onSubmitEditing={() => { this.yy.focus(); }}
+                                                    blurOnSubmit={false}
+                                                    onChangeText={(text)=>this.setState({mm:text})} 
+                                                    placeholderTextColor="#bebebe" 
+                                                    underlineColorAndroid="transparent" 
+                                                    value={this.state.mm}
+                                                    maxLength={2}
+                                                    keyboardType="number-pad"
+                                                />
+                                                <View style={{paddingHorizontal:4}}></View>
+                                                <TextInput 
+                                                    style={MainStyles.TInput} 
+                                                    placeholder="YYYY" 
+                                                    returnKeyType={"next"} 
+                                                    ref={(input) => { this.yy = input; }} 
+                                                    onSubmitEditing={() => { this.ahprano.focus(); }}
+                                                    blurOnSubmit={false}
+                                                    maxLength={4}
+                                                    onChangeText={(text)=>this.setState({yy:text})} 
+                                                    placeholderTextColor="#bebebe" 
+                                                    underlineColorAndroid="transparent" 
+                                                    value={this.state.yy}
+                                                    keyboardType="number-pad"
+                                                />
+                                                <View style={{paddingLeft:4,alignItems:'center',justifyContent:'center'}}>
+                                                    <TouchableOpacity onPress={this.showDatePicker}>
+                                                        <Image source={require('../../assets/calendar-icon.png')} style={{width:20,height:20}} />
+                                                    </TouchableOpacity>
+                                                    <DateTimePicker
+                                                    isVisible={this.state.isDatePickerVisible}
+                                                    onConfirm={this.handleDatePicked}
+                                                    onCancel={this.hideDatePicker}
+                                                    maximumDate={this.state.currentDate}
+                                                    />
+                                                </View>
+                                            </View>
+                                        </View>
+                                        {/* DOB Ends */}
+                                        <View style={{marginTop:15}}></View>
+                                        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop:10}}>
+                                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:13}}>
+                                                Your AHPRA Registration number
+                                                <Text style={{color:'#ee1b24'}}>*</Text>
+                                            </Text>
+                                            <View style={{paddingHorizontal:10}}></View>
+                                            <TextInput 
+                                                style={MainStyles.TInput} 
+                                                returnKeyType={"next"} 
+                                                ref={(input) => { this.js_ahpra = input; }} 
+                                                onSubmitEditing={() => { this.js_reg.focus(); }}
+                                                blurOnSubmit={false}
+                                                maxLength={10}
+                                                onChangeText={(text)=>this.setState({js_ahpra:text})} 
+                                                placeholderTextColor="#bebebe" 
+                                                underlineColorAndroid="transparent" 
+                                                value={this.state.js_ahpra}
+                                            />
+                                        </View>
+                                        {/* AHPRA Ends */}
+                                        <View style={{marginTop:15}}></View>
+                                        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop:10}}>
+                                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:13}}>
+                                                Initial year of registration in Australia 
+                                                <Text style={{color:'#ee1b24'}}>*</Text>
+                                            </Text>
+                                            <View style={{paddingHorizontal:10}}></View>
+                                            <TextInput 
+                                                style={MainStyles.TInput} 
+                                                returnKeyType={"go"} 
+                                                ref={(input) => { this.js_reg = input; }} 
+                                                blurOnSubmit={false}
+                                                keyboardType={"phone-pad"}
+                                                maxLength={4}
+                                                onChangeText={(text)=>this.setState({js_reg:text})} 
+                                                placeholderTextColor="#bebebe" 
+                                                underlineColorAndroid="transparent" 
+                                                value={this.state.js_reg}
+                                            />
+                                        </View>
+                                        {/* Initial Ends */}
+                                        <View style={{marginTop:15}}></View>
+                                        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop:10}}>
+                                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:13,flexWrap:'wrap',width:'60%'}}>
+                                            Have any restrictions been imposed on your registration?
+                                                <Text style={{color:'#ee1b24'}}>*</Text>
+                                            </Text>
+                                            <View style={{paddingHorizontal:10}}></View>
+                                            <View style={{flexDirection:'row',justifyContent:'space-between',flexWrap:'wrap',marginTop:10}}>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.setState({js_restrict:'Yes'});}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                    {this.state.js_restrict == 'Yes' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View>
+                                                    <Text style={[MainStyles.checkBoxLabel]}>Yes</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper,{marginLeft:10}]} onPress={()=>{this.setState({js_restrict:'No'});}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                        {this.state.js_restrict == 'No' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View>
+                                                    <Text style={[MainStyles.checkBoxLabel]}>No</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                        
+                                        {
+                                            this.state.js_restrict == 'Yes' &&  
+                                            <View style={{justifyContent:'flex-start',width:'100%',marginTop:10}}>
+                                                <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:13}}>
+                                                    Please describe the restrictions so we can better assess your needs
+                                                </Text>
+                                                <View style={{marginTop:10}}></View>
+                                                <TextInput 
+                                                    style={[MainStyles.TInput,{height:80}]} 
+                                                    ref={(input) => { this.des_restrict = input; }} 
+                                                    blurOnSubmit={false}
+                                                    multiline={true}
+                                                    onChangeText={(text)=>this.setState({des_restrict:text})} 
+                                                    placeholderTextColor="#bebebe" 
+                                                    underlineColorAndroid="transparent" 
+                                                    value={this.state.des_restrict}
+                                                />
+                                            </View>
+                                        }
+                                        {/* Restriction Ends */}
+                                        <View style={{flexDirection:'column',marginTop:15}}>
+                                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:13,flexWrap:'wrap'}}>
+                                                Which dispensing software are you familiar with:
+                                                <Text style={{color:'#ee1b24'}}>*</Text>
+                                            </Text>
+                                            <View style={{flexDirection:'row',justifyContent:'space-between',flexWrap:'wrap',marginTop:10}}>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.checkSoftware('WiniFRED');}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                    {this.state.js_software.indexOf('WiniFRED') !== -1 &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View>
+                                                    <Text style={[MainStyles.checkBoxLabel]}>WiniFRED</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.checkSoftware('FredNXT');}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                        {this.state.js_software.indexOf('FredNXT') !== -1 &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View>
+                                                    <Text style={[MainStyles.checkBoxLabel]}>FredNXT</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.checkSoftware('LOTS');}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                        {this.state.js_software.indexOf('LOTS') !== -1 &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View>
+                                                    <Text style={[MainStyles.checkBoxLabel]}>LOTS</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.checkSoftware('Simple');}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                        {this.state.js_software.indexOf('Simple') !== -1 &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View>
+                                                    <Text style={[MainStyles.checkBoxLabel]}>Simple</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                            <View style={{flexDirection:'row',justifyContent:'space-between',flexWrap:'wrap',marginTop:10}}>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.checkSoftware('MINFOS');}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                        {this.state.js_software.indexOf('MINFOS') !== -1 &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View>
+                                                    <Text style={[MainStyles.checkBoxLabel]}>MINFOS</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.checkSoftware('Merlin');}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                        {this.state.js_software.indexOf('Merlin') !== -1 &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View> 
+                                                    <Text style={[MainStyles.checkBoxLabel]}>Merlin</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.checkSoftware('Quickscript');}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                        {this.state.js_software.indexOf('Quickscript') !== -1 &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View>
+                                                    <Text style={[MainStyles.checkBoxLabel]}>Quickscript</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.checkSoftware('Other');}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                        {this.state.js_software.indexOf('Other') !== -1 &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View>
+                                                    <Text style={[MainStyles.checkBoxLabel]}>Other</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                        {/* Fimiliar Ends */}
+                                        <View style={{marginTop:15}}></View>
+                                        <View style={{flexDirection:'column',marginTop:15}}>
+                                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:13,flexWrap:'wrap'}}>
+                                                Are you accredited to administer Vaccinations? 
+                                                <Text style={{color:'#ee1b24'}}> *</Text>
+                                            </Text>
+                                            <View style={{flexDirection:'row',justifyContent:'flex-start',alignItems:'flex-start',flexWrap:'wrap',marginTop:10}}>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.setState({js_admin_vaccin:'Yes'});}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                        {this.state.js_admin_vaccin == 'Yes' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View>
+                                                    <Text style={[MainStyles.checkBoxLabel]}>Yes</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper,{alignItems:'flex-start',marginLeft:40}]} onPress={()=>{this.setState({js_admin_vaccin:'No'});}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                        {this.state.js_admin_vaccin == 'No' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View>
+                                                    <Text style={[MainStyles.checkBoxLabel]}>No</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                        {/* Pharmacotherapy Ends */}
+                                        <View style={{marginTop:15}}></View>
+                                        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop:10}}>
+                                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:13,flexWrap:'wrap',width:'60%'}}>
+                                                I am comfortable with administering pharmacotherapy
+                                                <Text style={{color:'#ee1b24'}}>*</Text>
+                                            </Text>
+                                            <View style={{paddingHorizontal:10}}></View>
+                                            <View style={{flexDirection:'row',justifyContent:'space-between',flexWrap:'wrap',marginTop:10}}>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.setState({js_comfort:'Yes'});}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                    {this.state.js_comfort == 'Yes' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View>
+                                                    <Text style={[MainStyles.checkBoxLabel]}>Yes</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper,{marginLeft:10}]} onPress={()=>{this.setState({js_comfort:'No'});}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                        {this.state.js_comfort == 'No' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View>
+                                                    <Text style={[MainStyles.checkBoxLabel]}>No</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                        {/* Comfortable Ends */}
+                                        <View style={{marginTop:10}}></View>
+                                        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop:10}}>
+                                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:13,flexWrap:'wrap',width:'60%'}}>
+                                                I am accredited for medication review services
+                                                <Text style={{color:'#ee1b24'}}>*</Text>
+                                            </Text>
+                                            <View style={{paddingHorizontal:10}}></View>
+                                            <View style={{flexDirection:'row',justifyContent:'space-between',flexWrap:'wrap',marginTop:10}}>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper]} onPress={()=>{this.setState({js_medi_review:'Yes'});}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                    {this.state.js_medi_review == 'Yes' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View>
+                                                    <Text style={[MainStyles.checkBoxLabel]}>Yes</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={[MainStyles.checkBoxWrapper,{marginLeft:10}]} onPress={()=>{this.setState({js_medi_review:'No'});}}>
+                                                    <View style={[MainStyles.checkBoxStyle]}>
+                                                        {this.state.js_medi_review == 'No' &&  <View style={MainStyles.checkBoxCheckedStyle}></View>}
+                                                    </View>
+                                                    <Text style={[MainStyles.checkBoxLabel]}>No</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                        {/* Accredited Ends */}
                                     </View>
                                 }
                                 <View style={{marginTop:15}}></View>

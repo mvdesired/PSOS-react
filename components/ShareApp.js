@@ -4,18 +4,37 @@ import MainStyles from './Styles';
 import Header from './Navigation/Header';
 import Share from 'react-native-share';
 const { height, width } = Dimensions.get('window');
+import { SERVER_URL } from '../Constants';
+var myHeaders = new Headers();
+myHeaders.set('Accept', 'application/json');
+myHeaders.set('Content-Type', 'application/json');
+myHeaders.set('Cache-Control', 'no-cache');
+myHeaders.set('Pragma', 'no-cache');
+myHeaders.set('Expires', '0');
 class ShareApp extends Component{
     constructor(props) {
         super(props);
         this.state={loading:false}
     }
     componentDidMount(){
+        fetch(SERVER_URL + 'share_text', {
+            method: 'GET',
+            headers: myHeaders
+        })
+        .then(res => res.json())
+        .then(r => {
+            console.log(r);
+            this.setState({link:r.link,title:r.text});
+        })
+        .catch(err => {
+            console.log(err);
+        });
     }
     shareThis(ShareOn){
         const shareOptions = {
             title: 'Share via',
-            message: 'some message',
-            url: 'some share url',
+            message: this.state.title,
+            url: this.state.link,
             social: ShareOn
         };
         Share.shareSingle(shareOptions);

@@ -28,7 +28,7 @@ class AboutScreen extends Component{
                         </TouchableOpacity>
                         <View style={{borderLeftColor:'#1d7bc3',borderLeftWidth:1,marginHorizontal:5}}><Text>&nbsp;</Text></View>
                         <TouchableOpacity onPress={()=>{navigation.navigate('Privacy')}}>
-                            <Text style={{color:'#147dbf',fontFamily:'AvenirLTStd-Roman'}}>Privacy &amp; Policy</Text>
+                            <Text style={{color:'#147dbf',fontFamily:'AvenirLTStd-Roman'}}>Privacy Policy</Text>
                         </TouchableOpacity>
                     </View>
                 </ImageBackground>

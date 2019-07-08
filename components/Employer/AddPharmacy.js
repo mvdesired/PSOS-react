@@ -26,13 +26,15 @@ class AddPharmacy extends Component{
             pharm_id:this.props.navigation.getParam("pharm_id"),
             redirect:this.props.navigation.getParam("redirect"),
             pageTitle:'Add Pharmacy',
-            bPhone:'4',
+            bPhone:'',
             abn:'',
             bname:'',
             fname:'',
             lname:'',
             bEmail:'',
-            bPhoneCode:'+61'
+            bPhoneCode:'+61',
+            mPhoneCode:'+61',
+            mNumber:'4'
         };
     }
     async setUserData(){
@@ -101,9 +103,9 @@ class AddPharmacy extends Component{
         formdata.append('f_name',this.state.fname);
         formdata.append('l_name',this.state.lname);
         formdata.append('email',this.state.bEmail);
-        formdata.append('phone',this.state.bPhone);
+        formdata.append('phone',this.state.bPhoneCode+''+this.state.bPhone);
         formdata.append('fax',this.state.bFax);
-        formdata.append('mobile',this.state.mNumber);
+        formdata.append('mobile',this.state.mPhoneCode+''+this.state.mNumber);
         var ActionType = 'add_pharmacy';
         if(this.state.pharm_id){
             formdata.append('pharm_id',this.state.pharm_id);
@@ -314,7 +316,49 @@ class AddPharmacy extends Component{
                                 {/* <Text style={{color:'#ee1b24'}}>*</Text> */}
                             </Text>
                             <View style={{marginTop:10}}></View>
-                            <TextInput 
+                            <View 
+                                style={{paddingLeft: 10,
+                                    paddingVertical:2,
+                                    height:30,
+                                    fontSize:14,
+                                    borderRadius:20,
+                                    fontFamily:'AvenirLTStd-Medium',
+                                    borderColor:'#a1a1a1',
+                                    borderWidth: 1,
+                                    borderStyle:"dashed",
+                                    flexDirection:'row'
+                                }}
+                            >
+                                <PhoneInput
+                                ref={(ref) => { this.mPhoneCode = ref; }}
+                                style={{
+                                    textAlign:'left',
+                                    paddingLeft: 10,
+                                    height:25,
+                                    fontSize:14,
+                                    fontFamily:'AvenirLTStd-Medium',
+                                    width:75
+                                }}  
+                                initialCountry={"au"}
+                                onChangePhoneNumber={(number)=>this.setState({mPhoneCode:number})}
+                                value={this.state.mPhoneCode}
+                                />
+                                <TextInput 
+                                    style={[MainStyles.TInput,{
+                                        borderWidth:0,
+                                        height:26,
+                                    }]}
+                                    maxLength={10}
+                                    keyboardType="number-pad"
+                                    ref={(input) => { this.mNumber = input; }} 
+                                    blurOnSubmit={false}
+                                    onChangeText={(text)=>this.setState({mNumber:text})} 
+                                    placeholderTextColor="#bebebe" 
+                                    underlineColorAndroid="transparent" 
+                                    value={this.state.mNumber}
+                                />
+                            </View>
+                            {/*<TextInput 
                                 style={[MainStyles.TInput]} 
                                 maxLength={12}
                                 placeholder="Mobile Number"
@@ -327,7 +371,7 @@ class AddPharmacy extends Component{
                                 underlineColorAndroid="transparent" 
                                 value={this.state.mNumber}
                             />
-                            {/* B Fax ends */}
+                             Mobile Number ends */}
                             <View style={{justifyContent:'center',alignItems:'center',marginTop:26}}>
                                 <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.submitPharmacy()}}>
                                     <Text style={MainStyles.psosBtnText}>Submit</Text>

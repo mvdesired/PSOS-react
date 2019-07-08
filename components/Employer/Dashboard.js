@@ -62,7 +62,6 @@ class Dashboard extends Component{
         })
         .then(res=>res.json())
         .then(r=>{
-            console.log(r);
             this.setState({totalJobs:r.jobs,totalPharmacy:r.pharmacy,totalApplications:r.applicants,totalBookedLocums:r.locum_booked});
             this.setState({loading:false});
         })
@@ -213,7 +212,7 @@ class Dashboard extends Component{
                             </TouchableOpacity>
                             <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#a29bfe',width:'100%'}]} onPress={()=>{this.props.navigation.navigate('ETimeSheet')}}>
                                 <Image source={require('../../assets/perm-pos.png')}  width={50} height={55} style={{width:50,height:55,marginBottom:10,}} />
-                                <Text style={[MainStyles.eDTWIT]}>eTIMESSHEET</Text>
+                                <Text style={[MainStyles.eDTWIT]}>eTIME SHEET</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#00cec9',width:'100%'}]} onPress={()=>{this.props.navigation.navigate('LocumAvail')}}>
                                 <Image source={require('../../assets/job-list.png')}  width={50} height={57} style={{width:50,height:57,marginBottom:10}} />

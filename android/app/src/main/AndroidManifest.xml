@@ -16,7 +16,7 @@
         android:name="${applicationId}.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
     <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
-    <!-- < Only if you're using GCM or localNotificationSchedule() > -->
+     <!--< Only if you're using GCM or localNotificationSchedule() > -->
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -30,10 +30,13 @@
                 android:value="Pharmacy SOS"/>
         <meta-data  android:name="com.dieam.reactnativepushnotification.notification_channel_description"
                     android:value="Pharmacist Locums and Locuming Services"/>
-        <!-- Change the resource name to your App's accent color - or any other color you want -->
+        <!-- Change the resource name to your App's accent color - or any other color you want-->
         <meta-data  android:name="com.dieam.reactnativepushnotification.notification_color"
                     android:resource="@color/psosBlue"/>
-        <receiver
+        <meta-data
+            android:name="com.dieam.reactnativepushnotification.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
+        <!--<receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
             android:permission="com.google.android.c2dm.permission.SEND" >
@@ -42,7 +45,7 @@
                 <category android:name="${applicationId}" />
             </intent-filter>
         </receiver>
-        <!-- < Only if you're using GCM or localNotificationSchedule() > -->
+         < Only if you're using GCM or localNotificationSchedule() > -->
 
         <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationPublisher" />
         <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationBootEventReceiver">
@@ -62,7 +65,7 @@
         </service>
         <!-- </ Only if you're using GCM or localNotificationSchedule() > -->
 
-        <!-- < Else > -->
+        <!-- < Else >-->
         <service
             android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationListenerService"
             android:exported="false" >

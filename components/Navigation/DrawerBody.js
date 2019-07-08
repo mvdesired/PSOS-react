@@ -1,6 +1,8 @@
 import React,{Component} from 'react';
 import { ScrollView, TouchableOpacity,View,SafeAreaView,ImageBackground,Image,Text,AsyncStorage,StyleSheet } from 'react-native';
 import { DrawerItems,NavigationActions,withNavigation } from 'react-navigation';
+import PushNotification from 'react-native-push-notification';
+import { SENDER_ID } from '../../Constants';
 class DrawerBody extends Component{
     isMount = false;
     constructor(props){
@@ -28,6 +30,7 @@ class DrawerBody extends Component{
     componentDidMount(){
         this.isMount = true;
         this.setUserData();
+        this.goPusNotification(this.redirectOnPushNotifcation.bind(this));
     }
     componentDidUpdate(){
         if(this.isMount == true){
@@ -38,6 +41,31 @@ class DrawerBody extends Component{
         this.setBlankUserData();
         this.isMount = false;
     }
+    goPusNotification(onNotification){
+        PushNotification.configure({
+            //onRegister: onToken,
+            onNotification: onNotification,
+            senderID: SENDER_ID,
+            permissions: {
+                alert: true,
+                badge: true,
+                sound: true
+            },
+            popInitialNotification: true,
+            requestPermissions: true,
+        });
+    }
+    redirectOnPushNotifcation(notification) {
+        if(notification.userInteraction){
+          if(notification.chat_id){
+              const navigateActionS = NavigationActions.navigate({
+                  routeName: 'ChatScreen',
+                  params:{chat_id:notification.chat_id}
+              });
+              this.props.navigation.dispatch(navigateActionS);
+          }
+        }
+      }
     render(){
         const {items} = this.props.props;
         return (

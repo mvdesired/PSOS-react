@@ -56,6 +56,7 @@ class LocumReg1Screen extends Component{
             js_comfort:'No',
             js_medi_review:'No',
             des_restrict:'',
+            about:'',
             isDatePickerVisible:false,
             otpVisible:false,
             otp:'',
@@ -295,6 +296,7 @@ class LocumReg1Screen extends Component{
             js_admin_vaccin:this.state.js_admin_vaccin,
             js_comfort:this.state.js_comfort,
             js_medi_review:this.state.js_medi_review,
+            about:this.state.about,
             device_type:Platform.OS,
             device_key:tokenGenerated,
             js_pharma:'',
@@ -525,6 +527,7 @@ class LocumReg1Screen extends Component{
                                     placeholder="Mobile Number *" 
                                     keyboardType="number-pad"
                                     ref={(input) => { this.phoneNo = input; }} 
+                                    onSubmitEditing={() => { this.emailAddress.focus(); }}
                                     blurOnSubmit={false}
                                     onChangeText={(text)=>this.setState({phoneNo:text})} 
                                     placeholderTextColor="#bebebe" 
@@ -557,7 +560,7 @@ class LocumReg1Screen extends Component{
                                 placeholder="E-mail" 
                                 returnKeyType={"go"} 
                                 ref={(input) => { this.emailAddress = input; }} 
-                                onSubmitEditing={() => { this.streetAddress.focus(); }}
+                                onSubmitEditing={() => { this.password.focus(); }}
                                 blurOnSubmit={false}
                                 keyboardType="email-address"
                                 onChangeText={(text)=>this.setState({emailAddress:text})} 
@@ -578,6 +581,7 @@ class LocumReg1Screen extends Component{
                                 returnKeyType={"go"} 
                                 ref={(input) => { this.password = input; }} 
                                 blurOnSubmit={false}
+                                onSubmitEditing={() => { this.about.focus(); }}
                                 secureTextEntry={true}
                                 keyboardType="default"
                                 onChangeText={(text)=>this.setState({password:text})} 
@@ -586,6 +590,25 @@ class LocumReg1Screen extends Component{
                                 value={this.state.password}
                             />
                             {/* Password Ends */}
+                            <View style={{marginTop:15}}></View>
+                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
+                                About
+                            </Text>
+                            <View style={{marginTop:10}}></View>
+                            <TextInput 
+                                style={MainStyles.TInput} 
+                                placeholder="About" 
+                                returnKeyType={"next"} 
+                                ref={(input) => { this.about = input; }} 
+                                onSubmitEditing={() => { this.streetAddress.focus(); }}
+                                blurOnSubmit={false}
+                                keyboardType="default"
+                                onChangeText={(text)=>this.setState({about:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.about}
+                            />
+                            {/* About Ends */}
                             <View style={{marginTop:15}}></View>
                             <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                                 Address
@@ -752,7 +775,7 @@ class LocumReg1Screen extends Component{
                                 </View>
                                 <View style={{paddingHorizontal:10}}></View>
                                 <TouchableOpacity style={[MainStyles.selectFilesBtn,{flexWrap:'wrap'}]} onPress={()=>{this.chooseDoc()}}>
-                                    <Text style={{flex:1,color:'#FFFFFF',flexWrap: 'wrap'}}>{(this.state.resumFileName != '')?this.state.resumFileName:'Select Files'}</Text>
+                                    <Text style={{flex:1,color:'#FFFFFF',flexWrap: 'wrap'}}>{(this.state.resumFileName != '')?this.state.resumFileName:'Select File'}</Text>
                                 </TouchableOpacity>
                             </View>
                             {/* Resume Field Ends */}
@@ -764,7 +787,7 @@ class LocumReg1Screen extends Component{
                                 </Text>
                                 <View style={{paddingHorizontal:10}}></View>
                                 <TouchableOpacity style={MainStyles.selectFilesBtn} onPress={()=>{this.pickFile()}}>
-                                    <Text style={{color:'#FFFFFF'}}>{(this.state.profilePicName!='')?this.state.profilePicName:'Select Files'}</Text>
+                                    <Text style={{color:'#FFFFFF'}}>{(this.state.profilePicName!='')?this.state.profilePicName:'Select File'}</Text>
                                 </TouchableOpacity>
                             </View>
                             {/* Picture Ends */}
