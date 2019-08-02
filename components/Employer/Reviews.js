@@ -184,7 +184,7 @@ class Reviews extends Component{
                                 </View>
                             </View>
                             )}}
-                        keyExtractor={(item) => 'key-my-'+item.review_id}
+                        keyExtractor={(item,index) => 'key-my-'+index}
                         viewabilityConfig={this.viewabilityConfig}
                         refreshControl={
                             <RefreshControl
@@ -235,7 +235,7 @@ class Reviews extends Component{
                                 </View>
                             </View>
                             )}}
-                        keyExtractor={(item) => 'key-o-'+item.review_id}
+                        keyExtractor={(item,index) => 'key-o-'+index}
                         viewabilityConfig={this.viewabilityConfig}
                         refreshControl={
                             <RefreshControl

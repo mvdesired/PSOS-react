@@ -6,12 +6,13 @@ import { DrawerActions,NavigationActions } from 'react-navigation';
 import Loader from '../Loader';
 import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
-import { SERVER_URL } from '../../Constants';
+import { SERVER_URL,SENDER_ID } from '../../Constants';
 import { FlatList } from 'react-native-gesture-handler';
 const { height, width } = Dimensions.get('window');
 import Header from '../Navigation/Header';
 import moment from 'moment';
 import Dialog, { SlideAnimation } from "react-native-popup-dialog";
+import PushNotification from 'react-native-push-notification';
 var myHeaders = new Headers();
 myHeaders.set('Accept', 'application/json');
 //myHeaders.set('Content-Type', 'application/json');
@@ -34,22 +35,22 @@ class JobList extends Component{
             waitForInteraction: true,
             viewAreaCoveragePercentThreshold: 95
         }
-        
         this.fetchLocumShifts = this._fetchLocumShifts.bind(this);
         this.fetchPermShifts = this._fetchPermShifts.bind(this);
     }
-    async setUserData(){
-        let userDataStringfy = await AsyncStorage.getItem('userData');
-        let userData = JSON.parse(userDataStringfy);
-        this.setState({userData});
+    setUserData = async() => {
+        await AsyncStorage.getItem('userData').then((userDataStringfy)=>{
+            let userData = JSON.parse(userDataStringfy);
+            this.setState({userData});
+            setTimeout(()=>{
+                this.fetchLocumShifts();
+                this.fetchPermShifts();
+            },100);
+        });
     }
     componentDidMount = ()=>{
+        this.goPusNotification(this.onNotification.bind(this));
         this.setUserData();
-        setTimeout(()=>{
-            this.fetchLocumShifts();
-            this.fetchPermShifts();
-        },1500);
-        
     }
     _fetchLocumShifts = ()=>{
         fetch(SERVER_URL+'locum_shift_list?user_id='+this.state.userData.id,{
@@ -58,7 +59,7 @@ class JobList extends Component{
         })
         .then(res=>res.json())
         .then(response=>{
-            console.log(response);
+            //console.log(response);
             if(response.status == 200){
                 this.setState({shiftList:response.result});
             }
@@ -66,7 +67,7 @@ class JobList extends Component{
             this.setState({loading:false,isRefreshingShift:false});
         })
         .catch(err=>{
-            Toast.show('Please check out internet connection',Toast.SHORT);
+            Toast.show('Please check your internet connection',Toast.SHORT);
             this.setState({loading:false,isRefreshingShift:false});
         })
     }
@@ -84,9 +85,27 @@ class JobList extends Component{
             this.setState({loading:false,isRefreshingPerm:false});
         })
         .catch(err=>{
-            Toast.show('Please check out internet connection',Toast.SHORT);
+            Toast.show('Please check your internet connection',Toast.SHORT);
             this.setState({loading:false,isRefreshingPerm:false});
         })
+    }
+    onNotification = ()=>{
+        this.fetchLocumShifts();
+        this.fetchPermShifts();
+    }
+    goPusNotification(onNotification){
+        PushNotification.configure({
+            //onRegister: onToken,
+            onNotification: onNotification,
+            senderID: SENDER_ID,
+            permissions: {
+                alert: true,
+                badge: true,
+                sound: true
+            },
+            popInitialNotification: true,
+            requestPermissions: true,
+        });
     }
     formatAMPM = (date) => {
         var date = new Date(date);
@@ -114,7 +133,6 @@ class JobList extends Component{
     }
     cancelShift = ()=>{
         this.setState({loading:true});
-        console.log(this.state.currentJobId);
         var fd = new FormData();
         fd.append("job_id",this.state.currentJobId);
         var cancelUrl = (this.state.currentJobType == 'perm')?'cancel_permanent':'cancel_locumshift';
@@ -126,9 +144,9 @@ class JobList extends Component{
             //     job_id:this.state.currentJobId
             // })
         })
-        .then(res=>{console.log(res);return res.json()})
+        .then(res=>{return res.json()})
         .then(response=>{
-            console.log(response);
+            //console.log(response);
             Toast.show(response.message,Toast.SHORT);
             this.setState({ActionModalShow:false,});
             this._fetchLocumShifts();
@@ -136,14 +154,14 @@ class JobList extends Component{
         })
         .catch(err=>{
             this.setState({loading:false});
-            console.log(err);
+            //console.log(err);
         })
     }
     showOptions = ()=>{
         if(Platform.OS == 'ios'){
-            var travelList = ['close','Cancel Shift','Edit Shift','View Shift'];
+            var travelList = ['close','Cancel Shift','Edit Shift','View Shift/Applicants'];
             if(this.state.currentJobType == 'perm'){
-                travelList = ['close','Edit Shift','View Shift'];
+                travelList = ['close','Edit Shift','View Shift/Applicants'];
                 ActionSheetIOS.showActionSheetWithOptions(
                     {
                     options: travelList,
@@ -269,7 +287,6 @@ class JobList extends Component{
                                 renderItem={({item}) => (
                                     <TouchableOpacity style={MainStyles.JLELoopItem} onPress={()=>{
                                         var stateItem = {currentJobId:item.id,currentJobType:'perm',isEnd:0,isCancelled:item.is_cancelled};
-                                        console.log(stateItem);
                                         this.setState(stateItem);
                                         this.showOptions();
                                         //this.props.navigation.navigate('LocumList',{job_type:'perm',job_id:item.id,isEnd:item.is_end});
@@ -310,11 +327,12 @@ class JobList extends Component{
                 {
                     Platform.OS == 'android' && 
                     <Dialog
-                    dialogStyle={{ width: "95%", padding: 0, maxHeight: "95%",flex:1,backgroundColor:'transparent',justifyContent:'center',alignItems:'center'}}
+                    width={220}
+                    dialogStyle={{ width: "100%", padding: 0,zIndex:1000, maxHeight: "95%",flex:1,backgroundColor:'transparent',justifyContent:'center',alignItems:'center'}}
                     dialogAnimation={new SlideAnimation()}
                     visible={this.state.ActionModalShow}
                     containerStyle={{
-                        zIndex: 10,
+                        zIndex: 1000,
                         flex: 1,
                         justifyContent:'center',
                         alignItems:'center',
@@ -323,7 +341,7 @@ class JobList extends Component{
                     onTouchOutside={()=>{this.setState({ActionModalShow:false})}}
                     rounded={false}
                     >
-                        <View style={{paddingHorizontal: 10,paddingBottom:40,borderRadius:15,backgroundColor:'#FFFFFF',width:200,alignItems:'center',justifyContent:'center'}}>
+                        <View style={{paddingHorizontal: 10,paddingBottom:40,borderRadius:15,backgroundColor:'#FFFFFF',width:230,alignItems:'center',justifyContent:'center'}}>
                             <View style={{
                                 paddingVertical:20,
                             }}><Text style={{fontSize:20}}>Choose Actions</Text></View>
@@ -332,7 +350,7 @@ class JobList extends Component{
                                 this.props.navigation.navigate('LocumList',{job_type:this.state.currentJobType,job_id:this.state.currentJobId,isEnd:this.state.isEnd});
                                 
                             }}>
-                                <Text style={styles.ModalActionsButtonsText}>View Shift</Text>
+                                <Text style={styles.ModalActionsButtonsText}>View Shift/Applicants</Text>
                             </TouchableOpacity>
                             {
                                 (this.state.isCancelled == 0 && this.state.isEnd == 0) && 
@@ -356,7 +374,7 @@ class JobList extends Component{
                                     <Text style={styles.ModalActionsButtonsText}>Cancel Shift</Text>
                                 </TouchableOpacity>
                             }
-                            <TouchableOpacity style={[styles.ModalActionsButtons,{width:70,marginTop:10}]} onPress={()=>{
+                            <TouchableOpacity style={[styles.ModalActionsButtons,{marginTop:10}]} onPress={()=>{
                                 this.setState({ActionModalShow:false});
                             }}>
                                 <Text style={styles.ModalActionsButtonsText}>Close</Text>
@@ -425,7 +443,7 @@ const styles = StyleSheet.create({
         marginVertical:5,
         alignItems:'center',
         justifyContent:'center',
-        width:150,
+        width:200,
         borderRadius:15
     },
     ModalActionsButtonsText:{

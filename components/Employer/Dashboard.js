@@ -30,10 +30,18 @@ class Dashboard extends Component{
         }
         this.fetchNotifications = this._fetchNotifications.bind(this);
     }
-    async setUserData(){
-        let userDataStringfy = await AsyncStorage.getItem('userData');
-        let userData = JSON.parse(userDataStringfy);
-        this.setState({userData});
+    setUserData = async() =>{
+        await AsyncStorage.getItem('userData').then((userDataStringfy)=>{
+            let userData = JSON.parse(userDataStringfy);
+            this.setState({userData});
+            if(this.state.userData.user_type == 'employer'){
+                this.fetchTotals();
+            }
+            this.fetchNotifications();
+            this.clearTime = setInterval(()=>{
+                this.fetchNotifications();
+            },10000);
+        });
     }
     componentDidMount = ()=>{
         this._isMounted = true;
@@ -45,15 +53,6 @@ class Dashboard extends Component{
     }
     onFocus =()=>{
         this.setUserData();
-        setTimeout(()=>{
-            if(this.state.userData.user_type == 'employer'){
-                this.fetchTotals();
-            }
-            this.fetchNotifications();
-            this.clearTime = setInterval(()=>{
-                this.fetchNotifications();
-            },10000);
-        },1500);
     }
     fetchTotals = ()=>{
         fetch(SERVER_URL+'dashboard?user_id='+this.state.userData.id,{
@@ -67,7 +66,7 @@ class Dashboard extends Component{
         })
         .catch((err)=>{
             this.setState({loading:false});
-            console.log(err);
+            //console.log(err);
         });
     }
     _fetchNotifications = ()=>{
@@ -79,7 +78,7 @@ class Dashboard extends Component{
         .then(response=>{
             if (this._isMounted) {
                 if(response.status == 200){
-                    this.setState({notiCount:response.result.length});
+                    this.setState({notiCount:response.result.read_count});
                 }
                 else{
                     this.setState({notiCount:0});
@@ -87,7 +86,7 @@ class Dashboard extends Component{
             }
         })
         .catch(err=>{
-            console.log(err);
+            //console.log(err);
         });
     }
     componentWillUnmount(){
@@ -146,7 +145,7 @@ class Dashboard extends Component{
                             </TouchableOpacity>
                             <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#00cec9'}]} onPress={()=>{this.props.navigation.navigate('JobListE')}}>
                                 <Image source={require('../../assets/job-list.png')}  width={50} height={57} style={{width:50,height:57,marginBottom:10}} />
-                                <Text style={MainStyles.eDTWIT}>JOB LIST</Text>
+                                <Text style={MainStyles.eDTWIT}>Job Dashboard</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[MainStyles.eDTWI,{marginTop:5,backgroundColor:'#0984e3'}]} onPress={()=>{this.props.navigation.navigate('PayInvoice')}}>
                                 <Image source={require('../../assets/pay-invoice.png')}  width={50} height={50} style={{width:50,height:50,marginBottom:10}} />
@@ -161,7 +160,10 @@ class Dashboard extends Component{
                                 <Text style={MainStyles.eDTWIT}>FEEBACK</Text>
                             </TouchableOpacity>
                         </View>
-                        <View style={[MainStyles.eDW,{marginTop:8}]}>
+                        <View style={{backgroundColor:'#FFFFFF',marginTop:18,paddingTop:10,paddingBottom:10,borderBottomColor:'#dedede',borderBottomWidth:1}}>
+                            <Text style={[MainStyles.eDBWIT,{fontSize:20}]}>Statistics</Text>
+                        </View>   
+                        <View style={[MainStyles.eDW]}>
                             <View style={{width:'48%',height:149,marginTop:8}}>
                                 <View style={[MainStyles.eDBWI,{height:149}]}>
                                     <View style={MainStyles.eDBWIIC}>
@@ -177,7 +179,7 @@ class Dashboard extends Component{
                                         <Image source={require('../../assets/total-job.png')} style={{width:30,height:27,marginBottom:8}}/>
                                         <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>{this.state.totalPharmacy}</Text>
                                     </View>
-                                    <Text style={MainStyles.eDBWIT}>Total Pharmacy</Text>
+                                    <Text style={MainStyles.eDBWIT}>Total Pharmacies</Text>
                                 </View>
                             </View>
                             <View style={{width:'48%',height:149,marginTop:8}}>
@@ -195,7 +197,7 @@ class Dashboard extends Component{
                                         <Image source={require('../../assets/total-jb.png')} style={{width:30,height:32,marginBottom:8}}/>
                                         <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Roman'}}>{this.state.totalBookedLocums}</Text>
                                     </View>
-                                    <Text style={MainStyles.eDBWIT}>Locum Booked</Text>
+                                    <Text style={MainStyles.eDBWIT}>Locums Booked</Text>
                                 </View>
                             </View>
                         </View>

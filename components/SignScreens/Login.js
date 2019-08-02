@@ -7,7 +7,7 @@ import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
 import { SERVER_URL,SENDER_ID } from '../../Constants';
 import PushNotification from 'react-native-push-notification';
-import PhoneInput from 'react-native-phone-input'
+import PhoneInput from 'react-native-phone-input';
 export default class Login extends Component{
     constructor(props){
         super(props);
@@ -77,45 +77,46 @@ export default class Login extends Component{
             this.setState({loading:false});
         })
         .catch((err)=>{
-            console.log(err);
+            //console.log(err);
             this.checkNetInfo();
             this.setState({loading:false});
         });
     }
     sendDataToServer(token){
-        console.log(token);
-        var tokenGenerated = (typeof(token) != "undefined")?token.token:'';
-        var jsonArray = {
-            email: this.state.emailAddress,
-            password: this.state.password,
-            device_type:Platform.OS,
-            device_key:tokenGenerated
-        };
-        fetch(SERVER_URL+'user_login',{
-            method:'POST',
-            headers: {
-                //Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(jsonArray)
-        })
-        .then((res)=>{return res.json()})
-        .then((response)=>{
-            if(response.status == 200){
-                //Toast.show(''+response.result.otp,Toast.SHORT);otpField:true,serverOtp:response.result.otp,
-                this.setState({userId:response.result.id});
-                this.checkOtp();
-            }
-            else{
-                setTimeout(()=>{Toast.show(response.message,Toast.SHORT);},300);
-            }
-            this.setState({loading:false});
-        })
-        .catch((err)=>{
-            console.log(err);
-            this.checkNetInfo();
-            this.setState({loading:false});
-        });
+        if(this.state.emailAddress != ''){
+            var tokenGenerated = (typeof(token) != "undefined")?token.token:'';
+            var jsonArray = {
+                email: this.state.emailAddress,
+                password: this.state.password,
+                device_type:Platform.OS,
+                device_key:tokenGenerated
+            };
+            fetch(SERVER_URL+'user_login',{
+                method:'POST',
+                headers: {
+                    //Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(jsonArray)
+            })
+            .then((res)=>{return res.json()})
+            .then((response)=>{
+                if(response.status == 200){
+                    //Toast.show(''+response.result.otp,Toast.SHORT);otpField:true,serverOtp:response.result.otp,
+                    this.setState({userId:response.result.id});
+                    this.checkOtp();
+                }
+                else{
+                    setTimeout(()=>{Toast.show(response.message,Toast.SHORT);},300);
+                }
+                this.setState({loading:false});
+            })
+            .catch((err)=>{
+                //console.log(err);
+                this.checkNetInfo();
+                this.setState({loading:false});
+            });
+        }
     }
     componentDidMount = ()=>{
         this.checkNetInfo();
@@ -135,10 +136,10 @@ export default class Login extends Component{
                 popInitialNotification: true,
                 requestPermissions: true,
             });
-        // }
-        // else{
-        //     onToken();
-        // }
+        //  }
+        //  else{
+        //      onToken();
+        //  }
     }
     checkNetInfo = ()=>{
         if (Platform.OS === "android") {
@@ -200,7 +201,7 @@ export default class Login extends Component{
                         }} 
                         placeholder="Email *" 
                         returnKeyType={"next"} 
-                        ref={(input) => { this.emailAddress = input; }} 
+                        //ref={(input) => { this.emailAddress = input; }} 
                         onSubmitEditing={() => { this.password.focus(); }} 
                         blurOnSubmit={false}
                         onChangeText={(text)=>this.setState({emailAddress:text})} 

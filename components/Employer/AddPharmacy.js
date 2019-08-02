@@ -21,10 +21,16 @@ myHeaders.set('Expires', '0');
 class AddPharmacy extends Component{
     constructor(props){
         super(props);
+        var cOptionsList = ['Australia'];
+        cOptionsList.unshift('Cancel');
+        var sOptions = ['VIC','NSW','QLD','ACT','TAS','NT','WA','SA'];
+        sOptions.unshift('Cancel');
         this.state={
             loading:true,
             pharm_id:this.props.navigation.getParam("pharm_id"),
             redirect:this.props.navigation.getParam("redirect"),
+            cOptions:cOptionsList,
+            sOptions:sOptions,
             pageTitle:'Add Pharmacy',
             bPhone:'',
             abn:'',
@@ -32,9 +38,14 @@ class AddPharmacy extends Component{
             fname:'',
             lname:'',
             bEmail:'',
+            bFax:'',
             bPhoneCode:'+61',
             mPhoneCode:'+61',
-            mNumber:'4'
+            mNumber:'4',
+            state:'VIC',
+            country:'Australia',
+            CountryList:['Australia'],
+            stateList:['VIC','NSW','QLD','ACT','TAS','NT','WA','SA'],
         };
     }
     async setUserData(){
@@ -45,16 +56,32 @@ class AddPharmacy extends Component{
     componentDidMount = ()=>{
         this.setUserData();
         if(this.state.pharm_id){
-            console.log(this.state.pharm_id);
             fetch(SERVER_URL+'pharmacy_details?p_id='+this.state.pharm_id)
-            .then(res=>{console.log(res); return res.json();})
+            .then(res=>{return res.json();})
             .then(response=>{
-                console.log(response.result);
                 var results = response.result;
-                this.setState({loading:false,pageTitle:'Edit Pharmacy',bname:results.business_name,abn:results.abn,fname:results.f_name,lname:results.l_name,bEmail:results.email,bPhone:results.phone,bFax:results.fax,mNumber:results.mobile});
+                this.setState({
+                    loading:false,
+                    pageTitle:'Edit Pharmacy',
+                    bname:results.business_name,
+                    abn:results.abn,
+                    fname:results.f_name,
+                    lname:results.l_name,
+                    bEmail:results.email,
+                    bPhoneCode:(results.phone_code == '')?'+641':results.phone_code,
+                    bPhone:results.phone,
+                    bFax:results.fax,
+                    mPhoneCode:(results.mobile_code == '')?'+641':results.mobile_code,
+                    mNumber:results.mobile,
+                    address:results.address,
+                    city:results.city,
+                    state:(results.state == '')?'VIC':results.state,
+                    country:(results.country == '')?'Australia':results.country,
+                    postal:results.postal
+                });
             })
             .catch(err=>{
-                console.log(err);
+                //console.log(err);
                 this.setState({loading:false,pageTitle:'Add Pharmacy'});
             });
         }
@@ -103,9 +130,16 @@ class AddPharmacy extends Component{
         formdata.append('f_name',this.state.fname);
         formdata.append('l_name',this.state.lname);
         formdata.append('email',this.state.bEmail);
-        formdata.append('phone',this.state.bPhoneCode+''+this.state.bPhone);
+        formdata.append('phone_code',this.state.bPhoneCode);
+        formdata.append('phone',this.state.bPhone);
         formdata.append('fax',this.state.bFax);
-        formdata.append('mobile',this.state.mPhoneCode+''+this.state.mNumber);
+        formdata.append('mobile_code',this.state.mPhoneCode);
+        formdata.append('mobile',this.state.mNumber);
+        formdata.append('address',this.state.address);
+        formdata.append('city',this.state.city);
+        formdata.append('state',this.state.state);
+        formdata.append('country',this.state.country);
+        formdata.append('postal',this.state.postal);
         var ActionType = 'add_pharmacy';
         if(this.state.pharm_id){
             formdata.append('pharm_id',this.state.pharm_id);
@@ -130,9 +164,31 @@ class AddPharmacy extends Component{
         })
         .catch(err=>{
             this.setState({loading:false});
-            console.log(err);
+            //console.log(err);
             Toast.show('Something went wrong',Toast.SHORT);
         });
+    }
+    pickerIos = ()=>{
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: this.state.cOptions,
+            cancelButtonIndex: 0,
+          },
+          (buttonIndex) => {
+            if(buttonIndex != 0){
+              this.setState({country: this.state.cOptions[buttonIndex]})
+            }
+          });
+    }
+    pickerState = ()=>{
+        ActionSheetIOS.showActionSheetWithOptions({
+            options: this.state.sOptions,
+            cancelButtonIndex: 0,
+          },
+          (buttonIndex) => {
+            if(buttonIndex != 0){
+              this.setState({state: this.state.sOptions[buttonIndex]})
+            }
+          });
     }
     render(){
         const RemoveHiehgt = height - 88;
@@ -372,6 +428,121 @@ class AddPharmacy extends Component{
                                 value={this.state.mNumber}
                             />
                              Mobile Number ends */}
+                             <View style={{marginTop:15}}></View>
+                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
+                                Address
+                                <Text style={{color:'#ee1b24'}}>*</Text>
+                            </Text>
+                            <View style={{marginTop:10}}></View>
+                            <TextInput 
+                                style={MainStyles.TInput} 
+                                placeholder="Street Address" 
+                                returnKeyType={"next"} 
+                                ref={(input) => { this.address = input; }} 
+                                onSubmitEditing={() => { this.city.focus(); }}
+                                blurOnSubmit={false}
+                                onChangeText={(text)=>this.setState({address:text})} 
+                                placeholderTextColor="#bebebe" 
+                                underlineColorAndroid="transparent" 
+                                value={this.state.address}
+                            />
+                            <View style={{flexDirection:'row',justifyContent:'space-around',marginTop:15}}>
+                                <TextInput 
+                                    style={MainStyles.TInput} 
+                                    placeholder="City" 
+                                    returnKeyType={"next"} 
+                                    ref={(input) => { this.city = input; }} 
+                                    onSubmitEditing={() => { this.postal.focus(); }}
+                                    blurOnSubmit={false}
+                                    onChangeText={(text)=>this.setState({city:text})} 
+                                    placeholderTextColor="#bebebe" 
+                                    underlineColorAndroid="transparent" 
+                                    value={this.state.city}
+                                />
+                                <View style={{paddingHorizontal:5}}></View>
+                                {
+                                    Platform.OS == 'android' && 
+                                    <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
+                                        <Picker
+                                        selectedValue={this.state.state}
+                                        style={{
+                                            flex:1,
+                                            paddingLeft: 10,
+                                            paddingVertical:2,
+                                            height:30,
+                                        }}
+                                        textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
+                                        itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
+                                        itemStyle={MainStyles.TInput}
+                                        onValueChange={(itemValue, itemIndex) => this.setState({state: itemValue})}>
+                                            {
+                                            this.state.stateList.map(item=>{
+                                                return (
+                                                <Picker.Item key={'key-'+item} label={item} value={item} />
+                                                )
+                                            })
+                                            }
+                                        </Picker>
+                                    </View>
+                                }
+                                {
+                                    Platform.OS == 'ios' && 
+                                    <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerState()}}>
+                                        <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.state}</Text>
+                                    </TouchableOpacity>
+                                    
+                                }
+                            </View>
+                            <View style={{flexDirection:'row',justifyContent:'space-around',marginTop:15}}>
+                                <TextInput 
+                                    style={MainStyles.TInput} 
+                                    placeholder="Postal / Zipcode" 
+                                    returnKeyType={"next"} 
+                                    ref={(input) => { this.postal = input; }} 
+                                    onSubmitEditing={() => { this.about.focus(); }}
+                                    blurOnSubmit={false}
+                                    onChangeText={(text)=>this.setState({postal:text})} 
+                                    placeholderTextColor="#bebebe" 
+                                    underlineColorAndroid="transparent" 
+                                    value={this.state.postal}
+                                    keyboardType="number-pad"
+                                    maxLength={4}
+                                />
+                                <View style={{paddingHorizontal:5}}></View>
+                                {
+                                    Platform.OS == 'android' && 
+                                    <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
+                                        <Picker
+                                        selectedValue={this.state.country}
+                                        style={{
+                                            flex:1,
+                                            paddingLeft: 10,
+                                            paddingVertical:2,
+                                            height:30,
+                                        }}
+                                        textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
+                                        itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
+                                        itemStyle={MainStyles.TInput}
+                                        onValueChange={(itemValue, itemIndex) => this.setState({country: itemValue})}>
+                                            {
+                                            this.state.CountryList.map(item=>{
+                                                return (
+                                                <Picker.Item key={'key-'+item} label={item} value={item} />
+                                                )
+                                            })
+                                            }
+                                        </Picker>
+                                    </View>
+                                }
+                                {
+                                    Platform.OS == 'ios' && 
+                                    <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
+                                        <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.country}</Text>
+                                    </TouchableOpacity>
+                                    
+                                }
+                            </View>
+                            {/* Address Ends */}
                             <View style={{justifyContent:'center',alignItems:'center',marginTop:26}}>
                                 <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.submitPharmacy()}}>
                                     <Text style={MainStyles.psosBtnText}>Submit</Text>

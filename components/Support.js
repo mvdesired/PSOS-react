@@ -21,15 +21,11 @@ class Support extends Component {
 
     this.state = { loading: true, showingQA: 'q1',faqList:{} }
   }
-  async setUserData() {
-    let userDataStringfy = await AsyncStorage.getItem('userData');
-    let userData = JSON.parse(userDataStringfy);
-    this.setState({ userData });
-  }
-  componentDidMount() {
-    this.setUserData();
-    setTimeout(() => {
-      fetch(SERVER_URL + 'faq_list?type=' + this.state.userData.user_type, {
+  setUserData = async ()=> {
+    await AsyncStorage.getItem('userData').then(async(userDataStringfy)=>{
+      let userData = JSON.parse(userDataStringfy);
+      this.setState({ userData });
+      fetch(SERVER_URL + 'faq_list?type=' + userData.user_type, {
         method: 'GET',
         headers: myHeaders
       })
@@ -40,8 +36,13 @@ class Support extends Component {
         })
         .catch(err => {
           console.log(err);
+          this.setState({loading:false});
         });
-    }, 300);
+    });
+  }
+  componentDidMount() {
+    this.props.navigation.addListener('didFocus',this.setUserData);
+    //this.setUserData();
   }
   render() {
 
@@ -50,11 +51,11 @@ class Support extends Component {
 
       <SafeAreaView style={{ flex: 1, backgroundColor: '#f0f0f0' }}>
         <Loader loading={this.state.loading} />
-        <Header pageName="Support" />
+        <Header pageName="FAQ" />
         <ScrollView style={{ height: RemoveHiehgt, flex: 1 }}>
           <View style={{ paddingVertical: 2, backgroundColor: '#FFFFFF', marginTop: 1, paddingHorizontal: 10 }}>
             <View style={{ justifyContent: 'center' }}>
-              <Text style={{ fontFamily: 'AvenirLTStd-Medium', fontSize: 17, color: '#151515', marginTop: 2, flexWrap: 'wrap' }}>How can we help you ?</Text>
+              <Text style={{ fontFamily: 'AvenirLTStd-Medium', fontSize: 17, color: '#151515', marginTop: 2, flexWrap: 'wrap' }}>How can we help you?</Text>
             </View>
           </View>
 
@@ -74,7 +75,7 @@ class Support extends Component {
                       }}
                       >
                         <Text style={[styles.qnaHeading, (this.state.showingQA == index) ? { color: '#FFFFFF' } : { color: '#147dbf' }]}>{item.ques}</Text>
-                        <Image source={require('../assets/s-d-arrow.png')} style={{ width: 18, height: 9 }} />
+                        <Image source={require('../assets/s-d-arrow.png')} style={{ width: 18, height: 9,position:'absolute',right:10 }} />
                       </TouchableOpacity>
                       {
                         this.state.showingQA == index &&
@@ -107,6 +108,7 @@ const styles = StyleSheet.create({
   },
   qnaHeadingWrapper: {
     paddingHorizontal: 10,
+    paddingRight:30,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'

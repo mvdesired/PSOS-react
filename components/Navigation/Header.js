@@ -2,6 +2,7 @@ import React,{Component} from 'react';
 import {View, Image,Text,TouchableOpacity,AsyncStorage } from 'react-native';
 import MainStyles from '../Styles';
 import { DrawerActions,NavigationActions,withNavigation } from 'react-navigation';
+import NotifService from '../GoToNotification';
 import { SERVER_URL } from '../../Constants';
 class Header extends Component{
     _isMounted = false;
@@ -13,20 +14,21 @@ class Header extends Component{
         }
         this.fetchNotifications = this._fetchNotifications.bind(this);
     }
-    async setUserData(){
-        let userDataStringfy = await AsyncStorage.getItem('userData');
-        let userData = JSON.parse(userDataStringfy);
-        this.setState({userData});
-    }
-    componentDidMount =()=>{
-        this._isMounted = true;
-        this.setUserData();
-        setTimeout(()=>{
+    setUserData = async()=>{
+        await AsyncStorage.getItem('userData').then((userDataStringfy)=>{
+            let userData = JSON.parse(userDataStringfy);
+            this.setState({userData});
             this.fetchNotifications();
             this.clearTime = setInterval(()=>{
                 this.fetchNotifications();
             },3000);
-        },2500);
+        });
+    }
+    componentDidMount =()=>{
+        //var newNotifService = new NotifService();
+        //newNotifService.configure();
+        this._isMounted = true;
+        this.setUserData();
     }
     _fetchNotifications = ()=>{
         fetch(SERVER_URL+'fetch_notification?user_id='+this.state.userData.id)

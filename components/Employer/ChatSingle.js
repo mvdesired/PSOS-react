@@ -42,21 +42,20 @@ class ChatScreen extends Component{
         this.readMsgs = this._readMsgs.bind(this);
         this.fetchChatting = this._fetchChatting.bind(this);
     }
-    async setUserData(){
-        let userDataStringfy = await AsyncStorage.getItem('userData');
-        let userData = JSON.parse(userDataStringfy);
-        this.setState({userData});
-    }
-    componentDidMount(){
-        this._isMounted = true;
-        this.setUserData();
-        setTimeout(()=>{
+    setUserData = async ()=>{
+        await AsyncStorage.getItem('userData').then((userDataStringfy)=>{
+            let userData = JSON.parse(userDataStringfy);
+            this.setState({userData});
             this.readMsgs();
             this.clearTimeR = setInterval(()=>{
                 this.readMsgs();
             },2000)
             this.update();
-        },1500);
+        });
+    }
+    componentDidMount(){
+        this._isMounted = true;
+        this.setUserData();
     }
     _fetchChatting = ()=>{
         if(this._isMounted){
@@ -64,7 +63,7 @@ class ChatScreen extends Component{
                 method:'GET',
                 headers:myHeaders
             })
-            .then(res=>{console.log(res);return res.json()})
+            .then(res=>{return res.json()})
             .then(response=>{
                 if(response.status == 200){
                     this.setState({
@@ -177,7 +176,7 @@ class ChatScreen extends Component{
                 headers:myHeaders,
                 body:JSON.stringify(jsonData)
             })
-            .then((response) => {console.log(response);return response.json()})
+            .then((response) => {return response.json()})
             .then((responseData) => {
                 this.setState({isFile:0,fileData:{}});
             })
@@ -297,7 +296,7 @@ class ChatScreen extends Component{
                                         }
                                         {
                                             item.is_file == '1' && 
-                                            <TouchableOpacity onPress={() => {this.openModal(item.media.i_index)}} style={(item.msg_text!='')?{marginBottom:10}:''}>
+                                            <TouchableOpacity onPress={() => {console.log(item.media.i_index);this.openModal(item.media.i_index)}} style={(item.msg_text!='')?{marginBottom:10}:''}>
                                                 <Image source={{uri:item.media.url}} width={200} height={200} style={[{width:200,height:200,},]} />
                                             </TouchableOpacity>
                                             

@@ -1,6 +1,6 @@
 {
   "name": "psos",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
@@ -16,6 +16,7 @@
     "react-lifecycles-compat": "^3.0.4",
     "react-native": "0.57.7",
     "react-native-android-sms-listener": "^0.7.0",
+    "react-native-app-intro-slider": "^3.0.0",
     "react-native-datepicker": "^1.7.2",
     "react-native-dimension": "^1.0.6",
     "react-native-document-picker": "^2.3.0",

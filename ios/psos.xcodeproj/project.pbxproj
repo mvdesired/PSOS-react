@@ -26,6 +26,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		1824B137A3E24CC9B9FD67F3 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 202626A5E8A84A3CA1AB47E3 /* MaterialCommunityIcons.ttf */; };
+		182ED83422D38CCE0063A009 /* pntone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 182ED83322D38CCE0063A009 /* pntone.mp3 */; };
 		18BAD23C22AADFEE0082F1BB /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18BAD21A22AADFD30082F1BB /* libRCTPushNotification.a */; };
 		18BAD24622AAE17D0082F1BB /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18BAD24322AAE1670082F1BB /* libRNFS.a */; };
 		18C3240322AABB3100C5E839 /* libRNGestureHandler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18C3240022AABAC500C5E839 /* libRNGestureHandler.a */; };
@@ -455,6 +456,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = psos/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = psos/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
+		182ED83322D38CCE0063A009 /* pntone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = pntone.mp3; path = ../../android/app/src/main/res/raw/pntone.mp3; sourceTree = "<group>"; };
 		18657EE222AAFA8000288FD5 /* RNDocumentPicker.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNDocumentPicker.xcodeproj; path = "../node_modules/react-native-document-picker/ios/RNDocumentPicker.xcodeproj"; sourceTree = "<group>"; };
 		18BAD20722AADFD20082F1BB /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		18BAD23D22AAE1670082F1BB /* RNFS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNFS.xcodeproj; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; };
@@ -694,6 +696,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		182ED80022D38CA10063A009 /* Sound */ = {
+			isa = PBXGroup;
+			children = (
+				182ED83322D38CCE0063A009 /* pntone.mp3 */,
+			);
+			path = Sound;
+			sourceTree = "<group>";
+		};
 		18657EE322AAFA8000288FD5 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -882,6 +892,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				182ED80022D38CA10063A009 /* Sound */,
 				13B07FAE1A68108700A75B9A /* psos */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* psosTests */,
@@ -1426,6 +1437,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				182ED83422D38CCE0063A009 /* pntone.mp3 in Resources */,
 				05B4E50D429540229D4F701D /* AvenirLTStd-Black.otf in Resources */,
 				FFA07E341DE6423FA5D0F2E7 /* AvenirLTStd-BlackOblique.otf in Resources */,
 				37D016CDA1CF467C87BE9287 /* AvenirLTStd-Book.otf in Resources */,

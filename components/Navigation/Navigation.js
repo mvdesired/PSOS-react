@@ -1,6 +1,6 @@
 /**
  * Pharmasy SOS App
- * 
+ * "react-native-push-notification": "^3.1.3",
  *
  * @format
  * @flow
@@ -44,7 +44,10 @@ import Login from '../SignScreens/Login';
 import ForgotPasswordScreen from '../SignScreens/Forgot';
 /*Static Screen */
 import TnCScreen from '../Termscondition';
+import IntroScreenEmployer from '../IntroImagesEmployer';
+import IntroScreenLocum from '../IntroImagesLocum';
 import PrivacyScreen from '../Privacy';
+import ContactSupportScreen from '../ContactSupport';
 const drawerItemStyle = { 
     height: 50, 
     textAlign: 'left' 
@@ -55,83 +58,85 @@ const drawerLabelStyle = {
     fontFamily: 'AvenirLTStd-Light',
     paddingHorizontal:10
 };
-    const Drawer = createDrawerNavigator({
-        Home:{
-            screen:DashboardScreen
-        },
-        Profile:{
-            screen:ProfileScreen
-        },
-        Pharmacy:{
-            screen:PharmacyScreen,
-            /*navigationOptions: {
-                title: 'Pharmacy',
-                drawerLabel: ({ tintColor, focused }) => {
-                    if(userData.user_type == 'employer'){
-                        return 'Pharmacy';
-                    }
-                    return null;
-                },
-                drawerIcon: ({ tintColor, focused }) => {
-                    if(userData.user_type == 'employer'){
-                        return <Image source={require('../../assets/phar-d-icon.png')} style={{width:18,height:16}} />;
-                    }
-                    return null;
-                }
-            }*/
-        },
-        Applied:{
-            screen:AppliedScreen,
-            /*navigationOptions: {
-                title: 'Applied Jobs',
-                drawerLabel: ({ tintColor, focused }) => {
-                    if(userData.user_type == 'locum'){
-                        return 'Applied Jobs';
-                    }
-                    return null;
-                },
-                drawerIcon: ({ tintColor, focused }) => {
-                    if(userData.user_type == 'locum'){
-                        return <Image source={require('../../assets/applied-d-icon.png')} style={{width:18,height:16}} />;
-                    }
-                    return null;
-                }
-            }*/
-        },
-        Notifications:{
-            screen:NotificationsScreen
-        },
-        Website:{
-            screen:WebsiteScreen
-        },
-        Twitter:{
-            screen:TwitterScreen
-        },
-        Facebook:{
-            screen:FacebookScreen
-        },
-        ShareApp:{
-            screen:ShareAppScreen
-        },
-        Support:{
-            screen:SupportScreen
-        },
-        About:{
-            screen:AboutScreen
-        },
-        Logout:{
-            screen:LogoutScreen
-        },
+const Drawer = createDrawerNavigator({
+    Home:{
+        screen:DashboardScreen
     },
-        {
-            initialRouteName: 'Home',
-            overlayColor: 'rgba(0, 0, 0, 1)',
-            drawerWidth: 250,
-            contentComponent: props =>(
-                <DrawerBody props={props} />
-            )
-                
-    });
+    Profile:{
+        screen:ProfileScreen
+    },
+    Pharmacy:{
+        screen:PharmacyScreen,
+        /*navigationOptions: {
+            title: 'Pharmacy',
+            drawerLabel: ({ tintColor, focused }) => {
+                if(userData.user_type == 'employer'){
+                    return 'Pharmacy';
+                }
+                return null;
+            },
+            drawerIcon: ({ tintColor, focused }) => {
+                if(userData.user_type == 'employer'){
+                    return <Image source={require('../../assets/phar-d-icon.png')} style={{width:18,height:16}} />;
+                }
+                return null;
+            }
+        }*/
+    },
+    Applied:{
+        screen:AppliedScreen,
+        /*navigationOptions: {
+            title: 'Applied Jobs',
+            drawerLabel: ({ tintColor, focused }) => {
+                if(userData.user_type == 'locum'){
+                    return 'Applied Jobs';
+                }
+                return null;
+            },
+            drawerIcon: ({ tintColor, focused }) => {
+                if(userData.user_type == 'locum'){
+                    return <Image source={require('../../assets/applied-d-icon.png')} style={{width:18,height:16}} />;
+                }
+                return null;
+            }
+        }*/
+    },
+    Notifications:{
+        screen:NotificationsScreen
+    },
+    Website:{
+        screen:WebsiteScreen
+    },
+    Twitter:{
+        screen:TwitterScreen
+    },
+    Facebook:{
+        screen:FacebookScreen
+    },
+    ShareApp:{
+        screen:ShareAppScreen
+    },
+    Support:{
+        screen:SupportScreen
+    },
+    About:{
+        screen:AboutScreen
+    },
+    ContactSupport:{
+        screen:ContactSupportScreen
+    },
+    Logout:{
+        screen:LogoutScreen
+    },
+},
+    {
+        initialRouteName: 'Home',
+        overlayColor: 'rgba(0, 0, 0, 1)',
+        drawerWidth: 250,
+        contentComponent: props =>(
+            <DrawerBody props={props} />
+        )
+});
 const Navigation = createStackNavigator({
     Splash: {
         screen: SplashScreen
@@ -219,6 +224,12 @@ const Navigation = createStackNavigator({
     },
     Privacy:{
         screen:PrivacyScreen
+    },
+    IntroEmployer:{
+        screen:IntroScreenEmployer
+    },
+    IntroLocum:{
+        screen:IntroScreenLocum
     }
 }, {
     headerMode: 'none',

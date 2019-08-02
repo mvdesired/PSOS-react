@@ -28,10 +28,15 @@ class Notifications extends Component{
             notiList:{},
         };
     }
-    async setUserData(){
-        let userDataStringfy = await AsyncStorage.getItem('userData');
-        let userData = JSON.parse(userDataStringfy);
-        this.setState({userData});
+    setUserData = async()=>{
+        await AsyncStorage.getItem('userData').then((userDataStringfy)=>{
+            let userData = JSON.parse(userDataStringfy);
+            this.setState({userData});
+            this._fetchNotifications();
+            this.clearTime = setInterval(()=>{
+                this._fetchNotifications();
+            },10000);
+        });
     }
     componentDidMount =()=>{
         this._isMounted = true;
@@ -39,12 +44,6 @@ class Notifications extends Component{
     }
     onFocus = ()=>{
         this.setUserData();
-        setTimeout(()=>{
-            this._fetchNotifications();
-            this.clearTime = setInterval(()=>{
-                this._fetchNotifications();
-            },10000);
-        },1500);
     }
     _fetchNotifications = ()=>{
         fetch(SERVER_URL+'fetch_notification?user_id='+this.state.userData.id,{
@@ -61,7 +60,7 @@ class Notifications extends Component{
             }
         })
         .catch(err=>{
-            console.log(err);
+            //console.log(err);
             this.setState({loading:false,isRefreshingNoti:false});
         });
     }
@@ -124,24 +123,27 @@ class Notifications extends Component{
                                 })
                                 .then(res=>res.json())
                                 .then(response=>{
+                                    this._fetchNotifications();
                                 })
                                 .catch(err=>{
-                                    console.log(err);
+                                    //console.log(err);
                                 });
-                                if(this.state.userData.user_type == 'employer'){
-                                    if(item.job_type == 'locum_shift'){
-                                        this.props.navigation.navigate('LocumDetails',{job_id:item.job_id,job_type:'shift',locum_id:item.user_id2,isEnd:item.is_end,is_filled:item.is_filled,applied:item.applied});
+                                if(item.job_id != "0"){
+                                    if(this.state.userData.user_type == 'employer'){
+                                        if(item.job_type == 'locum_shift'){
+                                            this.props.navigation.navigate('LocumList',{job_id:item.job_id,job_type:'shift',locum_id:item.user_id2,isEnd:item.is_end,is_filled:item.is_filled,applied:item.applied});
+                                        }
+                                        else{
+                                            this.props.navigation.navigate('LocumList',{job_id:item.job_id,job_type:'perm',locum_id:item.user_id2,isEnd:item.is_end,is_filled:item.is_filled,applied:item.applied});
+                                        }
                                     }
                                     else{
-                                        this.props.navigation.navigate('LocumDetails',{job_id:item.job_id,job_type:'perm',locum_id:item.user_id2,isEnd:item.is_end,is_filled:item.is_filled,applied:item.applied});
-                                    }
-                                }
-                                else{
-                                    if(item.job_type == 'locum_shift'){
-                                        this.props.navigation.navigate('JobDetails',{job_type:'shift',job_id:item.job_id,is_cancelled:item.is_cancelled,isEnd:item.is_end,applied:item.applied,is_filled:item.is_filled});
-                                    }
-                                    else{
-                                        this.props.navigation.navigate('JobDetails',{job_type:'perm',job_id:item.job_id,is_cancelled:item.is_cancelled,applied:item.applied,is_filled:item.is_filled});
+                                        if(item.job_type == 'locum_shift'){
+                                            this.props.navigation.navigate('JobDetails',{job_type:'shift',job_id:item.job_id,is_cancelled:item.is_cancelled,isEnd:item.is_end,applied:item.applied,is_filled:item.is_filled});
+                                        }
+                                        else{
+                                            this.props.navigation.navigate('JobDetails',{job_type:'perm',job_id:item.job_id,is_cancelled:item.is_cancelled,applied:item.applied,is_filled:item.is_filled});
+                                        }
                                     }
                                 }
                             }}>

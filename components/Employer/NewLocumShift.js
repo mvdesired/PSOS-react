@@ -50,7 +50,7 @@ class NewLocumShift extends Component{
             method:'GET',
             headers:myHeaders
         })
-        .then(res=>res.json())
+        .then(res=>{console.log(res);return res.json()})
         .then(response=>{
             if(response.status == 200){
                 Toast.show(response.message,Toast.SHORT);
@@ -94,7 +94,7 @@ class NewLocumShift extends Component{
                                 fontSize:13,
                                 marginBottom:5,
                             }}>
-                               For quick, easy and efficient New Locum Shift, please use this form
+                               Please select the pharmacy you are requiring a locum pharmacist for.  If your pharmacy is not listed, please click on the “+” icon below:
                             </Text>
                         </View>
                         {/* Locum Registration Heading Ends */}

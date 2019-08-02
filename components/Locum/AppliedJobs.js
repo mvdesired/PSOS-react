@@ -69,7 +69,7 @@ class AppliedJob extends Component{
             this.setState({loading:false,isRefreshingShift:false});
         })
         .catch(err=>{
-            Toast.show('Please check ou internet connection',Toast.SHORT);
+            Toast.show('Please check your internet connection',Toast.SHORT);
             this.setState({loading:false,isRefreshingShift:false});
         })
     }
@@ -86,7 +86,7 @@ class AppliedJob extends Component{
             this.setState({loading:false,isRefreshingPerm:false});
         })
         .catch(err=>{
-            Toast.show('Please check ou internet connection',Toast.SHORT);
+            Toast.show('Please check your internet connection',Toast.SHORT);
             this.setState({loading:false,isRefreshingPerm:false});
         })
     }

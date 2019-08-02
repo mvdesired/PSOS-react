@@ -105,7 +105,8 @@ class NLSFormScreen extends Component{
                 var startArray = (r.start_date).split('-');
                 var endArray = (r.start_date).split('-');
                 var startTArray = (r.start_time).split(':');
-                var endTArray = (r.start_time).split(':');
+                var endTArray = (r.end_time).split(':');
+                console.log(endTArray);
                 this.setState({loading:false,pageTitle:'Edit Locum Shift',
                 shiftName:r.name,
                 startDay:startArray[2],
@@ -116,7 +117,7 @@ class NLSFormScreen extends Component{
                 endYear:endArray[0],
                 startHour:startTArray[0],
                 startMinute:startTArray[1],
-                endHour:endTArray[1],
+                endHour:endTArray[0],
                 endMinute:endTArray[1],
                 shiftDetails:r.detail,
                 disSystem:r.dispense,

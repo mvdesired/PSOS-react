@@ -14,20 +14,23 @@ myHeaders.set('Expires', '0');
 class ShareApp extends Component{
     constructor(props) {
         super(props);
-        this.state={loading:false}
+        this.state={loading:true,page_title:'Share with your friends and colleagues'}
     }
     componentDidMount(){
-        fetch(SERVER_URL + 'share_text', {
-            method: 'GET',
-            headers: myHeaders
-        })
-        .then(res => res.json())
-        .then(r => {
-            console.log(r);
-            this.setState({link:r.link,title:r.text});
-        })
-        .catch(err => {
-            console.log(err);
+        this.props.navigation.addListener('didFocus',()=>{
+            this.setState({loading:true});
+            fetch(SERVER_URL + 'share_text', {
+                method: 'GET',
+                headers: myHeaders
+            })
+            .then(res => res.json())
+            .then(r => {
+                this.setState({link:r.link,title:r.text,page_title:r.page_title,loading:false});
+            })
+            .catch(err => {
+                console.log(err);
+                this.setState({loading:false});
+            });
         });
     }
     shareThis(ShareOn){
@@ -40,22 +43,22 @@ class ShareApp extends Component{
         Share.shareSingle(shareOptions);
     }
     render(){
-
         const RemoveHiehgt = height - 50;
         return (
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
             <Header pageName="Share App" />
             <View style={{justifyContent: 'center',alignItems:'center',paddingVertical:70,marginTop:60}}>
-                    <Image source={require('../assets/share-app-icon.png')} style={{width:70,height:68,}}/>
-                   <Text style={{fontFamily:'AvenirLTStd-Medium',fontSize:16,color:'#151515',padding:40,flexWrap:'wrap',lineHeight:16,textAlign:"center"}}>Lorem Ipsum has been the industry's standard dummy text ever since</Text>
+                    <Image source={require('../assets/share-screen-icon.png')} style={{width:100,height:104,}}/>
+                   <Text style={{fontFamily:'AvenirLTStd-Medium',fontSize:16,color:'#151515',padding:40,flexWrap:'wrap',lineHeight:16,textAlign:"center"}}>{this.state.page_title}</Text>
                    <View style={{flexDirection:'row',width:250,height:1,backgroundColor:'#e1e1e1',alignItems:'center',marginLeft:70,marginRight:70,borderColor: '#bebebe',marginTop:20}}></View>
-                        <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',paddingVertical:20,paddingBottom:40,flexWrap:'wrap',width:80,textAlign:'center'}}>Share Now</Text>
+                        {/* <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',paddingVertical:20,paddingBottom:40,flexWrap:'wrap',width:80,textAlign:'center'}}>Share Now</Text> */}
                         <View style={{flexDirection:'row',
                                     alignItems: 'center',
                                     width:'100%',
                                     justifyContent:'space-evenly',
                                     paddingLeft:2,
                                     paddingRight:3,
+                                    paddingTop:40
                         }}>
                         <TouchableOpacity style={styles.shareOptionBtn} onPress={()=>{
                             this.shareThis(Share.Social.WHATSAPP);

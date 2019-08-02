@@ -100,7 +100,7 @@ class Pharmacy extends Component{
         return (
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
                 <Loader loading={this.state.loading} />
-                <Header pageName="Pharmacy" />
+                <Header pageName="Pharmacies" />
                 
                 {
                     this.state.pharmaList.length > 0 && 

@@ -29,21 +29,17 @@ class EChatList extends Component{
         };
         //this.fetchChatList = this._fetchChatList.bind(this);
     }
-    async setUserData(){
-        let userDataStringfy = await AsyncStorage.getItem('userData');
-        let userData = JSON.parse(userDataStringfy);
-        this.setState({userData});
+    setUserData = async()=>{
+        await AsyncStorage.getItem('userData').then((userDataStringfy)=>{
+            let userData = JSON.parse(userDataStringfy);
+            this.setState({userData});
+            this._fetchChatList();
+            this.clearTime = setInterval(() => {this._fetchChatList();},5000);
+        });
     }
     componentDidMount(){
         this._isMounted = true;
         this.setUserData();
-        setTimeout(()=>{
-            this._fetchChatList();
-            this.clearTime = setInterval(
-                () => {this._fetchChatList();},
-                2500
-              );
-        },1500);
     }
     _fetchChatList = ()=>{
         if(this._isMounted){
@@ -116,7 +112,7 @@ class EChatList extends Component{
                                 }} onPress={()=>{
                                     this.props.navigation.navigate('ChatScreen',{chat_id:item.chat_id});
                                 }}>
-                                    <View style={{flexDirection:'row',alignItems:'center'}}>
+                                    <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
                                         <View style={{width:50,height:50,borderRadius: 100,justifyContent:'center',alignItems:'center'}}>
                                             <ImageBackground  source={{uri:item.user_img}} style={{overflow:'hidden',width:50,height:50,borderRadius: 100,borderColor:'#afafaf',borderWidth:1}}></ImageBackground>
                                             <View style={{
@@ -131,8 +127,10 @@ class EChatList extends Component{
                                                     borderRadius:100
                                                 }}></View>
                                         </View>
-                                        <Text style={[MainStyles.JLELoopItemName,{marginLeft:10,flexWrap:'wrap'}]}>{item.full_name}</Text>
+                                        <View style={{flexWrap:'wrap',flex:1,maxWidth:180}}>
+                                            <Text style={[MainStyles.JLELoopItemName,{marginLeft:10,flexWrap:'wrap'}]}>{item.full_name}</Text>
                                             <Text style={[MainStyles.JLELoopItemName,{fontSize:13,marginLeft:10,flexWrap:'wrap'}]}>{item.msg}</Text>
+                                        </View>
                                     </View>
                                     <View style={{alignItems:'center'}}>
                                         {

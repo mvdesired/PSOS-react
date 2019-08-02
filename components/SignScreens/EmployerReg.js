@@ -241,7 +241,7 @@ class EmployerScreen extends Component{
                 this.saveDetails('isUserLoggedIn',"true");
                 this.saveDetails('userData',JSON.stringify(response.result));
                 //if(response.result.user_type == 'employer'){
-                    this.props.navigation.navigate('Home');
+                    this.props.navigation.navigate('IntroEmployer');
                     this.setState({otpVisible:false,serverOtp:'',userId:'',otp:''});
                 //}
             }

@@ -35,20 +35,21 @@ class LocumList extends Component{
         this.fetchLocumList = this._fetchLocumList.bind(this);
         console.log(this.state);
     }
-    async setUserData(){
-        let userDataStringfy = await AsyncStorage.getItem('userData');
-        let userData = JSON.parse(userDataStringfy);
-        this.setState({userData});
+    setUserData = async ()=>{
+        await AsyncStorage.getItem('userData').then((userDataStringfy)=>{
+            let userData = JSON.parse(userDataStringfy);
+            this.setState({userData});
+            setTimeout(()=>{
+                this.shiftDetails();
+                this.fetchLocumList();
+            },100);
+        });
     }
     componentDidMount(){
         this.props.navigation.addListener('didFocus',this.onFocus);
     }
     onFocus = ()=>{
         this.setUserData();
-        setTimeout(()=>{
-            this.shiftDetails();
-            this.fetchLocumList();
-        },150);
     }
     shiftDetails(){
         var fetchFrom = (this.state.job_type == 'perm')?'permanent_details':'locumshift_details';
@@ -89,11 +90,12 @@ class LocumList extends Component{
     _fetchLocumList = ()=>{
         var fetchFrom = (this.state.job_type == 'perm')?'permanent_applierlist':'locumshift_applierlist';
         //+'&emp_id='+this.state.id
+        this.setState({locumList:[]});
         fetch(SERVER_URL+fetchFrom+'?job_id='+this.state.job_id,{
             method:'GET',
             headers:myHeaders
         })
-        .then(res=>res.json())
+        .then(res=>{console.log(res);return res.json()})
         .then(response=>{
             console.log(response);
             if(response.status == 200){
@@ -103,7 +105,7 @@ class LocumList extends Component{
         })
         .catch(err=>{
             console.log(err);
-            Toast.show('Please check ou internet connection',Toast.SHORT);
+            Toast.show('Please check your internet connection',Toast.SHORT);
             this.setState({loading:false,isRefreshingShift:false});
         })
     }
@@ -147,7 +149,7 @@ class LocumList extends Component{
                       {(this.state.job_type != 'perm') && <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>End Time: {this.state.endTime}</Text>}
                       <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Shift Details: {this.state.detail}</Text>
                       <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Dispensing  System: {this.state.dispense}</Text>
-                      <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Pharmacy offerss Pharmacotheraphy  System: {this.state.offer}</Text>
+                      <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Pharmacy offers Pharmacotheraphy  System: {this.state.offer}</Text>
                       <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Travel and Accommodation: {this.state.travel}</Text>
                       {
                           this.state.is_end == 1 && 
@@ -195,7 +197,7 @@ class LocumList extends Component{
                                     </TouchableOpacity>
                                 </View>
                                 )}}
-                            keyExtractor={(item) => 'key-'+(new Date()).getTime()+item.job_id}
+                            keyExtractor={(item,index) => 'key-'+(new Date()).getTime()+index}
                             viewabilityConfig={this.viewabilityConfig}
                             refreshControl={
                                 <RefreshControl

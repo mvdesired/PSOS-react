@@ -1,4 +1,4 @@
-import React,{Component} from 'react';
+ import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
     Picker,Dimensions,FlatList,AsyncStorage,StyleSheet,
     ActionSheetIOS,Platform } from 'react-native';
@@ -36,10 +36,10 @@ class ETimeSheet extends Component{
             dateMonth:{},
             dateYears:{},
             haveMore:'No',
-            sSTH:''+sH,
-            startMinute:''+sM,
-            endHour:''+eH,
-            endMinute:''+eM,
+            sSTH:'09',
+            startMinute:'00',
+            endHour:'18',
+            endMinute:'00',
         }
     }
     async setUserData(){
@@ -167,13 +167,14 @@ class ETimeSheet extends Component{
             return false;
         }
         this.setState({loading:true});
+        console.log(this.state);
         var formdata = new FormData();
         formdata.append('user_id',this.state.userData.id);
         formdata.append('fname',this.state.fname);
         formdata.append('lname',this.state.lname);
         formdata.append('available_on',this.state.startYear+'-'+this.state.startMonth+'-'+this.state.startDay);
-        formdata.append('start_time',this.state.startHour+':'+this.state.startMinute);
-        formdata.append('end_time',this.state.endHour+':'+this.state.endMinute);
+        formdata.append('start_time',this.state.sSTH+':'+this.state.startMinute+':00');
+        formdata.append('end_time',this.state.endHour+':'+this.state.endMinute+':00');
         formdata.append('email',this.state.email);
         formdata.append('mobile',this.state.mNumber);
         fetch(SERVER_URL+'locum_availability',{
@@ -248,10 +249,10 @@ class ETimeSheet extends Component{
                     <View style={{paddingVertical:20,}}>
                         <Text style={{fontFamily:'AvenirLTStd-Heavy',color:'#151515',fontSize:16}}>Locum Availability</Text>
                         <Text style={{marginTop:5,fontFamily:'AvenirLTStd-Medium',color:'#676767',fontSize:13,marginBottom:5,}}>
-                            Let us know when you are available in next few days
+                            Let us know when you are available in the next few days. 
                         </Text>
                         <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#676767',fontSize:13,marginBottom:5,}}>
-                            Please Note: WHen you click SUBMIT - you will return to this page. There is no submission confirmation page. You will get an email of your submission if you include an email address.
+                            PLEASE NOTE: When you click SUBMIT - you will return to this page. There is no submission confirmation page. You will get an email of your submission if you include an email address.
                         </Text>
                     </View>
                     {/* Locum Registration Heading Ends */}

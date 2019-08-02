@@ -47,7 +47,6 @@ class LocumDetails extends Component{
     }
     onFocus = ()=>{
         this.setUserData();
-        setTimeout(()=>{this.fetchLocumDetails();},150);
     }
     _fetchLocumDetails = ()=>{
         fetch(SERVER_URL+'locum_detail?locum_id='+this.state.locum_id+'&emp_id='+this.state.userData.id,{
@@ -72,10 +71,12 @@ class LocumDetails extends Component{
             this.setState({loading:false});
         });
     }
-    async setUserData(){
-        let userDataStringfy = await AsyncStorage.getItem('userData');
-        let userData = JSON.parse(userDataStringfy);
-        this.setState({userData});
+    setUserData = async()=>{
+        await AsyncStorage.getItem('userData').then((userDataStringfy)=>{
+            let userData = JSON.parse(userDataStringfy);
+            this.setState({userData});
+            setTimeout(()=>{this.fetchLocumDetails();},150);
+        });
     }
     hireThis = ()=>{
         this.setState({loading:true});
@@ -100,6 +101,7 @@ class LocumDetails extends Component{
         })
         .catch(err=>{
             console.log(err);
+            this.setState({loading:false});
         });
     }
     submitFeedBack = ()=>{

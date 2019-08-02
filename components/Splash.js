@@ -1,10 +1,14 @@
 import React,{Component} from 'react';
 import {View,ImageBackground, Image,Text, StyleSheet,AsyncStorage,BackHandler } from 'react-native';
 import Loader from './Loader';
+import { SERVER_URL } from '../Constants';
 class SplashScreen extends Component{
     constructor(props) {
         super(props);
         this.state={loading:false}
+    }
+    async saveDetails(key,value){
+        await AsyncStorage.setItem(key,value);
     }
     componentDidMount(){
         this.props.navigation.addListener('willFocus',payload=>{
@@ -15,7 +19,7 @@ class SplashScreen extends Component{
         setTimeout(()=>{
             this.authenticateSession();
             //navigation.navigate('Login');
-        },2500)
+        },2500);
         //
     }
     authenticateSession = async()=> {
@@ -25,8 +29,30 @@ class SplashScreen extends Component{
             let userDataStringfy = await AsyncStorage.getItem('userData');
             let userData = JSON.parse(userDataStringfy);
             if(userData){
+                var fd = new FormData();
+                fd.append('user_id',userData.id);
                 //if(userData.user_type == 'employer'){
-                    navigation.navigate('Home');
+                    fetch(SERVER_URL+'check_user_exists',{
+                        method:'POST',
+                        body:fd
+                    })
+                    .then(res=>res.json())
+                    .then(r=>{
+                        console.log(r);
+                        if(r.status == '0'){
+                            navigation.navigate('Home');
+                            this.saveDetails('userData',JSON.stringify(r));
+                        }
+                        else if(r.status == '2'){
+                            Toast.show("Your account is deactive",Toast.SHORT);
+                            this.saveDetails('isUserLoggedIn',"false");
+                            this.saveDetails('userData',"");
+                            navigation.navigate('Login');
+                        }
+                    })
+                    .catch(err=>{
+                        console.log(err);
+                    })
                 //}
             }
             else{

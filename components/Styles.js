@@ -131,7 +131,6 @@ const MainStyles = StyleSheet.create({
     },
     eDW:{
         backgroundColor:'#FFFFFF',
-        marginTop:8,
         paddingVertical:10,
         paddingHorizontal:15,
         flexDirection:'row',

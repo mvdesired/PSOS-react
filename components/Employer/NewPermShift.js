@@ -93,7 +93,7 @@ class NewPermShift extends Component{
                                 fontSize:13,
                                 marginBottom:5,
                             }}>
-                               For quick, easy and efficient New Permanent Position, please use this form
+                               Please select the pharmacy you are requiring a pharmacist for.  If your pharmacy is not listed, please click on the “+” icon below:
                             </Text>
                         </View>
                         {/* Locum Registration Heading Ends */}

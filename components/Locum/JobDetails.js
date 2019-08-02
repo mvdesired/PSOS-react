@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
-    Picker,Dimensions,RefreshControl,ImageBackground,AsyncStorage,
+    Picker,Dimensions,RefreshControl,ImageBackground,AsyncStorage,Linking,
     ActionSheetIOS,Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { DrawerActions,NavigationActions } from 'react-navigation';
@@ -28,9 +28,10 @@ class LocumDetails extends Component{
             job_type:this.props.navigation.getParam("job_type"),
             is_end:this.props.navigation.getParam("is_end"),
             is_cancelled:this.props.navigation.getParam("is_cancelled"),
+            is_hired:this.props.navigation.getParam("is_hired"),
+            
         }
         this.fetchLocumDetails = this._fetchLocumDetails.bind(this);
-        console.log(this.state);
     }
     async setUserData(){
         let userDataStringfy = await AsyncStorage.getItem('userData');
@@ -46,15 +47,16 @@ class LocumDetails extends Component{
         if(this.state.job_type == 'shift'){
             fetchData = 'locum_shift_detail';
         }
-        fetch(SERVER_URL+fetchData+'?job_id='+this.state.job_id,{
+        fetch(SERVER_URL+fetchData+'?job_id='+this.state.job_id+'&user_id='+this.state.userData.id,{
             method:'GET',
             headers:myHeaders
         })
-        .then(res=>res.json())
+        .then(res=>{console.log(res);return res.json()})
         .then(response=>{
             console.log(response);
             if(response.status == 200){
-                this.setState({jobData:response.result});
+                var RR = response.result;
+                this.setState({jobData:RR,is_end:RR.is_end,is_cancelled:RR.is_cancelled,applied:RR.applied,is_hired:RR.hired});
             }
             else{
                 Toast.show(response.message,Toast.SHORT);
@@ -84,8 +86,9 @@ class LocumDetails extends Component{
             headers: myHeaders,
             body: fd//JSON.stringify(jsonArray)
         })
-        .then((res)=>res.json())
+        .then((res)=>{console.log(res);return res.json()})
         .then(response=>{
+            console.log(response);
             this.setState({loading:false});
             Toast.show(''+response.message,Toast.SHORT);
             if(response.status == 200){
@@ -96,16 +99,26 @@ class LocumDetails extends Component{
             this.setState({loading:false});
         });
     }
+    gotPharmacy = (address)=>{
+        var url = "https://www.google.com/maps/dir/?api=1&travelmode=driving&destination="+address;
+        Linking.canOpenURL(url).then(supported => {
+            if (!supported) {
+                console.log('Can\'t handle url: ' + url);
+            } else {
+                return Linking.openURL(url);
+            }
+        }).catch(err => console.error('An error occurred', err)); 
+    }
     render(){
         const RemoveHiehgt = height - 95;
-        applied = this.props.navigation.getParam('applied');
+        applied = this.state.applied;//this.props.navigation.getParam('applied');
         return(
             <SafeAreaView style={{flex:1,backgroundColor:'#f0f0f0'}}>
                 <Loader loading={this.state.loading} />
                 <Header pageName="Jobs Description" />
                 {
                     this.state.job_type == 'shift' && 
-                    <ScrollView style={{paddingHorizontal:15,minHeight:RemoveHiehgt,flex:1,backgroundColor:'#FFFFFF'}} keyboardShouldPersistTaps="always">
+                    <ScrollView style={{paddingHorizontal:15,minHeight:RemoveHiehgt,flex:1,backgroundColor:'#FFFFFF'}} contentContainerStyle={{paddingBottom:15}} keyboardShouldPersistTaps="always">
                         <View style={MainStyles.locumProfileItemWrapper}>
                             <Text style={MainStyles.LPIHeading}>Job Title</Text>
                             <Text style={MainStyles.LPISubHeading}>{this.state.jobData.name}</Text>
@@ -116,11 +129,41 @@ class LocumDetails extends Component{
                             <Text style={MainStyles.LPISubHeading}>Locum Shift</Text>
                         </View>
                         {/* Languga */}
-                        <View style={MainStyles.locumProfileItemWrapper}>
-                            <Text style={MainStyles.LPIHeading}>Pharmacy Name</Text>
-                            <Text style={MainStyles.LPISubHeading}>{this.state.jobData.pharmacy_name}</Text>
-                        </View>
+                        {
+                            applied == true && this.state.is_hired == 1 && 
+                            <View style={MainStyles.locumProfileItemWrapper}>
+                                <Text style={MainStyles.LPIHeading}>Pharmacy Name</Text>
+                                <Text style={MainStyles.LPISubHeading}>{this.state.jobData.P_name}</Text>
+                            </View>
+                        }
                         {/* Languga */}
+                        {
+                            applied == true && this.state.is_hired == 1 && 
+                            <View style={MainStyles.locumProfileItemWrapper}>
+                                <Text style={MainStyles.LPIHeading}>Pharmacy Address</Text>
+                                <Text style={MainStyles.LPISubHeading}>{this.state.jobData.address}, {this.state.jobData.city} {this.state.jobData.state}, {this.state.jobData.postal} {this.state.jobData.country}, {this.state.jobData.phone_code} {this.state.jobData.phone}</Text>
+                                <View style={{flexDirection:'row'}}>
+                                    <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnXm,{width:70,marginTop:10,justifyContent:'center',alignItems:'center'}]} onPress={()=>{
+                                        this.gotPharmacy(this.state.jobData.address+', '+this.state.jobData.city+' '+this.state.jobData.state+', '+this.state.jobData.postal+' '+this.state.jobData.country);
+                                        }}>
+                                        <Text style={[MainStyles.psosBtnText,MainStyles.psosBtnXsText]}>Go</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnXm,{width:70,marginLeft:10,marginTop:10,justifyContent:'center',alignItems:'center'}]} onPress={()=>{
+                                        Linking.openURL(`tel:${this.state.jobData.phone_code+''+this.state.jobData.phone}`)
+                                        }}>
+                                        <Text style={[MainStyles.psosBtnText,MainStyles.psosBtnXsText]}>Call</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        }
+                        {
+                            this.state.is_hired == 0 && 
+                            <View style={MainStyles.locumProfileItemWrapper}>
+                                <Text style={MainStyles.LPIHeading}>Pharmacy Address</Text>
+                                <Text style={MainStyles.LPISubHeading}>{this.state.jobData.city}</Text>
+                            </View>
+                        }
+                        {/* Pharmacy Address */}
                         <View style={MainStyles.locumProfileItemWrapper}>
                             <Text style={MainStyles.LPIHeading}>Shift Start</Text>
                             <Text style={MainStyles.LPISubHeading}>{this.state.jobData.start_date} {this.state.jobData.start_time}</Text>
@@ -159,13 +202,27 @@ class LocumDetails extends Component{
                             </View>
                         }
                         {
-                            applied &&
+                            applied == true && this.state.is_hired == 0 && 
                             <View style={{justifyContent:'center',alignItems:'center',marginTop:10}}>
                                 <Text style={{color:'#61bf6f',fontFamily:'AvenirLTStd-Medium',fontSize:20}}>APPLIED</Text>
                             </View>
                         }
                         {
-                            !applied && this.state.is_end == 0 && this.state.is_cancelled == 0 && 
+                            applied == true && this.state.is_hired == 1 && 
+                            <View style={{justifyContent:'center',alignItems:'center',marginTop:10,flexDirection:'row'}}>
+                                <Text style={{color:'#61bf6f',fontFamily:'AvenirLTStd-Medium',fontSize:20}}>Hired</Text>
+                                {
+                                    this.state.jobData.chat_id > 0 && 
+                                    <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm,{marginLeft:20}]} onPress={()=>{
+                                        this.props.navigation.navigate('ChatScreen',{chat_id:this.state.jobData.chat_id});
+                                    }}>
+                                        <Icon name="comments" style={[MainStyles.psosBtnText,MainStyles.psosBtnXsText]} />
+                                    </TouchableOpacity>
+                                }
+                            </View>
+                        }
+                        {
+                            applied == false && this.state.is_end == 0 && this.state.is_cancelled == 0 && this.state.is_hired == 0 && 
                             <View style={{justifyContent:'center',alignItems:'center',marginTop: 10,marginBottom:15}}>
                                 <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{
                                     this.applyForJob();
@@ -178,12 +235,25 @@ class LocumDetails extends Component{
                 }
                 {
                     this.state.job_type == 'perm' && 
-                    <ScrollView style={{paddingHorizontal:15,minHeight:RemoveHiehgt,flex:1,backgroundColor:'#FFFFFF'}} keyboardShouldPersistTaps="always">
-                        <View style={MainStyles.locumProfileItemWrapper}>
-                            <Text style={MainStyles.LPIHeading}>Pharmacy Name</Text>
-                            <Text style={MainStyles.LPISubHeading}>{this.state.jobData.pharmacy_name}</Text>
-                        </View>
+                    <ScrollView style={{paddingHorizontal:15,minHeight:RemoveHiehgt,flex:1,backgroundColor:'#FFFFFF'}} contentContainerStyle={{paddingBottom:15}} keyboardShouldPersistTaps="always">
+                        {
+                            applied == true && this.state.is_hired == 1 && 
+                            <View style={MainStyles.locumProfileItemWrapper}>
+                                <Text style={MainStyles.LPIHeading}>Pharmacy Name</Text>
+                                <Text style={MainStyles.LPISubHeading}>{this.state.jobData.pharmacy_name}</Text>
+                            </View>
+                        }
                         {/* Languga */}
+                        {
+                            applied == true && this.state.is_hired == 1 && 
+                            <View>
+                                <View style={MainStyles.locumProfileItemWrapper}>
+                                    <Text style={MainStyles.LPIHeading}>Pharmacy Address</Text>
+                                    <Text style={MainStyles.LPISubHeading}>{this.state.jobData.address}, {this.state.jobData.city} {this.state.jobData.state}, {this.state.jobData.postal} {this.state.jobData.country}</Text>
+                                </View>
+                                {/* Pharmacy Address */}
+                            </View>
+                        }
                         <View style={MainStyles.locumProfileItemWrapper}>
                             <Text style={MainStyles.LPIHeading}>Type of Pharmacy</Text>
                             <Text style={MainStyles.LPISubHeading}>{this.state.jobData.pharmacy_type}</Text>
@@ -260,15 +330,29 @@ class LocumDetails extends Component{
                         </View>
                         {/* Languga */}
                         {
-                            applied &&
+                            applied == true && this.state.is_hired == 0 &&
                             <View style={{justifyContent:'center',alignItems:'center',marginTop:10}}>
                                 <Text style={{color:'#61bf6f',fontFamily:'AvenirLTStd-Medium',fontSize:20}}>APPLIED</Text>
                             </View>
                         }
                         {
-                            !applied && 
+                            applied == true && this.state.is_hired == 1 && 
+                            <View style={{justifyContent:'center',alignItems:'center',marginTop:10,flexDirection:'row'}}>
+                                <Text style={{color:'#61bf6f',fontFamily:'AvenirLTStd-Medium',fontSize:20}}>Hired</Text>
+                                {
+                                    this.state.jobData.chat_id > 0 && 
+                                    <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm,{marginLeft:20}]} onPress={()=>{
+                                        this.props.navigation.navigate('ChatScreen',{chat_id:this.state.jobData.chat_id});
+                                    }}>
+                                        <Icon name="comments" style={[MainStyles.psosBtnText,MainStyles.psosBtnXsText]} />
+                                    </TouchableOpacity>
+                                }
+                            </View>
+                        }
+                        {
+                            applied == false && 
                             <View style={{justifyContent:'center',alignItems:'center',marginTop: 10,marginBottom:15}}>
-                                <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{
+                                <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnXm]} onPress={()=>{
                                     this.applyForJob();
                                 }}>
                                     <Text style={MainStyles.psosBtnText}>Apply</Text>

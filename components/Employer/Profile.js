@@ -22,6 +22,8 @@ myHeaders.set('Expires', '0');
 class Profile extends Component{
     constructor(props) {
         super(props);
+        var todayDate = new Date();
+        todayDate.setFullYear(todayDate.getFullYear() - 21);
         this.state={
             loading:false,
             isEditing:false,
@@ -39,42 +41,56 @@ class Profile extends Component{
             des_restrict:'',
             resumFileName:'',
             isDatePickerVisible:false,
-            resumFile:''
+            resumFile:'',
+            maxDate:todayDate,
+            selectedDate:todayDate,
+            noti_sound:'default'
         }
     }
     async saveDetails(key,value){
         await AsyncStorage.setItem(key,value);
     }
-    async setUserData(){
-        let userDataStringfy = await AsyncStorage.getItem('userData');
-        let userData = JSON.parse(userDataStringfy);
-        console.log(userData);
-        var dob = (userData.js_dob).split('-');
-        this.setState({
-            userData,
-            fname:userData.fname,
-            lname:userData.lname,
-            user_img:userData.user_img,
-            email:userData.email,
-            phone:userData.phone,
-            address:userData.address,
-            city:userData.city,
-            state:userData.state,
-            country:userData.country,
-            postal:userData.postal,
-            about:userData.about,
-            js_ahpra:userData.js_ahpra,
-            dd:dob[0],
-            mm:dob[1],
-            yy:dob[2],
-            js_reg:userData.js_reg,
-            user_type:userData.user_type,
-            js_restrict:userData.js_restrict,
-            js_software:userData.js_software.split(','),
-            js_admin_vaccin:userData.js_admin_vaccin,
-            js_comfort:userData.js_medi_review,
-            js_medi_review:userData.js_medi_review,
-            des_restrict:userData.des_restrict
+    setUserData = async()=>{
+        await AsyncStorage.getItem('userData').then((userDataStringfy)=>{
+            let userData = JSON.parse(userDataStringfy);
+            console.log(userData);
+            var dob = (userData.js_dob)?(userData.js_dob).split('-'):'';
+            var dd,mm,yy;
+            if(dob.length > 0){
+                dd = dob[0];
+                mm = dob[1];
+                yy = dob[2];
+            }
+            var selectedDate = new Date(yy+'-'+mm+'-'+dd);
+            this.setState({
+                userData,
+                fname:userData.fname,
+                lname:userData.lname,
+                user_img:userData.user_img,
+                email:userData.email,
+                phone:userData.phone,
+                address:userData.address,
+                city:userData.city,
+                state:userData.state,
+                country:userData.country,
+                postal:userData.postal,
+                about:userData.about,
+                js_ahpra:userData.js_ahpra,
+                dd,
+                mm,
+                yy,
+                js_reg:userData.js_reg,
+                user_type:userData.user_type,
+                js_restrict:userData.js_restrict,
+                js_software:(userData.js_software)?userData.js_software.split(','):'',
+                js_admin_vaccin:userData.js_admin_vaccin,
+                js_comfort:userData.js_medi_review,
+                js_medi_review:userData.js_medi_review,
+                des_restrict:userData.des_restrict,
+                loading:false,
+                selectedDate,
+                noti_sound:userData.noti_sound
+            });
         });
     }
     pickerIos = ()=>{
@@ -138,12 +154,14 @@ class Profile extends Component{
           });
     }
     componentDidMount(){
-        this.setUserData();
-        setTimeout(()=>{
-            this.setState({loading:false});
-        },1000);
+        this.props.navigation.addListener('didFocus',this.setUserData);
     }
     updateProfile = ()=>{
+        var cureYear = new Date();
+        if(this.state.js_reg >= cureYear.getFullYear()){
+            Toast.show("Initial year should be less than current year",Toast.SHORT);
+            return false;
+        }
         this.setState({loading:true});
         var formdata = new FormData();
         formdata.append('user_id',this.state.userData.id);
@@ -257,6 +275,28 @@ class Profile extends Component{
         });
         this.hideDatePicker();
     };
+    saveNotificationSound = (noti_sound)=>{
+        var fd = new FormData();
+        fd.append('user_id',this.state.userData.id);
+        fd.append('noti_sound',noti_sound);
+        console.log(this.state.noti_sound);
+        fetch(SERVER_URL+'save_user_notification_sound',{
+            method:'POST',
+            //headers:myHeaders,
+            body:fd
+            // JSON.stringify({
+            //     user_id:this.state.userData.user_id,
+            //     noti_sound:this.state.noti_sound
+            // })
+        })
+        .then(res=>{console.log(res);return res.json()})
+        .then(r=>{
+            this.updateProfile();
+            console.log(r);
+
+        })
+        .catch(err=>{console.log(err);});
+    }
     render(){
         const RemoveHiehgt = height - 50;
         var behavior = (Platform.OS == 'ios')?'padding':'';
@@ -307,6 +347,7 @@ class Profile extends Component{
                                 <View style={{justifyContent:'flex-start',alignItems:'flex-start'}}>
                                     <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#FFFFFF',fontSize:16,textAlign:'left'}}>{this.state.phone}</Text>
                                 </View>
+                                
                             </View>
                         </View>
                         {this.state.isEditing == false && <View style={{paddingHorizontal:20}}>
@@ -628,7 +669,8 @@ class Profile extends Component{
                                                     isVisible={this.state.isDatePickerVisible}
                                                     onConfirm={this.handleDatePicked}
                                                     onCancel={this.hideDatePicker}
-                                                    maximumDate={this.state.currentDate}
+                                                    maximumDate={this.state.maxDate}
+                                                    date={this.state.selectedDate}
                                                     />
                                                 </View>
                                             </View>
@@ -851,7 +893,7 @@ class Profile extends Component{
                                 <View style={{marginTop:15}}></View>
                                 <View style={{justifyContent:'center',alignItems:'center',marginTop: 10,marginBottom:15}}>
                                     <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.updateProfile()}}>
-                                        <Text style={[MainStyles.psosBtnText,{fontFamily:'AvenirLTStd-Light',fontSize:15}]}>Update Detail</Text>
+                                        <Text style={[MainStyles.psosBtnText,{fontFamily:'AvenirLTStd-Light',fontSize:15}]}>Save Details</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -862,7 +904,5 @@ class Profile extends Component{
         );
     }
 }
-const currentStyles = StyleSheet.create({
 
-})
 export default Profile;
