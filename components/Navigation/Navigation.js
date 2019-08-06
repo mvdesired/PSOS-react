@@ -38,6 +38,7 @@ import JobDetailScreen from '../Locum/JobDetails';
 import SuccessLocum from '../Locum/Success';
 import ETimeSheet from '../Locum/ETimeSheet';
 import LocumAvail from '../Locum/LocumAvail';
+import TimeSheetList from '../Locum/MyeTimeSheet';
 /**Locum Screens ends */
 import Registration from '../Registration';
 import Login from '../SignScreens/Login';
@@ -100,6 +101,9 @@ const Drawer = createDrawerNavigator({
                 return null;
             }
         }*/
+    },
+    MyeTimeSheet:{
+        screen:TimeSheetList
     },
     Notifications:{
         screen:NotificationsScreen

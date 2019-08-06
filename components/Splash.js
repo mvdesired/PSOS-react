@@ -38,7 +38,7 @@ class SplashScreen extends Component{
                     })
                     .then(res=>res.json())
                     .then(r=>{
-                        console.log(r);
+                        //console.log(r);
                         if(r.status == '0'){
                             navigation.navigate('Home');
                             this.saveDetails('userData',JSON.stringify(r));

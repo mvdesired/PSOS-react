@@ -134,7 +134,7 @@ class DrawerBody extends Component{
                         <Image source={require('../../assets/home-d-icon.png')} style={{width:15,height:13}} />
                         <Text style={styles.DITS}>Home</Text>
                     </TouchableOpacity> */}
-                    <View style={{paddingHorizontal:10,marginVertical:20}}>
+                    {/* <View style={{paddingHorizontal:10,marginVertical:20}}>
                         <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:16}}>Notification Sound</Text>
                         <View style={{flexDirection:'row',marginTop:10,justifyContent:'space-around',alignItems:'center'}}>
                             <TouchableOpacity style={{flexDirection:'row'}} onPress={()=>{
@@ -176,7 +176,7 @@ class DrawerBody extends Component{
                                 <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>Mute</Text>
                             </TouchableOpacity>
                         </View>
-                    </View>
+                    </View> */}
                     <TouchableOpacity style={styles.DIS} onPress={()=>this.navigateToScreen('Profile')}>
                         {/* <Image source={require('../../assets/user-d-icon.png')} style={{width:15,height:15}} /> */}
                         <Icon name="user" style={{fontSize:15,color:'#000000'}} />
@@ -198,11 +198,20 @@ class DrawerBody extends Component{
                             <Text style={styles.DITS}>Job Dashboard</Text>
                         </TouchableOpacity>
                     }
+                    {
+                        this.state.userData.user_type == 'locum' && 
+                        <TouchableOpacity style={styles.DIS} onPress={()=>this.navigateToScreen('MyeTimeSheet')}>
+                            {/* <Image source={require('../../assets/applied-d-icon.png')} style={{width:15,height:13}} /> */}
+                            <Icon name="clock-o" style={{fontSize:15,color:'#000000'}} />
+                            <Text style={styles.DITS}>My eTime Sheets</Text>
+                        </TouchableOpacity>
+                    }
                     <TouchableOpacity style={styles.DIS} onPress={()=>this.navigateToScreen('Notifications')}>
                         {/* <Image source={require('../../assets/noti-d-icon.png')} style={{width:15,height:17}} /> */}
                         <Icon name="bell" style={{fontSize:15,color:'#000000'}} />
                         <Text style={styles.DITS}>Messages</Text>
                     </TouchableOpacity>
+
                     <TouchableOpacity style={styles.DIS} onPress={()=>this.navigateToScreen('Website')}>
                         {/* <Image source={require('../../assets/globe-icon.png')} style={{width:15,height:15}} /> */}
                         <Icon name="globe" style={{fontSize:15,color:'#000000'}} />

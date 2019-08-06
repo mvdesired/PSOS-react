@@ -90,7 +90,9 @@ class LocumDetails extends Component{
         .then(response=>{
             console.log(response);
             this.setState({loading:false});
-            Toast.show(''+response.message,Toast.SHORT);
+            setTimeout(()=>{
+                Toast.show(""+response.message,Toast.SHORT);
+            },200)
             if(response.status == 200){
                 this.props.navigation.navigate('SuccessApply');
             }
@@ -169,10 +171,10 @@ class LocumDetails extends Component{
                             <Text style={MainStyles.LPISubHeading}>{this.state.jobData.start_date} {this.state.jobData.start_time}</Text>
                         </View>
                         {/* Languga */}
-                        <View style={MainStyles.locumProfileItemWrapper}>
+                        {/* <View style={MainStyles.locumProfileItemWrapper}>
                             <Text style={MainStyles.LPIHeading}>Shift End</Text>
                             <Text style={MainStyles.LPISubHeading}>{this.state.jobData.end_date} {this.state.jobData.end_time}</Text>
-                        </View>
+                        </View> */}
                         {/* Languga */}
                         <View style={MainStyles.locumProfileItemWrapper}>
                             <Text style={MainStyles.LPIHeading}>Shift Detail</Text>
@@ -189,12 +191,12 @@ class LocumDetails extends Component{
                             <Text style={MainStyles.LPISubHeading}>{this.state.jobData.dispense}</Text>
                         </View>
                         {/* Languga */}
-                        {
+                        {/* {
                             (this.state.is_end == 1  && this.state.is_cancelled == 0) && 
                             <View style={{justifyContent:'center',alignItems:'center',marginTop:10,backgroundColor:'#bf9161',paddingVertical:20,borderRadius:15}}>
                                 <Text style={{color:'#FFFFFF',fontFamily:'AvenirLTStd-Medium',fontSize:20}}>END</Text>
                             </View>
-                        }
+                        } */}
                         {
                             this.state.is_cancelled == 1 && 
                             <View style={{justifyContent:'center',alignItems:'center',marginTop:10}}>
@@ -221,8 +223,8 @@ class LocumDetails extends Component{
                                 }
                             </View>
                         }
-                        {
-                            applied == false && this.state.is_end == 0 && this.state.is_cancelled == 0 && this.state.is_hired == 0 && 
+                        { //&& this.state.is_end == 0
+                            applied == false  && this.state.is_cancelled == 0 && this.state.is_hired == 0 && 
                             <View style={{justifyContent:'center',alignItems:'center',marginTop: 10,marginBottom:15}}>
                                 <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{
                                     this.applyForJob();

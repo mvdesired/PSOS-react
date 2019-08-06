@@ -161,18 +161,18 @@ class NLSFormScreen extends Component{
             Toast.show('Please select start year',Toast.SHORT);
             return false;
         }
-        if(this.state.endDay == ''){
-            Toast.show('Please select end year',Toast.SHORT);
-            return false;
-        }
-        if(this.state.endMonth == ''){
-            Toast.show('Please select end month',Toast.SHORT);
-            return false;
-        }
-        if(this.state.endYear == ''){
-            Toast.show('Please select end year',Toast.SHORT);
-            return false;
-        }
+        // if(this.state.endDay == ''){
+        //     Toast.show('Please select end year',Toast.SHORT);
+        //     return false;
+        // }
+        // if(this.state.endMonth == ''){
+        //     Toast.show('Please select end month',Toast.SHORT);
+        //     return false;
+        // }
+        // if(this.state.endYear == ''){
+        //     Toast.show('Please select end year',Toast.SHORT);
+        //     return false;
+        // }
         if(this.state.startHour == ''){
             Toast.show('Please select start hour',Toast.SHORT);
             return false;
@@ -206,7 +206,7 @@ class NLSFormScreen extends Component{
         formdata.append('user_id',this.state.userData.id);
         formdata.append('name',this.state.shiftName);
         formdata.append('start_date',this.state.startYear+'-'+this.state.startMonth+'-'+this.state.startDay);
-        formdata.append('end_date',this.state.endYear+'-'+this.state.endMonth+'-'+this.state.endDay);
+        //formdata.append('end_date',this.state.endYear+'-'+this.state.endMonth+'-'+this.state.endDay);
         formdata.append('start_time',this.state.startHour+':'+this.state.startMinute);
         formdata.append('end_time',this.state.endHour+':'+this.state.endMinute);
         formdata.append('detail',this.state.shiftDetails);
@@ -410,7 +410,7 @@ class NLSFormScreen extends Component{
                         {/* Shift Name ends */}
                         <View style={{marginTop:15}}></View>
                         <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
-                            First Date of Shift
+                            Date of Locum Shift
                             <Text style={{color:'#ee1b24'}}>*</Text>
                         </Text>
                         <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center',marginTop:10}}>
@@ -465,7 +465,7 @@ class NLSFormScreen extends Component{
                             </TouchableOpacity>
                         </View>
                         {/* First date of shift Ends */}
-                        <View style={{marginTop:15}}></View>
+                        {/* <View style={{marginTop:15}}></View>
                         <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                             Last Date of Shift
                             <Text style={{color:'#ee1b24'}}>*</Text>
@@ -509,7 +509,6 @@ class NLSFormScreen extends Component{
                                 value={this.state.endYear}
                                 maxLength={4}
                             />
-                            {/* End Date Year End*/}
                             <View style={{paddingHorizontal:5}}></View>
                             <DateTimePicker
                             isVisible={this.state.isEndDateTimePickerVisible}
@@ -520,7 +519,7 @@ class NLSFormScreen extends Component{
                             <TouchableOpacity onPress={this.showEndDateTimePicker}>
                                 <Image source={require('../../assets/calendar-icon.png')} style={{width:20,height:20}} />
                             </TouchableOpacity>
-                        </View>
+                        </View> */}
                         {/* Last date of shift Ends */}
                         <View style={{marginTop:15}}></View>
                         <View style={{flexDirection:'row'}}>

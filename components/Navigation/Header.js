@@ -32,7 +32,7 @@ class Header extends Component{
     }
     _fetchNotifications = ()=>{
         fetch(SERVER_URL+'fetch_notification?user_id='+this.state.userData.id)
-        .then(res=>res.json())
+        .then(res=>{if(res.status == 200){return res.json()}else{return false;}})
         .then(response=>{
             if (this._isMounted) {
                 if(response.status == 200){

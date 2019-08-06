@@ -367,7 +367,7 @@ class Profile extends Component{
                                 this.state.userData.user_type == 'locum' && 
                                 <View>
                                     <View style={MainStyles.locumProfileItemWrapper}>
-                                        <Text style={MainStyles.LPIHeading}>About</Text>
+                                        <Text style={MainStyles.LPIHeading}>About You – Mini Resume</Text>
                                         <Text style={MainStyles.LPISubHeading}>{this.state.about}</Text>
                                     </View>
                                     <View style={MainStyles.locumProfileItemWrapper}>
@@ -579,12 +579,12 @@ class Profile extends Component{
                                     <View>
                                         <View style={{marginTop:15}}></View>
                                         <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
-                                            About Me
+                                            About You – Mini Resume
                                         </Text>
                                         <View style={{marginTop:10}}></View>
                                         <TextInput 
                                             style={[MainStyles.TAInput]} 
-                                            placeholder="About Me" 
+                                            placeholder="About You – Mini Resume" 
                                             multiline={true}
                                             returnKeyType={"go"} 
                                             ref={(input) => { this.about = input; }} 

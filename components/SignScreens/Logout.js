@@ -14,10 +14,11 @@ class Logout extends Component{
     async saveDetails(key,value){
         await AsyncStorage.setItem(key,value);
     }
-    async setUserData(){
+    setUserData = async() =>{
         let userDataStringfy = await AsyncStorage.getItem('userData');
         let userData = JSON.parse(userDataStringfy);
-        this.setState({userData});
+        this.setState({loading:true,userData});
+        this.authenticateSession();
     }
     getToken = (onToken)=>{
         if(Platform.OS == 'android'){
@@ -69,15 +70,11 @@ class Logout extends Component{
             }
         });
     }
-    
     componentDidMount(){
         this.listner = this.props.navigation.addListener("didFocus", this.onFocus);
     }
     onFocus = ()=>{
         this.setUserData();
-        setTimeout(()=>{
-            this.authenticateSession();
-        },1500);
     }
     render(){
         return(

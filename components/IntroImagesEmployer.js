@@ -53,15 +53,15 @@ class IntroScreenEmployer extends Component{
             ],
             introText:[
                 'Post A Job',
-                'Get notified for every activity',
+                'Get Notifications',
                 'Feedback',
-                'Download & Pay',
+                'Free Download and Post',
             ],
             introTagline:[
-                'All in just a few taps',
-                'Get notifications of pharmacists who apply, review their ratings, and hire the best option for your position, and chat with the pharmacist',
-                'Employers can choose base on the pharmacists profile.',
-                'Free to download and post jobs.  Pay only for successfully filled jobs.'
+                'In just a few clicks!  With your pharmacy details saved with in the application, it’s easy to quickly post a shift.',
+                'Get notifications of new jobs in your state as a locum, and applications as an employer for shifts you have posted.',
+                'View locum profiles and choose the best application based for your position.',
+                'You can post shifts free of charge. Pay only for successfully hiring a pharmacist.'
             ]
         }
     }

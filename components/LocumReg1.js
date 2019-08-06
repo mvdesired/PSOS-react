@@ -66,7 +66,8 @@ class LocumReg1Screen extends Component {
             otp: '',
             serverOtp: '',
             page_text: '',
-            todayDate
+            todayDate,
+            fileData:''
         }
     }
     subscription = SmsListener.addListener(message => {
@@ -297,7 +298,7 @@ class LocumReg1Screen extends Component {
                 state: this.state.spr,
                 country: this.state.country,
                 postal: this.state.pz,
-                js_resume: this.state.resumFile,
+                //js_resume: this.state.resumFile,
                 user_img: this.state.fileData,
                 js_dob: this.state.dd + '-' + this.state.mm + '-' + this.state.yy,
                 js_ahpra: this.state.ahprano,
@@ -315,6 +316,7 @@ class LocumReg1Screen extends Component {
                 js_vaccin: '',
                 des_restrict: this.state.des_restrict
             }
+            console.log(jsonArray);
             fetch(SERVER_URL + 'locum_reg', {
                 method: 'POST',
                 credentials: 'same-origin',
@@ -605,12 +607,12 @@ class LocumReg1Screen extends Component {
                             {/* Password Ends */}
                             <View style={{ marginTop: 15 }}></View>
                             <Text style={{ color: '#151515', fontFamily: 'AvenirLTStd-Medium', fontSize: 14 }}>
-                                About
+                                About You – Mini Resume
                             </Text>
                             <View style={{ marginTop: 10 }}></View>
                             <TextInput
                                 style={MainStyles.TInput}
-                                placeholder="About"
+                                placeholder="About You – Mini Resume"
                                 returnKeyType={"next"}
                                 ref={(input) => { this.about = input; }}
                                 onSubmitEditing={() => { this.streetAddress.focus(); }}
@@ -778,7 +780,7 @@ class LocumReg1Screen extends Component {
                             <Image source={require('../assets/dashed-border.png')} width={'100%'} height={2} />
                             {/* BreadCrumbs Ends */}
                             <View style={{ marginTop: 15 }}></View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
+                            {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
                                 <View>
                                     <Text style={{ color: '#151515', fontFamily: 'AvenirLTStd-Medium', fontSize: 13 }}>
                                         Please upload your resume
@@ -790,13 +792,13 @@ class LocumReg1Screen extends Component {
                                 <TouchableOpacity style={[MainStyles.selectFilesBtn, { flexWrap: 'wrap' }]} onPress={() => { this.chooseDoc() }}>
                                     <Text style={{ flex: 1, color: '#FFFFFF', flexWrap: 'wrap' }}>{(this.state.resumFileName != '') ? this.state.resumFileName : 'Select File'}</Text>
                                 </TouchableOpacity>
-                            </View>
+                            </View> */}
                             {/* Resume Field Ends */}
                             <View style={{ marginTop: 15 }}></View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
                                 <Text style={{ color: '#151515', fontFamily: 'AvenirLTStd-Medium', fontSize: 13 }}>
                                     Professional Portrait image
-                                    <Text style={{ color: '#ee1b24' }}>*</Text>
+                                    {/* <Text style={{ color: '#ee1b24' }}>*</Text> */}
                                 </Text>
                                 <View style={{ paddingHorizontal: 10 }}></View>
                                 <TouchableOpacity style={MainStyles.selectFilesBtn} onPress={() => { this.pickFile() }}>
@@ -1084,14 +1086,14 @@ class LocumReg1Screen extends Component {
                             {/* Accredited Ends */}
                             <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 26 }}>
                                 <TouchableOpacity style={[MainStyles.psosBtn, MainStyles.psosBtnSm]} onPress={() => {
-                                    if (typeof (this.state.resumFile) == 'undefined') {
-                                        Toast.show('Please select your resume', Toast.SHORT);
-                                        return false;
-                                    }
-                                    if (typeof (this.state.fileData) == 'undefined') {
-                                        Toast.show('Please select your profile picture', Toast.SHORT);
-                                        return false;
-                                    }
+                                    // if (typeof (this.state.resumFile) == 'undefined') {
+                                    //     Toast.show('Please select your resume', Toast.SHORT);
+                                    //     return false;
+                                    // }
+                                    // if (typeof (this.state.fileData) == 'undefined') {
+                                    //     Toast.show('Please select your profile picture', Toast.SHORT);
+                                    //     return false;
+                                    // }
                                     if ((typeof (this.state.dd) == 'undefined' || typeof (this.state.mm) == 'undefined' || typeof (this.state.yy) == 'undefined') || (this.state.dd == '' || this.state.mm == '' || this.state.yy == '')) {
                                         Toast.show('Please select your birth date', Toast.SHORT);
                                         return false;

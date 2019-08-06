@@ -77,9 +77,9 @@ class JobList extends Component{
             method:'GET',
             headers:myHeaders
         })
-        .then(res=>{return res.json()})
+        .then(res=>{console.log(res);return res.json()})
         .then(response=>{
-            //console.log(response);
+            console.log(response);
             if(response.status == 200){
                 this.setState({jobList:response.result});
             }
@@ -632,7 +632,7 @@ class JobList extends Component{
                     shadowOpacity:0.7,
                     shadowRadius:3
                 }} onPress={()=>{
-                    this.setState({isRefreshingPerm:true,isRefreshingShift:true});
+                    this.setState({isRefreshingList:true});
                     this.fetchOpenJobs();
                     this.fetchOnlineJobs();
                     //this.fetchLocumShifts();

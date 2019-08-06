@@ -34,6 +34,7 @@ class ETimeSheet extends Component{
             dateYears:{},
             haveMore:'No',
             pharmacyId:0,
+            paharmacyNamesList:['Cancel']
         }
     }
     setUserData = async ()=>{
@@ -45,7 +46,7 @@ class ETimeSheet extends Component{
         });
     }
     componentDidMount(){
-        this.setUserData();
+        this.props.navigation.addListener('didFocus',this.setUserData);
         var currentDate = new Date();
         var startDay = ''+currentDate.getDate();
         var startMonth = ''+(currentDate.getMonth()+1);
@@ -56,16 +57,22 @@ class ETimeSheet extends Component{
     }
     didFocus = ()=>{
         fetch(SERVER_URL+"fetch_locum_pharmacy?user_id="+this.state.userData.id)
-        .then(res=>{return res.json()})
+        .then(res=>{console.log(res);return res.json()})
         .then(response =>{
-            var paharmacyNamesList = [];
+            var paharmacyNamesList = ['Cancel'];
             var paharmacyIdsList = [];
-            var pharmacyId = response.result[0].pharm_id;
-            for(var i=0;i<response.result.length;i++){
-                paharmacyNamesList.push(response.result[i].name);
-                paharmacyIdsList.push(response.result[i].pharm_id);
+            if(response.status == 200){
+                var pharmacyId = response.result[0].pharm_id;
+                for(var i=0;i<response.result.length;i++){
+                    paharmacyNamesList.push(response.result[i].name);
+                    paharmacyIdsList.push(response.result[i].pharm_id);
+                }
+                this.setState({paharmacyIdsList,paharmacyNamesList,pharmacyList:response.result,loading:false,pharmacyId});
             }
-            this.setState({paharmacyIdsList,paharmacyNamesList,pharmacyList:response.result,loading:false,pharmacyId});
+            else{
+                Toast.show(response.message,Toast.SHORT);
+                this.setState({loading:false});
+            }
         })
         .catch(err=>{
             console.log(err);
@@ -173,16 +180,18 @@ class ETimeSheet extends Component{
         this.hideDateTimePicker3();
     };
     pickerPharmacyList = () => {
-        ActionSheetIOS.showActionSheetWithOptions({
-            options: this.state.paharmacyNamesList,
-            cancelButtonIndex: 0,
-            },
-            (buttonIndex) => {
-            if(buttonIndex != 0){
-              this.setState({pharmacyId: this.state.paharmacyIdsList[buttonIndex]});
-              this.setState({pharmacyName: this.state.paharmacyNamesList[buttonIndex]});
-            }
-        });
+        if(this.state.paharmacyNamesList.length > 0){
+            ActionSheetIOS.showActionSheetWithOptions({
+                options: this.state.paharmacyNamesList,
+                cancelButtonIndex: 0,
+                },
+                (buttonIndex) => {
+                if(buttonIndex != 0){
+                  this.setState({pharmacyId: this.state.paharmacyIdsList[buttonIndex-1]});
+                  this.setState({pharmacyName: this.state.paharmacyNamesList[buttonIndex]});
+                }
+            });
+        }
     }
     saveSign = () => {
         this.refs["sign"].saveImage();
@@ -203,42 +212,42 @@ class ETimeSheet extends Component{
             if(typeof(this.state.startYear1) != "undefined"){
                 startDateArray.push(this.state.startYear1+'-'+this.state.startMonth1+'-'+this.state.startDay1);
             }
-            if(typeof(this.state.startYear2) != "undefined"){
-                startDateArray.push(this.state.startYear2+'-'+this.state.startMonth2+'-'+this.state.startDay2);
-            }
-            if(typeof(this.state.startYear3) != "undefined"){
-                startDateArray.push(this.state.startYear3+'-'+this.state.startMonth3+'-'+this.state.startDay3);
-            }
+            // if(typeof(this.state.startYear2) != "undefined"){
+            //     startDateArray.push(this.state.startYear2+'-'+this.state.startMonth2+'-'+this.state.startDay2);
+            // }
+            // if(typeof(this.state.startYear3) != "undefined"){
+            //     startDateArray.push(this.state.startYear3+'-'+this.state.startMonth3+'-'+this.state.startDay3);
+            // }
             var startTimeArray = [this.state.sSTH+':'+this.state.sSTM+':00'];
             if(typeof(this.state.sSTH1) != "undefined"){
                 startTimeArray.push(this.state.sSTH1+':'+this.state.sSTM1+':00');
             }
-            if(typeof(this.state.sSTH2) != "undefined"){
-                startTimeArray.push(this.state.sSTH2+':'+this.state.sSTM2+':00');
-            }
-            if(typeof(this.state.sSTH3) != "undefined"){
-                startTimeArray.push(this.state.sSTH3+':'+this.state.sSTM3+':00');
-            }
+            // if(typeof(this.state.sSTH2) != "undefined"){
+            //     startTimeArray.push(this.state.sSTH2+':'+this.state.sSTM2+':00');
+            // }
+            // if(typeof(this.state.sSTH3) != "undefined"){
+            //     startTimeArray.push(this.state.sSTH3+':'+this.state.sSTM3+':00');
+            // }
             var unPaidArray = [this.state.sUPH+':'+this.state.sUPM+':00'];
             if(typeof(this.state.sUPH1) != "undefined"){
                 unPaidArray.push(this.state.sUPH1+':'+this.state.sUPM1+':00');
             }
-            if(typeof(this.state.sUPH2) != "undefined"){
-                unPaidArray.push(this.state.sUPH2+':'+this.state.sUPM2+':00');
-            }
-            if(typeof(this.state.sUPH3) != "undefined"){
-                unPaidArray.push(this.state.sUPH3+':'+this.state.sUPM3+':00');
-            }
+            // if(typeof(this.state.sUPH2) != "undefined"){
+            //     unPaidArray.push(this.state.sUPH2+':'+this.state.sUPM2+':00');
+            // }
+            // if(typeof(this.state.sUPH3) != "undefined"){
+            //     unPaidArray.push(this.state.sUPH3+':'+this.state.sUPM3+':00');
+            // }
             var endTimeArray = [this.state.sETH+':'+this.state.sETM+':00'];
             if(typeof(this.state.sETH1) != "undefined"){
                 endTimeArray.push(this.state.sETH1+':'+this.state.sETM1+':00');
             }
-            if(typeof(this.state.sETH2) != "undefined"){
-                endTimeArray.push(this.state.sETH2+':'+this.state.sETM2+':00');
-            }
-            if(typeof(this.state.sETH3) != "undefined"){
-                endTimeArray.push(this.state.sETH3+':'+this.state.sETM3+':00');
-            }
+            // if(typeof(this.state.sETH2) != "undefined"){
+            //     endTimeArray.push(this.state.sETH2+':'+this.state.sETM2+':00');
+            // }
+            // if(typeof(this.state.sETH3) != "undefined"){
+            //     endTimeArray.push(this.state.sETH3+':'+this.state.sETM3+':00');
+            // }
             this.setState({loading:true});
             var jsonArray = {
                 signature:this.state.signature,
@@ -267,11 +276,13 @@ class ETimeSheet extends Component{
                 return res.json();
             })
             .then(response=>{
+                this.setState({loading:false});
+                setTimeout(()=>{
+                    Toast.show(response.message,Toast.LONG);
+                },200);
                 if(response.status == 200){
                     this.props.navigation.navigate('Home');
                 }
-                Toast.show(response.message,Toast.LONG);
-                this.setState({loading:false});
             })
             .catch(err=>{
                 console.log(err);
@@ -313,9 +324,9 @@ class ETimeSheet extends Component{
                         <View style={[styles.breadCrumbs,(this.state.activeTab == 'sd')?{backgroundColor:'#1476c0'}:'']}>
                             <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#FFFFFF',fontSize:12}}>Shift Details</Text>
                         </View>
-                        <View style={[styles.breadCrumbs,(this.state.activeTab == 'ms')?{backgroundColor:'#1476c0'}:'']}>
+                        {/* <View style={[styles.breadCrumbs,(this.state.activeTab == 'ms')?{backgroundColor:'#1476c0'}:'']}>
                             <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#FFFFFF',fontSize:12}}>More Shift</Text>
-                        </View>
+                        </View> */}
                         <View style={[styles.breadCrumbs,(this.state.activeTab == 'so')?{backgroundColor:'#1476c0'}:'']}>
                             <Text style={{fontFamily:'AvenirLTStd-Medium',color:'#FFFFFF',fontSize:12}}>Sign Off</Text>
                         </View>
@@ -592,36 +603,36 @@ class ETimeSheet extends Component{
                                 {/* Shift Unpaid Breaks End*/}
                             </View>
                             {/* Shift Time End*/}
-                            <View style={{marginTop:15}}></View>
+                            {/* <View style={{marginTop:15}}></View>
                             <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                                 Do you have more days to fill time sheet for same Pharmacy location?
-                            </Text>
-                            <View style={{marginTop:10}}></View>
+                            </Text> */}
+                            {/* <View style={{marginTop:10}}></View> */}
                             {
-                                Platform.OS == 'android' && 
-                                <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                    <Picker
-                                    selectedValue={this.state.haveMore}
-                                    style={{
-                                        flex:1,
-                                        paddingVertical:2,
-                                        height:30,
-                                    }}
-                                    mode="dropdown"
-                                    textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                    itemStyle={MainStyles.TInput}
-                                    onValueChange={(itemValue, itemIndex) => this.setState({haveMore: itemValue})}>
-                                        <Picker.Item label={'Yes - I do'} value={'Yes'} />
-                                        <Picker.Item label={'No - I am finished'} value={'No'} />
-                                    </Picker>
-                                </View>
+                                // Platform.OS == 'android' && 
+                                // <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
+                                //     <Picker
+                                //     selectedValue={this.state.haveMore}
+                                //     style={{
+                                //         flex:1,
+                                //         paddingVertical:2,
+                                //         height:30,
+                                //     }}
+                                //     mode="dropdown"
+                                //     textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
+                                //     itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
+                                //     itemStyle={MainStyles.TInput}
+                                //     onValueChange={(itemValue, itemIndex) => this.setState({haveMore: itemValue})}>
+                                //         <Picker.Item label={'Yes - I do'} value={'Yes'} />
+                                //         <Picker.Item label={'No - I am finished'} value={'No'} />
+                                //     </Picker>
+                                // </View>
                             }
                             {
-                                Platform.OS == 'ios' && 
-                                <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                    <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.haveMore}</Text>
-                                </TouchableOpacity>
+                                // Platform.OS == 'ios' && 
+                                // <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
+                                //     <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.haveMore}</Text>
+                                // </TouchableOpacity>
                                 
                             }
                             {/* More Days End*/}
