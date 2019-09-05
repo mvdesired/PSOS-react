@@ -36,84 +36,144 @@ class Reviews extends Component{
         this.getMyReviews = this._getMyReviews.bind(this);
         this.getLocumReviews = this._getLocumReviews.bind(this);
     }
-    async setUserData(){
-        let userDataStringfy = await AsyncStorage.getItem('userData');
-        let userData = JSON.parse(userDataStringfy);
-        this.setState({userData});
+    setUserData = async () => {
+        //let userDataStringfy = await AsyncStorage.getItem('userData');
+        await AsyncStorage.getItem('userData').then((userDataStringfy)=>{
+            let userData = JSON.parse(userDataStringfy);
+            this.setState({userData});
+            this.getMyReviews();
+            this.getLocumReviews();
+        });
     }
     componentDidMount(){
         this.setUserData();
-        setTimeout(()=>{
-            if(this.state.userData.user_type == 'locum'){
-                this.setState({pageTitle:'EMPLOYER REVIEW'});
-                fetch(SERVER_URL+'locum_review?locum_id='+this.state.userData.id,{
-                    headers:myHeaders
-                })
-                .then(res=>res.json())
-                .then(response=>{
-                    console.log(response);
-                    if(response.status == 200){
-                        this.setState({locumList:response.result});
-                    }
-                    this.setState({loading:false});
-                })
-                .catch(err=>{
-                    console.log(err);
-                    this.setState({loading:false});
-                });
-                fetch(SERVER_URL+'locum_myreview?locum_id='+this.state.userData.id,{
-                    headers:myHeaders
-                })
-                .then(res=>res.json())
-                .then(response=>{
-                    console.log(response);
-                    if(response.status == 200){
-                        this.setState({myList:response.result});
-                    }
-                    this.setState({loading:false});
-                })
-                .catch(err=>{
-                    console.log(err);
-                    this.setState({loading:false});
-                });
-            }
-            else{
-                this.setState({pageTitle:'LOCUM REVIEW'});
-                fetch(SERVER_URL+'employer_review?employer_id='+this.state.userData.id,{
-                    headers:myHeaders
-                })
-                .then(res=>res.json())
-                .then(response=>{
-                    console.log(response);
-                    if(response.status == 200){
-                        this.setState({locumList:response.result});
-                    }
-                    this.setState({loading:false});
-                })
-                .catch(err=>{
-                    console.log(err);
-                });
-                fetch(SERVER_URL+'employer_myreview?employer_id='+this.state.userData.id,{
-                    headers:myHeaders
-                })
-                .then(res=>res.json())
-                .then(response=>{
-                    if(response.status == 200){
-                        this.setState({myList:response.result});
-                    }
-                    this.setState({loading:false});
-                })
-                .catch(err=>{
-                    console.log(err);
-                    this.setState({loading:false});
-                });
-            }
-        },1500);
     }
     _getMyReviews = ()=>{
-        this.setState({isRefreshingMy:false});
+        if(this.state.userData.user_type == 'locum'){
+            this.setState({pageTitle:'EMPLOYER REVIEW'});
+            fetch(SERVER_URL+'locum_review?locum_id='+this.state.userData.id,{
+                headers:myHeaders
+            })
+            .then(res=>res.json())
+            .then(response=>{
+                if(response.status == 200){
+                    this.setState({locumList:response.result});
+                }
+                this.setState({loading:false});
+            })
+            .catch(err=>{
+                console.log(err);
+                this.setState({loading:false});
+            });
+            fetch(SERVER_URL+'locum_myreview?locum_id='+this.state.userData.id,{
+                headers:myHeaders
+            })
+            .then(res=>res.json())
+            .then(response=>{
+                if(response.status == 200){
+                    this.setState({myList:response.result});
+                }
+                this.setState({loading:false});
+            })
+            .catch(err=>{
+                console.log(err);
+                this.setState({loading:false});
+            });
+        }
+        else{
+            this.setState({pageTitle:'LOCUM REVIEW'});
+            fetch(SERVER_URL+'employer_review?employer_id='+this.state.userData.id,{
+                headers:myHeaders
+            })
+            .then(res=>res.json())
+            .then(response=>{
+                if(response.status == 200){
+                    this.setState({locumList:response.result});
+                }
+                this.setState({loading:false});
+            })
+            .catch(err=>{
+                console.log(err);
+            });
+            fetch(SERVER_URL+'employer_myreview?employer_id='+this.state.userData.id,{
+                headers:myHeaders
+            })
+            .then(res=>res.json())
+            .then(response=>{
+                if(response.status == 200){
+                    this.setState({myList:response.result});
+                }
+                this.setState({loading:false});
+            })
+            .catch(err=>{
+                console.log(err);
+                this.setState({loading:false});
+            });
+        }
     }
     _getLocumReviews = ()=>{
+        if(this.state.userData.user_type == 'locum'){
+            this.setState({pageTitle:'EMPLOYER REVIEW'});
+            fetch(SERVER_URL+'locum_review?locum_id='+this.state.userData.id,{
+                headers:myHeaders
+            })
+            .then(res=>res.json())
+            .then(response=>{
+                if(response.status == 200){
+                    this.setState({locumList:response.result});
+                }
+                this.setState({loading:false,isRefreshingMy:false});
+            })
+            .catch(err=>{
+                console.log(err);
+                this.setState({loading:false,isRefreshingMy:false});
+            });
+            fetch(SERVER_URL+'locum_myreview?locum_id='+this.state.userData.id,{
+                headers:myHeaders
+            })
+            .then(res=>res.json())
+            .then(response=>{
+                if(response.status == 200){
+                    this.setState({myList:response.result});
+                }
+                this.setState({loading:false,isRefreshingMy:false});
+            })
+            .catch(err=>{
+                console.log(err);
+                this.setState({loading:false,isRefreshingMy:false});
+            });
+        }
+        else{
+            this.setState({pageTitle:'LOCUM REVIEW'});
+            fetch(SERVER_URL+'employer_review?employer_id='+this.state.userData.id,{
+                headers:myHeaders
+            })
+            .then(res=>res.json())
+            .then(response=>{
+                if(response.status == 200){
+                    this.setState({locumList:response.result});
+                }
+                this.setState({loading:false,isRefreshingLocum:false});
+            })
+            .catch(err=>{
+                console.log(err);
+                this.setState({loading:false,isRefreshingLocum:false});
+            });
+            fetch(SERVER_URL+'employer_myreview?employer_id='+this.state.userData.id,{
+                headers:myHeaders
+            })
+            .then(res=>res.json())
+            .then(response=>{
+                if(response.status == 200){
+                    this.setState({myList:response.result});
+                }
+                this.setState({loading:false,isRefreshingLocum:false});
+            })
+            .catch(err=>{
+                console.log(err);
+                this.setState({loading:false,isRefreshingLocum:false});
+            });
+        }
         this.setState({isRefreshingLocum:false});
     }
     formatAMPM = (date) => {

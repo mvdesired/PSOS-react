@@ -46,7 +46,7 @@ class Registration extends Component {
                                 flexDirection: 'row',
                                 justifyContent: 'space-between'
                             }}>
-                                <Text style={{ color: '#676767', textAlign: 'left' }}>A Locum</Text>
+                                <Text style={{ color: '#676767', textAlign: 'left' }}>Locum</Text>
                                 <View style={{
                                     borderWidth: 1,
                                     borderColor: '#6e6f71',
@@ -85,7 +85,7 @@ class Registration extends Component {
                                 flexDirection: 'row',
                                 justifyContent: 'space-between'
                             }}>
-                                <Text style={{ color: '#676767', textAlign: 'left' }}>A Employer</Text>
+                                <Text style={{ color: '#676767', textAlign: 'left' }}>Employer</Text>
                                 <View style={{
                                     borderWidth: 1,
                                     borderColor: '#6e6f71',

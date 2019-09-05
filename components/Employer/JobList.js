@@ -2,7 +2,7 @@ import React,{Component} from 'react';
 import {View,SafeAreaView, Image,Text, ScrollView,TextInput,TouchableOpacity,KeyboardAvoidingView,
     Picker,Dimensions,RefreshControl,AsyncStorage,ActionSheetIOS,Modal,StyleSheet,Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { DrawerActions,NavigationActions } from 'react-navigation';
+import { DrawerActions,NavigationActions,withNavigation } from 'react-navigation';
 import Loader from '../Loader';
 import MainStyles from '../Styles';
 import Toast from 'react-native-simple-toast';
@@ -59,7 +59,7 @@ class JobList extends Component{
         })
         .then(res=>res.json())
         .then(response=>{
-            //console.log(response);
+            console.log(response);
             if(response.status == 200){
                 this.setState({shiftList:response.result});
             }
@@ -114,7 +114,12 @@ class JobList extends Component{
         var dateToday = (new Date()).getTime();
         var messageDate = date.getTime();
         if(dateToday > messageDate){
-            var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
+            var day = (date.getDate()<10)?'0'+date.getDate():date.getDate();
+            var month = (date.getMonth()+1);
+            if(month < 10){
+                month = '0'+month;
+            }
+            var fullDate = day+'/'+month+'/'+date.getFullYear();
             var ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
             hours = hours ? hours : 12; // the hour '0' should be '12'
@@ -250,8 +255,28 @@ class JobList extends Component{
                                             <Text style={MainStyles.JLELoopItemCount}>{item.applier}</Text>
                                             <Icon name="eye" style={MainStyles.JLELoopItemIcon}/>
                                             {
-                                                item.is_end == 1 &&
-                                                <View style={{width:15,height:15,backgroundColor:'#61bf6f',borderRadius:50,marginLeft:5}}></View>
+                                                item.is_filled == "1" && item.is_end == 0 && 
+                                                <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                    <Text style={{transform: [{ rotate: "45deg" }],color:'#61bf6f',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Filled</Text>
+                                                </View>
+                                            }
+                                            {
+                                                item.is_filled == "1" && item.is_end == 1 && 
+                                                <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                    <Text style={{transform: [{ rotate: "45deg" }],color:'#61bf6f',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Filled</Text>
+                                                </View>
+                                            }
+                                            {
+                                                item.is_filled == "0" && item.is_end == 0 && 
+                                                <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                    <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Open</Text>
+                                                </View>
+                                            }
+                                            {
+                                                item.is_filled == "0" && item.is_end == 1 &&
+                                                <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                    <Text style={{transform: [{ rotate: "45deg" }],color:'#FF9800',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Expired</Text>
+                                                </View>
                                                 // <Text style={{marginLeft:5,color:'#61bf6f',fontFamily:'AvenirLTStd-Light',fontSize:10}}>Completed</Text>
                                             }
                                             {
@@ -435,7 +460,7 @@ class JobList extends Component{
         )
     }
 }
-export default JobList;
+export default withNavigation(JobList);
 const styles = StyleSheet.create({
     ModalActionsButtons:{
         padding:10,

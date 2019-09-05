@@ -39,17 +39,20 @@ class EChatList extends Component{
     }
     componentDidMount(){
         this._isMounted = true;
-        this.setUserData();
+        //this.setUserData();
+        this.props.navigation.addListener('didFocus',this.setUserData);
+        this.props.navigation.addListener('didBlur',this.willBlur);
     }
     _fetchChatList = ()=>{
         if(this._isMounted){
             fetch(SERVER_URL+'fethc_chat_list?user_id='+this.state.userData.id+'&user_type='+this.state.userData.user_type,{
                 method:'GET',
                 headers:myHeaders,
+                signal:this.signal
             })
             .then(res=>{console.log(res);return res.json()})
             .then(response=>{
-                console.log(response);
+                //console.log(response);
                 if(response.status == 200){
                     this.setState({chatList:response.result});
                 }
@@ -61,6 +64,11 @@ class EChatList extends Component{
             })
         }
     }
+    willBlur = ()=>{
+        this._isMounted = false;
+        clearTimeout(this.clearTime);
+        //this.controller.abort();
+    }
     formatAMPM(date) {
         var date = new Date(date);
         var hours = date.getHours();
@@ -68,7 +76,12 @@ class EChatList extends Component{
         var dateToday = (new Date()).getDate();
         var messageDate = date.getDate();
         if(dateToday > messageDate){
-            var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
+            var day = (date.getDate()<10)?'0'+date.getDate():date.getDate();
+            var month = (date.getMonth()+1);
+            if(month < 10){
+                month = '0'+month;
+            }
+            var fullDate = day+'/'+month+'/'+date.getFullYear();
             var ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
             hours = hours ? hours : 12; // the hour '0' should be '12'
@@ -88,6 +101,7 @@ class EChatList extends Component{
     componentWillUnmount(){
         this._isMounted = false;
         clearTimeout(this.clearTime);
+        //this.controller.abort();
     }
     render(){
         const RemoveHiehgt = height - 50;

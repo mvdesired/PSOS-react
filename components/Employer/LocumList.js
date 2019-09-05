@@ -116,7 +116,12 @@ class LocumList extends Component{
         var dateToday = (new Date()).getTime();
         var messageDate = date.getTime();
         if(dateToday > messageDate){
-            var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
+            var day = (date.getDate()<10)?'0'+date.getDate():date.getDate();
+            var month = (date.getMonth()+1);
+            if(month < 10){
+                month = '0'+month;
+            }
+            var fullDate = day+'/'+month+'/'+date.getFullYear();
             var ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
             hours = hours ? hours : 12; // the hour '0' should be '12'
@@ -143,8 +148,8 @@ class LocumList extends Component{
                 <View style={{backgroundColor:"#f7f7f7",padding:10,}}>
                       <View style={{flexWrap:'wrap'}}>
                       <Text style={{color:'#212121',fontFamily:'AvenirLTStd-Light',fontSize:14}}>Shift Name: {this.state.name}</Text>
-                      <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>First Date of Shift: {this.state.FirstDate}</Text>
-                      <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Last  Date of Shift: {this.state.EndDate} </Text>
+                      <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Date of Shift: {this.state.FirstDate}</Text>
+                      {/* <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Last  Date of Shift: {this.state.EndDate} </Text> */}
                       {(this.state.job_type != 'perm') && <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Start Time: {this.state.startTime}</Text>}
                       {(this.state.job_type != 'perm') && <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>End Time: {this.state.endTime}</Text>}
                       <Text style={{color:'#212121',padding:3,fontFamily:'AvenirLTStd-Light',fontSize:14}}>Shift Details: {this.state.detail}</Text>

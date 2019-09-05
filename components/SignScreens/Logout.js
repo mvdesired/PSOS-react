@@ -21,7 +21,7 @@ class Logout extends Component{
         this.authenticateSession();
     }
     getToken = (onToken)=>{
-        if(Platform.OS == 'android'){
+        //if(Platform.OS == 'android'){
             PushNotification.configure({
                 onRegister: onToken,
                 onNotification: function(notification) {
@@ -36,10 +36,10 @@ class Logout extends Component{
                 popInitialNotification: true,
                 requestPermissions: true,
             });
-        }
-        else{
-            onToken();
-        }
+        // }
+        // else{
+        //     onToken();
+        // }
     }
     authenticateSession(){
         this.getToken(this.logoutFromServer.bind(this));

@@ -7,35 +7,37 @@ import MainStyles from './Styles';
 const { height, width } = Dimensions.get('window');
 const slides = [
     {
-      key: 'somethun',
-      title: 'Find state specific job',
-      image: require('../assets/introl-01.png'),
-      backgroundColor: '#59b2ab',
-    },
-    {
-      key: 'somethun-dos',
-      title: 'Easily apply anytime anywhere',
-      image: require('../assets/intro-05.png'),
-      backgroundColor: '#febe29',
-    },
-    {
       key: 'somethun1',
-      title: 'Submit etimesheets & Locum Availability',
-      image: require('../assets/introl-03.png'),
-      backgroundColor: '#22bcb5',
+      image: require('../assets/intro-new-img-1.png'),
+    },
+    {
+      key: 'somethun2',
+      image: require('../assets/intro-new-img-2.png'),
+    },
+    {
+      key: 'somethun3',
+      image: require('../assets/intro-new-img-3.png'),
     },
     {
       key: 'somethun4',
-      title: 'Chat and notifications',
-      image: require('../assets/introl-06.png'),
-      backgroundColor: '#22bcb5',
+      image: require('../assets/intro-new-img-4.png'),
     },
-    // {
-    //   key: 'somethun5',
-    //   title: 'Easily share on social media',
-    //   image: require('../assets/intro-01.png'),
-    //   backgroundColor: '#22bcb5',
-    // }
+    {
+        key: 'somethun5',
+        image: require('../assets/intro-new-img-5.png'),
+    },
+    {
+        key: 'somethun6',
+        image: require('../assets/intro-new-img-6.png'),
+    },
+    {
+        key: 'somethun7',
+        image: require('../assets/intro-new-img-7.png'),
+    },
+    {
+        key: 'somethun8',
+        image: require('../assets/intro-new-img-8.png'),
+    }
   ];
 class IntroScreenLocum extends Component{
     constructor(props) {
@@ -44,24 +46,15 @@ class IntroScreenLocum extends Component{
             loading:false,
             currentBullet:0,
             forwardBtn:'Skip',
-            introgImagesList:[
-                require('../assets/intro-02.png'),
-                require('../assets/intro-03.png'),
-                require('../assets/intro-04.png'),
-                require('../assets/intro-05.png'),
-                require('../assets/intro-01.png'),
-            ],
-            introText:[
-                'Apply For A Job',
-                'Get notified for every activity',
-                'Feedback',
-                'Download',
-            ],
             introTagline:[
-                'All in just a few taps',
-                'Get notifications of shifts in your state, view open shifts, apply, and chat with the employer.',
-                'Pharmacists can build up a profile based on feedback. ',
-                'Free to download and use.'
+                'Here is an idea!  An application specifically designed for locuming!',
+                'Introducing the Pharmacy SOS Locuming App for Employers & locums.',
+                'Post and view jobs short term locuming jobs and permanent opportunities. ',
+                'Build up a profile through feedback.  Employers can choose the best candidate.',
+                'Operates across all mobile android and iOS devices with in-app chat feature.',
+                'Hit "Go" for direct navigation, enter time sheets, submit availability.',
+                'Post, view and apply for free. Employers pay only for successful  placements.',
+                'For more information, please see FAQ section and terms & conditions in app.'
             ]
         }
     }
@@ -82,7 +75,7 @@ class IntroScreenLocum extends Component{
     slideChanged = (index)=>{
         this.setState({currentBullet:index});
         if(index == slides.length - 1){
-            this.setState({forwardBtn:'Get Started'});
+            this.setState({forwardBtn:'START'});
         }
         else{
             this.setState({forwardBtn:'SKIP'});
@@ -100,14 +93,17 @@ class IntroScreenLocum extends Component{
                         <Image source={this.state.introgImagesList[this.state.currentBullet]} style={{width:250,height:250}} />
                     </View> */}
                     <View style={styles.bulletWrapper}>
-                        <View style={[styles.bullets,(this.state.currentBullet == 0)?styles.bulletsActive:{}]}></View>
-                        <View style={[styles.bullets,(this.state.currentBullet == 1)?styles.bulletsActive:{}]}></View>
-                        <View style={[styles.bullets,(this.state.currentBullet == 2)?styles.bulletsActive:{}]}></View>
-                        <View style={[styles.bullets,(this.state.currentBullet == 3)?styles.bulletsActive:{}]}></View>
+                        {
+                            slides.map((item,index)=>{
+                                return(
+                                    <View key={'key-'+index} style={[styles.bullets,(this.state.currentBullet == index)?styles.bulletsActive:{}]}></View>
+                                )
+                            })
+                        }
                         {/* <View style={[styles.bullets,(this.state.currentBullet == 4)?styles.bulletsActive:{}]}></View> */}
                     </View>
                     <View style={styles.TextWrapper}>
-                        <Text style={{fontFamily:"AvenirLTStd-Heavy",fontSize:16,textAlign:'center'}}>{this.state.introText[this.state.currentBullet]}</Text>
+                        {/* <Text style={{fontFamily:"AvenirLTStd-Heavy",fontSize:16,textAlign:'center'}}>{this.state.introText[this.state.currentBullet]}</Text> */}
                         <Text style={{fontFamily:"AvenirLTStd-Light",fontSize:14,marginTop:10,textAlign:'center'}}>{this.state.introTagline[this.state.currentBullet]}</Text>
                     </View>
                     <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm,{flexDirection:'row',alignItems:'center',justifyContent:'center',marginTop:20}]} onPress={()=>{

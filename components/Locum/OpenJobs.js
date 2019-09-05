@@ -213,7 +213,12 @@ class JobList extends Component{
         var dateToday = (new Date()).getTime();
         var messageDate = date.getTime();
         if(dateToday > messageDate){
-            var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
+            var day = (date.getDate()<10)?'0'+date.getDate():date.getDate();
+            var month = (date.getMonth()+1);
+            if(month < 10){
+                month = '0'+month;
+            }
+            var fullDate = day+'/'+month+'/'+date.getFullYear();
             var ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
             hours = hours ? hours : 12; // the hour '0' should be '12'
@@ -295,7 +300,7 @@ class JobList extends Component{
                                                             <Icon name="handshake-o" style={{fontSize:20,color:'#1d7bc3'}} />
                                                         }
                                                     </View>
-                                                    <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
+                                                    <Text style={MainStyles.JLELoopItemName}>{item.name} ({item.start_date})</Text>
                                                     <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM((item.created_on).replace(' ', 'T'))}</Text>
                                                     {
                                                         item.job_type == 'shift' && 
@@ -312,6 +317,12 @@ class JobList extends Component{
                                                         // <View style={{flexDirection:'row',alignItems:'center'}}>
                                                         //     <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Cancelled</Text>
                                                         // </View>
+                                                    }
+                                                    {
+                                                        item.isAHired == 1 && 
+                                                        <View style={{flexDirection:'row',alignItems:'center',marginRight:5}}>
+                                                            <Text style={{transform: [{ rotate: "45deg" }],color:'#bf6161',fontFamily:'AvenirLTStd-Light',fontSize:13}}>Filled</Text>
+                                                        </View>
                                                     }
                                                     {
                                                         item.is_end == 1 && 
@@ -335,7 +346,7 @@ class JobList extends Component{
                                                             <Icon name="handshake-o" style={{fontSize:20,color:'#1d7bc3'}} />
                                                         }
                                                     </View>
-                                                    <Text style={[MainStyles.JLELoopItemName]}>{item.name}</Text>
+                                                    <Text style={[MainStyles.JLELoopItemName]}>{item.name} ({item.start_date})</Text>
                                                     <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM((item.created_on).replace(' ', 'T'))}</Text>
                                                     {
                                                         item.job_type == 'shift' && 
@@ -392,7 +403,7 @@ class JobList extends Component{
                                                             <Icon name="handshake-o" style={{fontSize:20,color:'#1d7bc3'}} />
                                                         }
                                                     </View>
-                                                    <Text style={MainStyles.JLELoopItemName}>{item.name}</Text>
+                                                    <Text style={MainStyles.JLELoopItemName}>{item.name} ({item.start_date})</Text>
                                                     <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM((item.created_on).replace(' ', 'T'))}</Text>
                                                     {
                                                         item.job_type == 'shift' && 

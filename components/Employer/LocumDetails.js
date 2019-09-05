@@ -28,12 +28,7 @@ class LocumDetails extends Component{
             loading:true,
             locumData:{fname:'',lname:''},
             isRefreshing:false,
-            job_id:this.props.navigation.getParam("job_id"),
-            job_type:this.props.navigation.getParam("job_type"),
-            locum_id:this.props.navigation.getParam("locum_id"),
-            applied:this.props.navigation.getParam("applied"),
-            is_end:this.props.navigation.getParam("isEnd"),
-            is_filled:this.props.navigation.getParam("is_filled"),
+            
             punctuality: 5,
             presentation: 5,
             professionalism: 5,
@@ -74,7 +69,12 @@ class LocumDetails extends Component{
     setUserData = async()=>{
         await AsyncStorage.getItem('userData').then((userDataStringfy)=>{
             let userData = JSON.parse(userDataStringfy);
-            this.setState({userData});
+            this.setState({userData,job_id:this.props.navigation.getParam("job_id"),
+            job_type:this.props.navigation.getParam("job_type"),
+            locum_id:this.props.navigation.getParam("locum_id"),
+            applied:this.props.navigation.getParam("applied"),
+            is_end:this.props.navigation.getParam("isEnd"),
+            is_filled:this.props.navigation.getParam("is_filled")});
             setTimeout(()=>{this.fetchLocumDetails();},150);
         });
     }
@@ -94,9 +94,9 @@ class LocumDetails extends Component{
         .then(response=>{
             Toast.show(response.message,Toast.SHORT);
             if(response.status == 200){
-                var userData = this.state.userData;
-                userData.chat_id = response.chat_id;
-                this.setState({applied:1,userData,loading:false});
+                var locumData = this.state.locumData;
+                locumData.chat_id = response.result;
+                this.setState({applied:1,locumData,loading:false});
             }
         })
         .catch(err=>{
@@ -223,6 +223,7 @@ class LocumDetails extends Component{
                         this.state.applied == 1 && 
                         <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop: 10,marginBottom:15}}>
                             <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{
+                                //console.log(this.state.locumData,this.state.locumData.chat_id);
                                 this.props.navigation.navigate('ChatScreen',{chat_id:this.state.locumData.chat_id});
                                 }}>
                                     <Text style={MainStyles.psosBtnText}>Chat</Text>

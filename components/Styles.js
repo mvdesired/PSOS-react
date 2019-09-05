@@ -86,7 +86,8 @@ const MainStyles = StyleSheet.create({
     checkBoxLabel:{
         color:'#676767',
         fontSize:13,
-        fontFamily:'AvenirLTStd-Medium'
+        fontFamily:'AvenirLTStd-Medium',
+        flexWrap:'wrap'
     },
     tacItems:{
         paddingVertical: 10,

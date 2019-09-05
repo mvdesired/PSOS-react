@@ -7,61 +7,54 @@ import MainStyles from './Styles';
 const { height, width } = Dimensions.get('window');
 const slides = [
     {
-      key: 'somethun',
-      title: 'Post A Job',
-      image: require('../assets/intro-02.png'),
-      backgroundColor: '#59b2ab',
-    },
-    {
-      key: 'somethun-dos',
-      title: 'Easily pay invoice',
-      image: require('../assets/intro-05.png'),
-      backgroundColor: '#febe29',
-    },
-    {
       key: 'somethun1',
-      title: 'Find and hire Locums anytime anywhere',
-      image: require('../assets/intro-04.png'),
-      backgroundColor: '#22bcb5',
+      image: require('../assets/intro-new-img-1.png'),
+    },
+    {
+      key: 'somethun2',
+      image: require('../assets/intro-new-img-2.png'),
+    },
+    {
+      key: 'somethun3',
+      image: require('../assets/intro-new-img-3.png'),
     },
     {
       key: 'somethun4',
-      title: 'Chat and notifications',
-      image: require('../assets/intro-06.png'),
-      backgroundColor: '#22bcb5',
+      image: require('../assets/intro-new-img-4.png'),
     },
-    // {
-    //   key: 'somethun5',
-    //   title: 'Easily share on social media',
-    //   image: require('../assets/intro-01.png'),
-    //   backgroundColor: '#22bcb5',
-    // }
+    {
+        key: 'somethun5',
+        image: require('../assets/intro-new-img-5.png'),
+    },
+    {
+        key: 'somethun6',
+        image: require('../assets/intro-new-img-6.png'),
+    },
+    {
+        key: 'somethun7',
+        image: require('../assets/intro-new-img-7.png'),
+    },
+    {
+        key: 'somethun8',
+        image: require('../assets/intro-new-img-8.png'),
+    }
   ];
-class IntroScreenEmployer extends Component{
+class IntroScreenLocum extends Component{
     constructor(props) {
         super(props);
         this.state={
             loading:false,
             currentBullet:0,
             forwardBtn:'Skip',
-            introgImagesList:[
-                require('../assets/intro-02.png'),
-                require('../assets/intro-03.png'),
-                require('../assets/intro-04.png'),
-                require('../assets/intro-05.png'),
-                //require('../assets/intro-01.png'),
-            ],
-            introText:[
-                'Post A Job',
-                'Get Notifications',
-                'Feedback',
-                'Free Download and Post',
-            ],
             introTagline:[
-                'In just a few clicks!  With your pharmacy details saved with in the application, it’s easy to quickly post a shift.',
-                'Get notifications of new jobs in your state as a locum, and applications as an employer for shifts you have posted.',
-                'View locum profiles and choose the best application based for your position.',
-                'You can post shifts free of charge. Pay only for successfully hiring a pharmacist.'
+                'Here is an idea!  An application specifically designed for locuming!',
+                'Introducing the Pharmacy SOS Locuming App for Employers & locums.',
+                'Post and view jobs short term locuming jobs and permanent opportunities. ',
+                'Build up a profile through feedback.  Employers can choose the best candidate.',
+                'Operates across all mobile android and iOS devices with in-app chat feature.',
+                'Hit "Go" for direct navigation, enter time sheets, submit availability.',
+                'Post, view and apply for free. Employers pay only for successful  placements.',
+                'For more information, please see FAQ section and terms & conditions in app.'
             ]
         }
     }
@@ -79,20 +72,10 @@ class IntroScreenEmployer extends Component{
             }
         });
     }
-    runSlider = ()=>{
-        setInterval(()=>{
-            if(this.state.currentBullet < 4){
-                this.setState({currentBullet:this.state.currentBullet+1});
-            }
-            else{
-                this.setState({currentBullet:0});
-            }
-        },5000);
-    }
     slideChanged = (index)=>{
         this.setState({currentBullet:index});
         if(index == slides.length - 1){
-            this.setState({forwardBtn:'Get Started'});
+            this.setState({forwardBtn:'START'});
         }
         else{
             this.setState({forwardBtn:'SKIP'});
@@ -110,15 +93,18 @@ class IntroScreenEmployer extends Component{
                         <Image source={this.state.introgImagesList[this.state.currentBullet]} style={{width:250,height:250}} />
                     </View> */}
                     <View style={styles.bulletWrapper}>
-                        <View style={[styles.bullets,(this.state.currentBullet == 0)?styles.bulletsActive:{}]}></View>
-                        <View style={[styles.bullets,(this.state.currentBullet == 1)?styles.bulletsActive:{}]}></View>
-                        <View style={[styles.bullets,(this.state.currentBullet == 2)?styles.bulletsActive:{}]}></View>
-                        <View style={[styles.bullets,(this.state.currentBullet == 3)?styles.bulletsActive:{}]}></View>
+                        {
+                            slides.map((item,index)=>{
+                                return(
+                                    <View style={[styles.bullets,(this.state.currentBullet == index)?styles.bulletsActive:{}]}></View>
+                                )
+                            })
+                        }
                         {/* <View style={[styles.bullets,(this.state.currentBullet == 4)?styles.bulletsActive:{}]}></View> */}
                     </View>
                     <View style={styles.TextWrapper}>
-                        <Text style={{fontFamily:"AvenirLTStd-Heavy",fontSize:16}}>{this.state.introText[this.state.currentBullet]}</Text>
-                        <Text style={{fontFamily:"AvenirLTStd-Light",fontSize:14,marginTop:10,textAlign:'center',height:65,lineHeight:18}}>{this.state.introTagline[this.state.currentBullet]}</Text>
+                        {/* <Text style={{fontFamily:"AvenirLTStd-Heavy",fontSize:16,textAlign:'center'}}>{this.state.introText[this.state.currentBullet]}</Text> */}
+                        <Text style={{fontFamily:"AvenirLTStd-Light",fontSize:14,marginTop:10,textAlign:'center'}}>{this.state.introTagline[this.state.currentBullet]}</Text>
                     </View>
                     <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm,{flexDirection:'row',alignItems:'center',justifyContent:'center',marginTop:20}]} onPress={()=>{
                         this.props.navigation.navigate('Home');
@@ -131,7 +117,7 @@ class IntroScreenEmployer extends Component{
         );
     }
 }
-export default IntroScreenEmployer;
+export default IntroScreenLocum;
 const styles = StyleSheet.create({
     bulletWrapper:{
         marginVertical:30,
@@ -155,7 +141,7 @@ const styles = StyleSheet.create({
         marginTop:0,
         marginBottom:30,
         alignItems:'center',
-        maxWidth : 300,
+        maxWidth : 280,
         alignItems:'center',
         justifyContent:'center'
     },

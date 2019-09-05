@@ -36,9 +36,9 @@ class SplashScreen extends Component{
                         method:'POST',
                         body:fd
                     })
-                    .then(res=>res.json())
+                    .then(res=>{return res.json()})
                     .then(r=>{
-                        //console.log(r);
+                        console.log(r);
                         if(r.status == '0'){
                             navigation.navigate('Home');
                             this.saveDetails('userData',JSON.stringify(r));

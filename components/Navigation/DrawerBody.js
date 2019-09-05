@@ -11,6 +11,7 @@ class DrawerBody extends Component{
     constructor(props){
         super(props);
         this.state = {
+            userImg:require('../../assets/defaul-p-bg.png'),
             userData:{},
             noti_sound:'default'
         }
@@ -29,7 +30,7 @@ class DrawerBody extends Component{
         let userData = JSON.parse(userDataStringfy);
         if(this.state.userData != userData){
             if(userData){
-                this.setState({userData,noti_sound:userData.noti_sound});
+                this.setState({userData,noti_sound:userData.noti_sound,userImg:{uri:userData.user_img}});
                 this.goPusNotification(this.redirectOnPushNotifcation.bind(this));
             }
         }
@@ -124,7 +125,7 @@ class DrawerBody extends Component{
                     }}>
                         <View>
                             <View style={{width:60,height:60,overflow:'hidden',borderRadius:50,marginBottom:7}}>
-                                <Image source={{uri:this.state.userData.user_img}} style={{width:60,height:60}}/>
+                                <Image source={this.state.userImg} style={{width:60,height:60}}/>
                             </View>
                             <Text style={{color:'#feffff',fontFamily:'AvenirLTStd-Light',marginBottom:5}}>{this.state.userData.fname} {this.state.userData.lname}</Text>
                             <Text style={{color:'#feffff',fontFamily:'AvenirLTStd-Light'}}>{this.state.userData.email}</Text>
@@ -192,7 +193,7 @@ class DrawerBody extends Component{
                     }
                     {
                         this.state.userData.user_type == 'locum' && 
-                        <TouchableOpacity style={styles.DIS} onPress={()=>this.navigateToScreen('Applied')}>
+                        <TouchableOpacity style={styles.DIS} onPress={()=>this.navigateToScreen('OpenJobs')}>
                             {/* <Image source={require('../../assets/applied-d-icon.png')} style={{width:15,height:13}} /> */}
                             <Icon name="briefcase" style={{fontSize:15,color:'#000000'}} />
                             <Text style={styles.DITS}>Job Dashboard</Text>

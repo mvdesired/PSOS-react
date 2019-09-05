@@ -56,7 +56,7 @@ class LocumDetails extends Component{
             console.log(response);
             if(response.status == 200){
                 var RR = response.result;
-                this.setState({jobData:RR,is_end:RR.is_end,is_cancelled:RR.is_cancelled,applied:RR.applied,is_hired:RR.hired});
+                this.setState({jobData:RR,is_end:RR.is_end,is_cancelled:RR.is_cancelled,applied:RR.applied,is_hired:RR.hired,isAHired:RR.isAHired});
             }
             else{
                 Toast.show(response.message,Toast.SHORT);
@@ -167,8 +167,16 @@ class LocumDetails extends Component{
                         }
                         {/* Pharmacy Address */}
                         <View style={MainStyles.locumProfileItemWrapper}>
-                            <Text style={MainStyles.LPIHeading}>Shift Start</Text>
-                            <Text style={MainStyles.LPISubHeading}>{this.state.jobData.start_date} {this.state.jobData.start_time}</Text>
+                            <Text style={MainStyles.LPIHeading}>Shift Date</Text>
+                            <Text style={MainStyles.LPISubHeading}>{this.state.jobData.start_date}</Text>
+                        </View>
+                        <View style={MainStyles.locumProfileItemWrapper}>
+                            <Text style={MainStyles.LPIHeading}>Shift Start Time</Text>
+                            <Text style={MainStyles.LPISubHeading}>{this.state.jobData.start_time}</Text>
+                        </View>
+                        <View style={MainStyles.locumProfileItemWrapper}>
+                            <Text style={MainStyles.LPIHeading}>Shift End Time</Text>
+                            <Text style={MainStyles.LPISubHeading}>{this.state.jobData.end_time}</Text>
                         </View>
                         {/* Languga */}
                         {/* <View style={MainStyles.locumProfileItemWrapper}>
@@ -225,12 +233,19 @@ class LocumDetails extends Component{
                         }
                         { //&& this.state.is_end == 0
                             applied == false  && this.state.is_cancelled == 0 && this.state.is_hired == 0 && 
+                             this.state.isAHired == 0 &&
                             <View style={{justifyContent:'center',alignItems:'center',marginTop: 10,marginBottom:15}}>
                                 <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{
                                     this.applyForJob();
                                 }}>
                                     <Text style={MainStyles.psosBtnText}>Apply</Text>
                                 </TouchableOpacity>
+                            </View>
+                        }
+                        {
+                            this.state.is_hired == 0 && this.state.isAHired == 1 && 
+                            <View style={{justifyContent:'center',alignItems:'center',marginTop:10}}>
+                                <Text style={{color:'#bf6161',fontFamily:'AvenirLTStd-Medium',fontSize:20}}>This position has been filled</Text>
                             </View>
                         }
                     </ScrollView>

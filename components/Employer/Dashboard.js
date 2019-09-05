@@ -34,7 +34,7 @@ class Dashboard extends Component{
         await AsyncStorage.getItem('userData').then((userDataStringfy)=>{
             let userData = JSON.parse(userDataStringfy);
             this.setState({userData});
-            if(this.state.userData.user_type == 'employer'){
+            if(userData.user_type == 'employer'){
                 this.fetchTotals();
             }
             this.fetchNotifications();

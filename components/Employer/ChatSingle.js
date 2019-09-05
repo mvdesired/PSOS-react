@@ -14,10 +14,11 @@ import PhotoView from "@merryjs/photo-viewer";
 const { height, width } = Dimensions.get('window');
 var myHeaders = new Headers();
 myHeaders.set('Accept', 'application/json');
-myHeaders.set('Content-Type', 'application/json');
+//myHeaders.set('Content-Type', 'application/json');
 myHeaders.set('Cache-Control', 'no-cache');
 myHeaders.set('Pragma', 'no-cache');
 myHeaders.set('Expires', '0');
+
 class ChatScreen extends Component{
     _isMounted = false;
     clearTime = '';
@@ -37,7 +38,8 @@ class ChatScreen extends Component{
             media:'',
             isModalOpened: false,  //Controls if modal is opened or closed
             currentImageIndex: 0,
-            images:{}
+            images:{},
+            isFetchingMsgs:false
         };
         this.readMsgs = this._readMsgs.bind(this);
         this.fetchChatting = this._fetchChatting.bind(this);
@@ -56,39 +58,51 @@ class ChatScreen extends Component{
     componentDidMount(){
         this._isMounted = true;
         this.setUserData();
+        this.props.navigation.addListener('didBlur',this.willBlur);
     }
     _fetchChatting = ()=>{
         if(this._isMounted){
-            fetch(SERVER_URL+'fetch_chat_data?chat_id='+this.state.chat_id+'&user_type='+this.state.userData.user_type,{
-                method:'GET',
-                headers:myHeaders
-            })
-            .then(res=>{return res.json()})
-            .then(response=>{
-                if(response.status == 200){
-                    this.setState({
-                        loading:false,
-                        full_name:response.result.full_name,
-                        status:response.result.status,
-                        chatting:response.result.msg
-                    });
-                    let images = [];
-                    for(var i=0;i<response.result.media_list.length;i++){
-                        images.push({source:{uri:response.result.media_list[i]}});
+            if(!this.state.isFetchingMsgs){
+                this.setState({isFetchingMsgs:true});
+                fetch(SERVER_URL+'fetch_chat_data?chat_id='+this.state.chat_id+'&user_type='+this.state.userData.user_type,{
+                    method:'GET',
+                    headers:myHeaders,
+                    signal:this.signal
+                })
+                .then(res=>{return res.json()})
+                .then(response=>{
+                    console.log(response);
+                    if(response.status == 200){
+                        this.setState({
+                            loading:false,
+                            full_name:response.result.full_name,
+                            status:response.result.status,
+                            chatting:response.result.msg
+                        });
+                        let images = [];
+                        for(var i=0;i<response.result.media_list.length;i++){
+                            images.push({source:{uri:response.result.media_list[i]}});
+                        }
+                        this.setState({loading:false,images});
                     }
-                    this.setState({loading:false,images});
-                }
-            })
-            .catch(err=>{
-                this.setState({loading:false,});
-            })
+                    this.setState({isFetchingMsgs:false});
+                })
+                .catch(err=>{
+                    this.setState({loading:false,});
+                });
+            }
         }
+    }
+    willBlur = ()=>{
+        this._isMounted = false;
+        clearTimeout(this.clearTime);
+        clearInterval(this.clearTimeR);
     }
     update() {
         this.fetchChatting();
         this.clearTime = setInterval(
           () => {this.fetchChatting();},
-          2500
+          1500
         );
     }
     formatAMPM(date) {
@@ -98,7 +112,12 @@ class ChatScreen extends Component{
         var dateToday = (new Date()).getDate();
         var messageDate = date.getDate();
         if(dateToday > messageDate){
-            var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
+            var day = (date.getDate()<10)?'0'+date.getDate():date.getDate();
+            var month = (date.getMonth()+1);
+            if(month < 10){
+                month = '0'+month;
+            }
+            var fullDate = day+'/'+month+'/'+date.getFullYear();
             var ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
             hours = hours ? hours : 12; // the hour '0' should be '12'
@@ -128,6 +147,9 @@ class ChatScreen extends Component{
         var isFile = this.state.isFile;
         var newDate = new Date();
         if (message || isFile == 1) {
+            clearTimeout(this.clearTime);
+            clearInterval(this.clearTimeR);
+            //this.controller.abort();
             this.refs['messageText'].setNativeProps({text: ''});
             if(this.state.chatting.length > 0){
                 var messagesCopy = this.state.chatting.slice();
@@ -176,9 +198,9 @@ class ChatScreen extends Component{
                 headers:myHeaders,
                 body:JSON.stringify(jsonData)
             })
-            .then((response) => {return response.json()})
-            .then((responseData) => {
-                this.setState({isFile:0,fileData:{}});
+            .then((response) => {
+                this.setUserData();
+                this.setState({isFile:0,fileData:{},messageText:''}); //return response.json()
             })
             .catch(err=>{
                 console.log(err);

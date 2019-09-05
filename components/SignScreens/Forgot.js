@@ -41,8 +41,8 @@ export default class Login extends Component{
             Toast.show('Mobile number should not be blank',Toast.SHORT);
             return false;
         }
-        else if(this.state.mobileNumber.length < 10){
-            Toast.show('Mobile number should be atleast 10 digits',Toast.SHORT);
+        else if(this.state.mobileNumber.length < 9){
+            Toast.show('Mobile number should be atleast 9 digits',Toast.SHORT);
             return false;
         }
         //this.sendDataToServer();

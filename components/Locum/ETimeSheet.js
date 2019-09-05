@@ -33,8 +33,9 @@ class ETimeSheet extends Component{
             dateMonth:{},
             dateYears:{},
             haveMore:'No',
-            pharmacyId:0,
-            paharmacyNamesList:['Cancel']
+            //pharmacyId:0,
+            paharmacyNamesList:['Cancel'],
+            otherPharmacyName:''
         }
     }
     setUserData = async ()=>{
@@ -59,7 +60,7 @@ class ETimeSheet extends Component{
         fetch(SERVER_URL+"fetch_locum_pharmacy?user_id="+this.state.userData.id)
         .then(res=>{console.log(res);return res.json()})
         .then(response =>{
-            var paharmacyNamesList = ['Cancel'];
+            var paharmacyNamesList = ['Cancel','Other'];
             var paharmacyIdsList = [];
             if(response.status == 200){
                 var pharmacyId = response.result[0].pharm_id;
@@ -186,9 +187,14 @@ class ETimeSheet extends Component{
                 cancelButtonIndex: 0,
                 },
                 (buttonIndex) => {
-                if(buttonIndex != 0){
-                  this.setState({pharmacyId: this.state.paharmacyIdsList[buttonIndex-1]});
+                    console.log(buttonIndex);
+                if(buttonIndex > 1){
+                  this.setState({pharmacyId: this.state.paharmacyIdsList[buttonIndex-2]});
                   this.setState({pharmacyName: this.state.paharmacyNamesList[buttonIndex]});
+                }
+                else if(buttonIndex==1){
+                    this.setState({pharmacyId: 0});
+                    this.setState({pharmacyName: 'Other'});
                 }
             });
         }
@@ -257,6 +263,7 @@ class ETimeSheet extends Component{
                 email:this.state.email,
                 sheet_time_file:this.state.resumFile,
                 pharmacy:this.state.pharmacyId,
+                other_pharmacy_name:this.state.otherPharmacyName,
                 other_comments:this.state.otherComments,
                 staff_fname:this.state.oFname,
                 staff_lname:this.state.oLname,
@@ -418,6 +425,7 @@ class ETimeSheet extends Component{
                                     itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
                                     itemStyle={MainStyles.TInput}
                                     onValueChange={(itemValue, itemIndex) => {this.setState({pharmacyId: itemValue})}}>
+                                        <Picker.Item key={'key-other'} label="Other" value={0} />
                                         {
                                         this.state.pharmacyList.map((item,key)=>{
                                             return (
@@ -434,6 +442,27 @@ class ETimeSheet extends Component{
                                     <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.pharmacyName}</Text>
                                 </TouchableOpacity>
                                 
+                            }
+                            {
+                                this.state.pharmacyId == 0 && 
+                                <View>
+                                    <View style={{marginTop:15}}></View>
+                                    <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
+                                        Pharmacy Name
+                                        <Text style={{color:'#ee1b24'}}>*</Text>
+                                    </Text>
+                                    <TextInput 
+                                        style={[MainStyles.TInput]} 
+                                        placeholder="Pharmacy Name"
+                                        returnKeyType={"next"} 
+                                        ref={(input) => { this.otherPharmacyName = input; }} 
+                                        blurOnSubmit={false}
+                                        onChangeText={(text)=>this.setState({otherPharmacyName:text})} 
+                                        placeholderTextColor="#bebebe" 
+                                        underlineColorAndroid="transparent" 
+                                        value={this.state.otherPharmacyName}
+                                    />
+                                </View>
                             }
                             {/* Pharmacy Ends */}
                             <View style={{marginTop:15}}></View>
@@ -603,45 +632,20 @@ class ETimeSheet extends Component{
                                 {/* Shift Unpaid Breaks End*/}
                             </View>
                             {/* Shift Time End*/}
-                            {/* <View style={{marginTop:15}}></View>
-                            <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
-                                Do you have more days to fill time sheet for same Pharmacy location?
-                            </Text> */}
-                            {/* <View style={{marginTop:10}}></View> */}
-                            {
-                                // Platform.OS == 'android' && 
-                                // <View style={[MainStyles.TInput,{paddingLeft:0,paddingVertical:0}]}>
-                                //     <Picker
-                                //     selectedValue={this.state.haveMore}
-                                //     style={{
-                                //         flex:1,
-                                //         paddingVertical:2,
-                                //         height:30,
-                                //     }}
-                                //     mode="dropdown"
-                                //     textStyle={{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                //     itemTextStyle= {{fontSize: 14,fontFamily:'AvenirLTStd-Medium'}}
-                                //     itemStyle={MainStyles.TInput}
-                                //     onValueChange={(itemValue, itemIndex) => this.setState({haveMore: itemValue})}>
-                                //         <Picker.Item label={'Yes - I do'} value={'Yes'} />
-                                //         <Picker.Item label={'No - I am finished'} value={'No'} />
-                                //     </Picker>
-                                // </View>
-                            }
-                            {
-                                // Platform.OS == 'ios' && 
-                                // <TouchableOpacity style={[MainStyles.TInput,{alignItems:'center'}]} onPress={()=>{this.pickerIos()}}>
-                                //     <Text style={{color:'#03163a',fontFamily:'Roboto-Light',fontSize:18}}>{this.state.haveMore}</Text>
-                                // </TouchableOpacity>
-                                
-                            }
-                            {/* More Days End*/}
                             <View style={{justifyContent:'center',alignItems:'center',marginTop:26}}>
                                 <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{
-                                    if(typeof(this.state.pharmacyId) == "undefined" || this.state.pharmacyId == '' ){
+                                    console.log(typeof(this.state.pharmacyId),this.state.otherPharmacyName);
+                                    if(typeof(this.state.pharmacyId) == "undefined" || this.state.pharmacyId == 0 ){
+                                        if(this.state.otherPharmacyName == ''){
+                                            Toast.show("Please add Pharmacy Name");
+                                            return false;
+                                        }
+                                    }
+                                    else if(typeof(this.state.pharmacyId) == "undefined" || this.state.pharmacyId == '' ){
                                         Toast.show("Please select Pharmacy");
                                         return false;
                                     }
+
                                     if(typeof(this.state.startDay) == "undefined" || this.state.startDay == ''){
                                         Toast.show('Please select shift day',Toast.SHORT);
                                         return false;

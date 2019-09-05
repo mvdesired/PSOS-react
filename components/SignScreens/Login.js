@@ -122,7 +122,7 @@ export default class Login extends Component{
         this.checkNetInfo();
     }
     getToken = (onToken)=>{
-        if(Platform.OS == 'android'){
+        //if(Platform.OS == 'android'){
             PushNotification.configure({
                 onRegister: onToken,
                 onNotification: function(notification) {
@@ -136,10 +136,10 @@ export default class Login extends Component{
                 popInitialNotification: true,
                 requestPermissions: true,
             });
-         }
-         else{
-             onToken();
-         }
+        //  }
+        //  else{
+        //      onToken();
+        //  }
     }
     checkNetInfo = ()=>{
         if (Platform.OS === "android") {

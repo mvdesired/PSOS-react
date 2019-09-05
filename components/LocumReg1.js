@@ -265,7 +265,7 @@ class LocumReg1Screen extends Component {
 
     }
     getToken = (onToken) => {
-        if (Platform.OS == 'android') {
+        //if (Platform.OS == 'android') {
             PushNotification.configure({
                 onRegister: onToken,
                 onNotification: function (notification) {
@@ -279,10 +279,10 @@ class LocumReg1Screen extends Component {
                 popInitialNotification: true,
                 requestPermissions: true,
             });
-        }
-        else {
-            onToken();
-        }
+        //}
+        // else {
+        //     onToken();
+        // }
     }
     sendDataToServer = (token) => {
         if (this.state.emailAddress != '') {
@@ -332,7 +332,7 @@ class LocumReg1Screen extends Component {
                     // setTimeout(()=>{
                     //     this.props.navigation.navigate('Home');
                     // },1500);
-                    this.setState({ showTerms: false, otpVisible: true, serverOtp: response.result.otp, userId: response.result.id });
+                    this.setState({ showTerms: false, otpVisible: true, serverOtp: response.result.otp, userId: response.result.id,emailAddress:'' });
                 }
                 Toast.show(response.message, Toast.SHORT);
                 this.setState({ loading: false, showTerms: false });
@@ -476,7 +476,7 @@ class LocumReg1Screen extends Component {
                                     placeholder="Last Name"
                                     returnKeyType={"go"}
                                     ref={(input) => { this.lastName = input; }}
-                                    onSubmitEditing={() => { this.mobileNumber.focus(); }}
+                                    onSubmitEditing={() => { this.phoneNo.focus(); }}
                                     blurOnSubmit={false}
                                     onChangeText={(text) => this.setState({ lastName: text })}
                                     placeholderTextColor="#bebebe"

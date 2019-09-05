@@ -106,7 +106,7 @@ class NLSFormScreen extends Component{
                 var endArray = (r.start_date).split('-');
                 var startTArray = (r.start_time).split(':');
                 var endTArray = (r.end_time).split(':');
-                console.log(endTArray);
+                //console.log(endTArray);
                 this.setState({loading:false,pageTitle:'Edit Locum Shift',
                 shiftName:r.name,
                 startDay:startArray[2],
@@ -267,7 +267,7 @@ class NLSFormScreen extends Component{
         this.setState({
             startDay:dd,startMonth:mm,startYear:yy
         });
-        console.log("A date has been picked: ", dd,mm,yy);
+        //console.log("A date has been picked: ", dd,mm,yy);
         this.hideStartDateTimePicker();
     };
     showEndDateTimePicker = () => {
@@ -286,7 +286,7 @@ class NLSFormScreen extends Component{
         this.setState({
             endDay:dd,endMonth:mm,endYear:yy
         });
-        console.log("A date has been picked: ", dd,mm,yy);
+        //console.log("A date has been picked: ", dd,mm,yy);
         this.hideEndDateTimePicker();
     };
     showStartTimePicker = () => {

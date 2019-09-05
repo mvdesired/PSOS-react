@@ -184,7 +184,7 @@ class ETimeSheet extends Component{
             },
             body:formdata
         })
-        .then(res=>res.json())
+        .then(res=>{console.log(res);return res.json()})
         .then(response=>{
             console.log(response);
             this.setState({loading:false});

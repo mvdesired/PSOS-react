@@ -410,6 +410,12 @@ class Profile extends Component{
                             this.state.isEditing == true && 
                             <View style={{paddingHorizontal:20}}>
                                 <View style={{marginTop:15}}></View>
+                                <View style={{justifyContent:'center',alignItems:'center',marginTop: 10,marginBottom:15}}>
+                                    <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.updateProfile()}}>
+                                        <Text style={[MainStyles.psosBtnText,{fontFamily:'AvenirLTStd-Light',fontSize:15}]}>Save Details</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={{marginTop:15}}></View>
                                 <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:14}}>
                                     Name
                                     <Text style={{color:'#ee1b24'}}>*</Text>
@@ -600,7 +606,7 @@ class Profile extends Component{
                                             <View>
                                                 <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Medium',fontSize:13}}>
                                                     Please upload your resume 
-                                                    <Text style={{color:'#ee1b24'}}>*</Text>
+                                                    {/* <Text style={{color:'#ee1b24'}}>*</Text> */}
                                                 </Text>
                                                 <Text style={{color:'#151515',fontFamily:'AvenirLTStd-Light',fontSize:11,marginTop:4}}>Supported Files: .pdf, .docx, .doc</Text>
                                             </View>
@@ -890,12 +896,7 @@ class Profile extends Component{
                                         {/* Accredited Ends */}
                                     </View>
                                 }
-                                <View style={{marginTop:15}}></View>
-                                <View style={{justifyContent:'center',alignItems:'center',marginTop: 10,marginBottom:15}}>
-                                    <TouchableOpacity style={[MainStyles.psosBtn,MainStyles.psosBtnSm]} onPress={()=>{this.updateProfile()}}>
-                                        <Text style={[MainStyles.psosBtnText,{fontFamily:'AvenirLTStd-Light',fontSize:15}]}>Save Details</Text>
-                                    </TouchableOpacity>
-                                </View>
+                                
                             </View>
                         }
                     </ScrollView>

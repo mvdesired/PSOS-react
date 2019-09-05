@@ -61,7 +61,12 @@ class TimeSheetList extends Component{
         var dateToday = (new Date()).getTime();
         var messageDate = date.getTime();
         if(dateToday > messageDate){
-            var fullDate = date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear();
+            var day = (date.getDate()<10)?'0'+date.getDate():date.getDate();
+            var month = (date.getMonth()+1);
+            if(month < 10){
+                month = '0'+month;
+            }
+            var fullDate = day+'/'+month+'/'+date.getFullYear();
             var ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
             hours = hours ? hours : 12; // the hour '0' should be '12'
@@ -92,10 +97,13 @@ class TimeSheetList extends Component{
                                     <TouchableOpacity style={[MainStyles.JLELoopItem]} onPress={()=>{
                                     }}>
                                         <View style={{flexWrap:'wrap'}}>
-                                            <Text style={MainStyles.JLELoopItemName}>{item.staff_fname} {item.staff_lname}</Text>
+                                            {/* <Text style={MainStyles.JLELoopItemName}>{item.staff_fname} {item.staff_lname}</Text> */}
                                             <Text style={MainStyles.JLELoopItemName}>Pharmacy Name :  {item.pharmacy_name}</Text>
+                                            <Text style={MainStyles.JLELoopItemName}>Shift Date: {item.shift_date}</Text>
+                                            <Text style={MainStyles.JLELoopItemName}>Start Time: {item.start_time}</Text>
+                                            <Text style={MainStyles.JLELoopItemName}>Unpaid Breaks: {item.unpaid_breaks}</Text>
+                                            <Text style={MainStyles.JLELoopItemName}>End Time: {item.end_time}</Text>
                                             <Text style={MainStyles.JLELoopItemTime}>{this.formatAMPM((item.created_on).replace(' ', 'T'))}</Text>
-                                            <Text style={MainStyles.JLELoopItemTime}>{item.other_comments}</Text>
                                         </View>
                                     </TouchableOpacity>
                             </View>
