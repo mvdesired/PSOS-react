@@ -9,7 +9,7 @@
   "dependencies": {
     "@merryjs/photo-viewer": "^3.0.0",
     "axios": "^0.19.0",
-    "moment": "^2.23.0",
+    "moment": "^2.29.4",
     "push-notification": "^0.2.5",
     "react": "^16.6.1",
     "react-dom": "^16.6.3",
